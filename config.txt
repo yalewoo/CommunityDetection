@@ -1,0 +1,11 @@
+#Graphviz
+Graphviz_Path="C:/Program Files (x86)/Graphviz2.38/bin/dot.exe"
+
+#Infomap
+Infomap_exe="F:/Local/CommunityDetectionAlgorithm/Infomap/Infomap.exe"
+
+#LinkComm
+LinkComm_dir=F:/Local/CommunityDetectionAlgorithm/linkcomm-master/cpp/
+
+#OSLOM2
+OSLOM2_dir=F:/Local/CommunityDetectionAlgorithm/OSLOM2_bineary/
