@@ -2,14 +2,18 @@
 #define COMMUNITIES_H
 
 #include <vector>
+#include <set>
 #include <algorithm>
 using std::vector;
 using std::unique;
 using std::sort;
+using std::max;
+using std::set;
 
 struct Community
 {
 	vector<int> nodes;
+	int max_node_id = -1;
 
 	Community()
 	{
@@ -17,6 +21,7 @@ struct Community
 	}
 	void add(int n)
 	{
+		max_node_id = max(max_node_id, n);
 		nodes.push_back(n);
 	}
 	void sort()
@@ -32,7 +37,7 @@ struct Community
 class Communities
 {
 	vector< Community > comms;
-
+	int max_node_id = -1;
 public:
 	void clear() { comms.clear(); }
 	Communities()
@@ -41,9 +46,11 @@ public:
 	}
 	void addCommunity(Community c)
 	{
+		max_node_id = max(max_node_id, c.max_node_id);
 		comms.push_back(c);
 	}
 	void print();
+	bool save(const char * fn);
 	int size() { return comms.size(); }
 
 
@@ -55,6 +62,9 @@ public:
 	void loadCFinder(const char * fn);
 	void loadMod(const char * fn);
 
+	vector<vector<int> > getCommsOfEveryid() const;
+
+	static vector<int> intersection(vector<int> & a, vector<int> & b);
 	
 };
 

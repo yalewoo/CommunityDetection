@@ -76,10 +76,10 @@ Communities Graph::runInfomap(char * args)
 {
 	string Infomap = "\"" + config["Infomap_dir"] + "Infomap\"";
 	save("tmp.graph");
-	cmd(Infomap + " graph.txt . -z -i link-list");
+	cmd(Infomap + " tmp.graph . -z -i link-list");
 
 	Communities cs;
-	cs.loadInfomap("graph.tree");
+	cs.loadInfomap("tmp.tree");
 	return cs;
 }
 
@@ -184,15 +184,96 @@ Communities Graph::runMod(char * args)
 	else
 	{
 		cmd(convert + " -i tmp.graph -o graph.bin");
-		cmd(community + " graph.bin  -l -1 -v > graph.tree");
+		cmd(community + " graph.bin  -l -1 -v > mod.result");
 	}
 	
 
 	Communities cs;
-	cs.loadMod("graph.tree");
+	cs.loadMod("mod.result");
 	return cs;
 
 }
+
+Graph Graph::remove(const Communities & cs)
+{
+	vector<vector<int> > cid = cs.getCommsOfEveryid();
+	Graph g;
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		int x = edges[i].x;
+		int y = edges[i].y;
+		double w = edges[i].w;
+		vector<int> insertofxy = Communities::intersection(cid[x], cid[y]);
+		if (insertofxy.empty())
+		{
+			g.addEdge(x, y, w);
+		}
+	}
+
+	return g;
+}
+
+void Graph::print()
+{
+	printf("-----------------\n");
+	printf("%d edges:\n", edges.size());
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		printf("%d %d\n", edges[i].x, edges[i].y);
+	}
+}
+bool Graph::create_dot_file(char *fn)
+{
+	FILE * fp = fopen(fn, "w");
+	if (!fp)
+		return false;
+
+	if (Weighted)	//有权图
+	{
+		if (!Directed)	//无向图 有权
+		{
+			for (size_t i = 0; i < edges.size(); ++i)
+			{
+				
+			}
+		}
+		else //有向图 有权
+		{
+
+		}
+	}
+	else
+	{
+		if (!Directed)	//无向图 无权图
+		{
+			fprintf(fp, "graph g {\n");
+
+			for (size_t i = 0; i < edges.size(); ++i)
+			{
+				fprintf(fp, "\t%d -- %d;\n", edges[i].x, edges[i].y);
+			}
+			fprintf(fp, "}");
+		}
+		else //有向图 无权图
+		{
+
+		}
+
+	}
+
+	fclose(fp);
+	return true;
+}
+void Graph::showPic(void)
+{
+	create_dot_file("tmp.dot");
+	string dot = config["Graphviz_dot"];
+	cmd(dot + " -T png tmp.dot -o graph.png");
+	cmd("graph.png");
+	printf("Press Enter to continue...\n");
+	getchar();
+}
+
 
 void Graph::loadWeightedGraph(FILE * fp)
 {

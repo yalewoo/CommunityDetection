@@ -1,5 +1,5 @@
 #Graphviz
-Graphviz_Path="C:/Program Files (x86)/Graphviz2.38/bin/dot.exe"
+Graphviz_dot="D:/game/graphviz/bin/dot.exe"
 
 #Modularity
 Mod_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/louvain-code/

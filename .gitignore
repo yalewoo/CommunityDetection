@@ -5,6 +5,8 @@
 
 #communities
 vs2015/vs2015/*
+!vs2015/vs2015/vs2015.vcxproj
+!vs2015/vs2015/vs2015.vcxproj.filters
 
 # User-specific files
 *.suo

@@ -33,7 +33,7 @@ class Graph {
 	bool Weighted;
 	bool Directed;
 
-	map<string, string> config;
+	static map<string, string> config;
 
 	void loadWeightedGraph(FILE * fp);
 	void loadUnweightedGraph(FILE * fp);
@@ -44,7 +44,7 @@ class Graph {
 public:
 	bool load(char * graph_path);
 	bool save(char *graph_path);
-	bool loadConfig(char * config_path);
+	static bool loadConfig(char * config_path);
 	
 	Graph(bool weighted = false, bool directed = false) : Weighted(weighted), Directed(directed) {}
 
@@ -55,6 +55,12 @@ public:
 	Communities runDemon(char * args = 0);
 	Communities runCFinder(char * args = 0);
 	Communities runMod(char * args = 0);
+
+	Graph remove(const Communities & cs);
+
+	void print();
+	bool create_dot_file(char *fn);
+	void showPic(void);
 };
 
 

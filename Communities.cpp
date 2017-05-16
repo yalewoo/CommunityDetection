@@ -7,11 +7,13 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+
 using std::ifstream;
 using std::string;
 using std::stringstream;
 using std::cout;
 using std::endl;
+using std::set_intersection;
 
 
 void Communities::loadInfomap(const char * fn)
@@ -269,6 +271,34 @@ void Communities::loadMod(const char * fn)
 	}
 }
 
+vector<vector<int> > Communities::getCommsOfEveryid() const
+{
+	vector<vector<int> > res;
+	res.resize(max_node_id+1);
+	for (size_t i = 0; i < comms.size(); ++i)
+	{
+		const vector<int> & nodes = comms[i].nodes;
+		for (size_t j = 0; j < nodes.size(); ++j)
+		{
+			res[nodes[j]].push_back(i);
+		}
+	}
+
+	return res;
+}
+
+vector<int> Communities::intersection(vector<int>& a, vector<int>& b)
+{
+	sort(a.begin(), a.end());
+	sort(b.begin(), b.end());
+
+	vector<int> res(max(a.size(), b.size()));
+	auto iter = set_intersection(a.begin(), a.end(), b.begin(), b.end(), res.begin());
+	res.resize(iter - res.begin());
+
+	return res;
+}
+
 void Communities::print()
 {
 	printf("-------------------------\n");
@@ -281,4 +311,20 @@ void Communities::print()
 		}
 		printf("\n");
 	}
+}
+
+bool Communities::save(const char * fn)
+{
+	FILE * fp = fopen(fn, "w");
+	if (!fp) return false;
+	for (size_t i = 0; i < comms.size(); ++i)
+	{
+		for (size_t j = 0; j < comms[i].nodes.size(); ++j)
+		{
+			fprintf(fp, "%d ", comms[i].nodes[j]);
+		}
+		fprintf(fp, "\n");
+	}
+	fclose(fp);
+	return true;
 }
