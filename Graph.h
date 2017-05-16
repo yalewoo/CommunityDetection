@@ -51,6 +51,9 @@ public:
 	Communities runInfomap(char * args = 0);
 	Communities runLinkComm(char * args = 0);
 	Communities runOSLOM2(char * args = 0);
+	Communities runGCE(char * args = 0);
+	Communities runDemon(char * args = 0);
+	Communities runCFinder(char * args = 0);
 };
 
 

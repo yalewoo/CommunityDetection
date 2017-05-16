@@ -1,0 +1,10 @@
+# The communities at k=3
+# from F:\Local\CommunityDetectionAlgorithm\CFinder-2.0.6\graph.txt
+# at no lower link weight threshold,
+# and at no upper link weight threshold.
+# Links were treated as undirected.
+# No time limit was set for the clique search.
+
+0: 0 1 2 3 
+1: 4 5 7 6 8 
+2: 10 11 12 13 9 

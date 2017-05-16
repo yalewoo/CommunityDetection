@@ -46,6 +46,9 @@ public:
 	void loadInfomap(const char * fn);
 	void loadLinkComm(const char * fn);
 	void loadOSLOM2(const char * fn);
+	void loadGCE(const char * fn);
+	void loadDemon(const char * fn);
+	void loadCFinder(const char * fn);
 
 	
 };

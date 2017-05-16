@@ -126,7 +126,103 @@ void Communities::loadOSLOM2(const char * fn)
 		{
 			c.add(id);
 		}
-		//c.sort();
+		c.sort();
+		if (c.nodes.size() > 0)
+			addCommunity(c);
+	}
+}
+
+void Communities::loadGCE(const char * fn)
+{
+	clear();
+
+	ifstream f(fn, std::ios::in);
+
+
+	while (!f.eof())
+	{
+		string s;
+		getline(f, s);
+
+
+		stringstream stream;
+		stream << s;
+		int id;
+		Community c;
+		while (stream >> id)
+		{
+			c.add(id);
+		}
+		c.sort();
+		if (c.nodes.size() > 0)
+			addCommunity(c);
+	}
+}
+
+void Communities::loadDemon(const char * fn)
+{
+	clear();
+
+	ifstream f(fn, std::ios::in);
+
+
+	while (!f.eof())
+	{
+		string s;
+		getline(f, s);
+
+		for (size_t i = 0; i < s.size(); ++i)
+		{
+			if (s[i] == ',') s[i] = ' ';
+		}
+
+
+		stringstream stream;
+		stream << s;
+		int id;
+		stream >> id;	//第一个数字是社团号舍弃
+		Community c;
+		while (stream >> id)
+		{
+			c.add(id);
+		}
+		c.sort();
+		if (c.nodes.size() > 0)
+			addCommunity(c);
+	}
+}
+
+void Communities::loadCFinder(const char * fn)
+{
+	clear();
+
+	ifstream f(fn, std::ios::in);
+
+
+	while (!f.eof())
+	{
+		string s;
+		getline(f, s);
+
+		if (s.size() > 0 && s[0] == '#')
+			continue;
+
+		for (size_t i = 0; i < s.size(); ++i)
+		{
+			if (s[i] == ':') s[i] = ' ';
+		}
+
+
+		stringstream stream;
+		stream << s;
+		int id;
+		stream >> id;	//第一个数字是社团号舍弃
+		Community c;
+		while (stream >> id)
+		{
+			c.add(id);
+		}
+		c.sort();
 		if (c.nodes.size() > 0)
 			addCommunity(c);
 	}

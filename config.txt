@@ -2,10 +2,21 @@
 Graphviz_Path="C:/Program Files (x86)/Graphviz2.38/bin/dot.exe"
 
 #Infomap
-Infomap_exe="F:/Local/CommunityDetectionAlgorithm/Infomap/Infomap.exe"
+Infomap_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/Infomap/
 
 #LinkComm
-LinkComm_dir=F:/Local/CommunityDetectionAlgorithm/linkcomm-master/cpp/
+LinkComm_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/linkcomm-master/cpp/
 
 #OSLOM2
-OSLOM2_dir=F:/Local/CommunityDetectionAlgorithm/OSLOM2_bineary/
+OSLOM2_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/OSLOM2_bineary/
+
+#GCE
+GCE_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/GCECommunityFinder/build/
+
+#Demon
+python2_exe="C:\Program Files\Anaconda3\envs\python2\python.exe"
+Demon_launch=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/demon_py/launch.py
+
+#Cfinder
+Cfinder_exe="F:/Project/CommunityDetection/CommunityDetectionAlgorithm/CFinder-2.0.6/CFinder_commandline64"
+Cfinder_licence=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/CFinder-2.0.6/licence.txt

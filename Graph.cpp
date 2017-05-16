@@ -74,8 +74,9 @@ bool Graph::loadConfig(char * config_path)
 
 Communities Graph::runInfomap(char * args)
 {
+	string Infomap = "\"" + config["Infomap_dir"] + "Infomap\"";
 	save("tmp.graph");
-	cmd(config["Infomap_exe"] + " graph.txt . -z -i link-list");
+	cmd(Infomap + " graph.txt . -z -i link-list");
 
 	Communities cs;
 	cs.loadInfomap("graph.tree");
@@ -125,6 +126,46 @@ Communities Graph::runOSLOM2(char * args)
 
 	return cs;
 
+}
+
+Communities Graph::runGCE(char * args)
+{
+	string GCE = "\"" + config["GCE_dir"] + "GCECommunityFinder\"";
+	save("tmp.graph");
+	//cmd(GCE + " tmp.graph 3 0.6 1.0 0.75 > gce.log | tee gce.gen");
+	cmd("\"" + GCE + " tmp.graph 3 0.6 1.0 0.75 2> gen.log | tee gce.gen\"");
+
+	Communities cs;
+	cs.loadGCE("gce.gen");
+	return cs;
+}
+
+Communities Graph::runDemon(char * args)
+{
+	string python2 = config["python2_exe"];
+	string demonlaunch = config["Demon_launch"];
+	save("tmp.graph");
+	//cmd(GCE + " tmp.graph 3 0.6 1.0 0.75 > gce.log | tee gce.gen");
+	cmd(python2 + " " + demonlaunch + " tmp.graph");
+
+	Communities cs;
+	cs.loadDemon("communities");
+	return cs;
+}
+
+Communities Graph::runCFinder(char * args)
+{
+	string Cfinder_exe = config["Cfinder_exe"];
+	string Cfinder_licence = config["Cfinder_licence"];
+
+	save("tmp.graph");
+
+	cmd("rm -r CFinderOutput");
+	cmd(Cfinder_exe + " -i tmp.graph -l " + Cfinder_licence + " -o CFinderOutput");
+
+	Communities cs;
+	cs.loadCFinder("CFinderOutput/k=3/communities");
+	return cs;
 }
 
 void Graph::loadWeightedGraph(FILE * fp)
