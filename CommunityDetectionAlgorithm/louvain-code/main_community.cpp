@@ -123,7 +123,7 @@ display_time(const char *str) {
 
 int
 main(int argc, char **argv) {
-  srand(time(NULL)+getpid());
+  srand(time(NULL));
 
   parse_args(argc, argv);
   time_t time_begin, time_end;

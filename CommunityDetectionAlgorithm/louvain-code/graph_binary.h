@@ -52,7 +52,7 @@ class Graph {
   unsigned long nb_links;
   double total_weight;  
 
-  vector<unsigned long> degrees;
+  vector<unsigned long long> degrees;
   vector<unsigned int> links;
   vector<float> weights;
 

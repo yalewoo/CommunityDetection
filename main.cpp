@@ -13,7 +13,8 @@ int main()
 	//g.runOSLOM2().print();
 	//g.runGCE().print();
 	//g.runDemon().print();
-	g.runCFinder().print();
+	//g.runCFinder().print();
+	g.runMod().print();
 
 	
 

@@ -1,6 +1,9 @@
 #Graphviz
 Graphviz_Path="C:/Program Files (x86)/Graphviz2.38/bin/dot.exe"
 
+#Modularity
+Mod_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/louvain-code/
+
 #Infomap
 Infomap_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/Infomap/
 

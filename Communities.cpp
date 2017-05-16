@@ -228,6 +228,47 @@ void Communities::loadCFinder(const char * fn)
 	}
 }
 
+void Communities::loadMod(const char * fn)
+{
+	clear();
+
+	ifstream f(fn, std::ios::in);
+
+
+	string s;
+	getline(f, s);
+
+	stringstream stream;
+	stream << s;
+	int node_id;
+	int comm_id;
+	stream >> node_id >> comm_id;
+	int last;
+	Community c;
+	c.clear();
+	while (!f.eof())
+	{
+		last = comm_id;
+		c.add(node_id);
+
+		getline(f, s);
+		stringstream stream2;
+		stream2 << s;
+		stream2 >> node_id >> comm_id;
+		if (last != comm_id)
+		{
+			c.sort();
+			if (c.nodes.size() > 0)
+				addCommunity(c);
+			c.clear();
+			if (comm_id == 0)
+				break;
+		}
+
+		
+	}
+}
+
 void Communities::print()
 {
 	printf("-------------------------\n");

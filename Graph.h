@@ -54,6 +54,7 @@ public:
 	Communities runGCE(char * args = 0);
 	Communities runDemon(char * args = 0);
 	Communities runCFinder(char * args = 0);
+	Communities runMod(char * args = 0);
 };
 
 

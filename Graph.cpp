@@ -168,6 +168,32 @@ Communities Graph::runCFinder(char * args)
 	return cs;
 }
 
+Communities Graph::runMod(char * args)
+{
+	string convert = "\"" + config["Mod_dir"] + "convert\"";
+	string community = "\"" + config["Mod_dir"] + "community\"";
+
+
+	save("tmp.graph");
+
+	if (Weighted)
+	{
+		cmd(convert + " -i tmp.graph -o graph.bin -w graph.weights");
+		cmd(community + " graph.bin  -l -1 -w graph.weights > graph.tree");
+	}
+	else
+	{
+		cmd(convert + " -i tmp.graph -o graph.bin");
+		cmd(community + " graph.bin  -l -1 -v > graph.tree");
+	}
+	
+
+	Communities cs;
+	cs.loadMod("graph.tree");
+	return cs;
+
+}
+
 void Graph::loadWeightedGraph(FILE * fp)
 {
 	int x, y;

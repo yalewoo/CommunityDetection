@@ -1,3 +1,4 @@
+#include "oslom_net_global.h"
 
 int oslom_net_global::try_to_assign_homeless(module_collection & Mcoll, bool anyway) {
 	

@@ -27,7 +27,7 @@
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
 
-#include <sys/mman.h>
+//#include <sys/mman.h>
 #include <fstream>
 #include "graph_binary.h"
 #include "math.h"

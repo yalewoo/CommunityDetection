@@ -24,6 +24,10 @@ struct Community
 		std::sort(nodes.begin(), nodes.end());
 		nodes.erase(unique(nodes.begin(), nodes.end()), nodes.end());
 	}
+	void clear()
+	{
+		nodes.clear();
+	}
 };
 class Communities
 {
@@ -49,6 +53,7 @@ public:
 	void loadGCE(const char * fn);
 	void loadDemon(const char * fn);
 	void loadCFinder(const char * fn);
+	void loadMod(const char * fn);
 
 	
 };
