@@ -8,6 +8,8 @@
 #include <sstream>
 #include <iostream>
 
+#include "Graph.h"
+
 using std::ifstream;
 using std::string;
 using std::stringstream;
@@ -264,7 +266,7 @@ void Communities::loadMod(const char * fn)
 		stream2 << s;
 		stream2 >> node_id >> comm_id;
 		
-		if (comm_id == 0)
+		if (node_id == 0)
 			break;
 		
 	}
@@ -300,6 +302,23 @@ vector<int> Communities::intersection(vector<int>& a, vector<int>& b)
 	return res;
 }
 
+double Communities::calcModularity(const Graph & g)
+{
+	int nc = size();
+	vector<int> comm_inter_edge_num = g.getCommInterEdgeNum(*this);
+	vector<int> comm_inter_nodes_degree = g.getCommInterNodesDegree(*this);
+	double m = g.edges.size();	//×Ü±ßÊý
+
+	double Q = 0;
+	for (size_t i = 0; i < nc; ++i)
+	{
+		Q += (comm_inter_edge_num[i] / m) - (comm_inter_nodes_degree[i] / (2 * m)) * (comm_inter_nodes_degree[i] / (2 * m));
+	}
+
+	this->Q = Q;
+	return Q;
+}
+
 void Communities::getCommsByCid(const vector<int> &cid)
 {
 	int max_comm_id = *std::max_element(cid.begin(), cid.end());
@@ -326,6 +345,7 @@ void Communities::removeSmallComm(int size)
 void Communities::print()
 {
 	printf("-------------------------\n");
+	printf("Modularity: %lf\n", Q);
 	printf("%d communities:\n", comms.size());
 	for (size_t i = 0; i < comms.size(); ++i)
 	{

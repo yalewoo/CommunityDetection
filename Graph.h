@@ -7,6 +7,8 @@
 using std::vector;
 using std::string;
 using std::map;
+
+#define SHOW_CMD false
 #define LINE_BUFF_SIZE 1024
 
 #include "Communities.h"
@@ -64,9 +66,11 @@ public:
 	void showPic(void);
 
 	double calcModularity(const Communities & cs);	//计算模块度
-	vector<int> getDegree();	//返回每个结点的度
-	vector<int> getCommInterEdgeNum(const Communities & cs);	//返回每个社团内部的边数
-	vector<int> getCommInterNodesDegree(const Communities & cs);	//返回社团内部点的度数之和
+	vector<int> getDegree() const;	//返回每个结点的度
+	vector<int> getCommInterEdgeNum(const Communities & cs) const;	//返回每个社团内部的边数
+	vector<int> getCommInterNodesDegree(const Communities & cs) const;	//返回社团内部点的度数之和
+
+	friend class Communities;
 };
 
 

@@ -3,6 +3,7 @@
 #include "Graph.h"
 
 using std::cout;
+using std::endl;
 
 map<string, string> Graph::config;
 
@@ -15,6 +16,31 @@ int main()
 	//从edge list的文本文件读入图
 	//g.load("F:/Project/CommunityDetection/graph.txt");
 	g.load("graph.txt");
+
+	Communities cs;
+
+	cs = g.runInfomap();
+	cs.calcModularity(g);
+	cs.print();
+	cs = g.runLinkComm();
+	cs.calcModularity(g);
+	cs.print();
+	cs = g.runOSLOM2();
+	cs.calcModularity(g);
+	cs.print();
+	cs = g.runGCE();
+	cs.calcModularity(g);
+	cs.print();
+	cs = g.runDemon();
+	cs.calcModularity(g);
+	cs.print();
+	cs = g.runCFinder();
+	cs.calcModularity(g);
+	cs.print();
+	cs = g.runMod();
+	cs.calcModularity(g);
+	cs.print();
+
 
 	/*
 	g.runInfomap().save("result/Infomap.gen");
@@ -31,10 +57,13 @@ int main()
 	g = g.remove(cs);
 	g.print();
 	g.showPic();*/
-	Communities cs;
-	cs.load("res.gen");
+	//Communities cs;
+	//cs.load("res.gen");
 
-	cout << g.calcModularity(cs);
+	//cout << g.calcModularity(cs) << endl;
+	//cout << cs.calcModularity(g) << endl;
+
+	//cs.print();
 
 	printf("------------\ndone\n");
 	return 0;

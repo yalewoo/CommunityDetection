@@ -31,6 +31,7 @@ class Communities
 {
 
 	vector< Community > comms;
+	double Q = 0;
 	void getCommsByCid(const vector<int> &cid);	//转换cid到comms
 	int max_node_id = -1;
 public:
@@ -65,7 +66,7 @@ public:
 
 	friend class Graph;
 
-	
+	double calcModularity(const Graph & g);	//计算模块度
 };
 
 

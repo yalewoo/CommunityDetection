@@ -280,10 +280,17 @@ void Graph::showPic(void)
 
 double Graph::calcModularity(const Communities & cs)
 {
-	int nc = cs.size();
+	//社团个数
+	int nc = cs.size();	
+
+	//社团内部的边数
 	vector<int> comm_inter_edge_num = getCommInterEdgeNum(cs);
+
+	//社团内部点的度数之和
 	vector<int> comm_inter_nodes_degree = getCommInterNodesDegree(cs);
-	double m = edges.size();	//总边数
+
+	//总边数
+	double m = edges.size();
 
 	double Q = 0;
 	for (size_t i = 0; i < nc; ++i)
@@ -295,7 +302,8 @@ double Graph::calcModularity(const Communities & cs)
 	return Q;
 }
 
-vector<int> Graph::getDegree()
+//返回每个结点的度
+vector<int> Graph::getDegree() const
 {
 	vector<int> d(max_node_id + 1, 0);
 	for (size_t i = 0; i < edges.size(); ++i)
@@ -307,7 +315,8 @@ vector<int> Graph::getDegree()
 	return d;
 }
 
-vector<int> Graph::getCommInterEdgeNum(const Communities & cs)
+//社团内部的边数
+vector<int> Graph::getCommInterEdgeNum(const Communities & cs) const
 {
 	vector<int> v(cs.size(), 0);
 
@@ -328,7 +337,8 @@ vector<int> Graph::getCommInterEdgeNum(const Communities & cs)
 	return v;
 }
 
-vector<int> Graph::getCommInterNodesDegree(const Communities & cs)
+//社团内部结点的度数之和
+vector<int> Graph::getCommInterNodesDegree(const Communities & cs) const
 {
 	vector<int> degree = getDegree();
 	vector<int> v(cs.size(), 0);
@@ -401,6 +411,7 @@ void Graph::cmd(string s)
 
 void Graph::cmd(const char * s)
 {
-	printf("Call: %s\n", s);
+	if (SHOW_CMD)
+		printf("Call: %s\n", s);
 	system(s);
 }
