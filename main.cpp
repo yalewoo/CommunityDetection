@@ -19,27 +19,27 @@ int main()
 
 	Communities cs;
 
-	cs = g.runInfomap();
-	cs.calcModularity(g);
-	cs.print();
-	cs = g.runLinkComm();
-	cs.calcModularity(g);
-	cs.print();
-	cs = g.runOSLOM2();
-	cs.calcModularity(g);
-	cs.print();
-	cs = g.runGCE();
-	cs.calcModularity(g);
-	cs.print();
-	cs = g.runDemon();
-	cs.calcModularity(g);
-	cs.print();
-	cs = g.runCFinder();
-	cs.calcModularity(g);
-	cs.print();
-	cs = g.runMod();
-	cs.calcModularity(g);
-	cs.print();
+	// cs = g.runInfomap();
+	// cs.calcModularity(g);
+	// cs.print();
+	// cs = g.runLinkComm();
+	// cs.calcModularity(g);
+	// cs.print();
+	// cs = g.runOSLOM2();
+	// cs.calcModularity(g);
+	// cs.print();
+	// cs = g.runGCE();
+	// cs.calcModularity(g);
+	// cs.print();
+	// cs = g.runDemon();
+	// cs.calcModularity(g);
+	// cs.print();
+	// cs = g.runCFinder();
+	// cs.calcModularity(g);
+	// cs.print();
+	// cs = g.runMod();
+	// cs.calcModularity(g);
+	// cs.print();
 
 
 	/*
@@ -58,12 +58,12 @@ int main()
 	g.print();
 	g.showPic();*/
 	//Communities cs;
-	//cs.load("res.gen");
+	cs.load("res.gen");
 
-	//cout << g.calcModularity(cs) << endl;
-	//cout << cs.calcModularity(g) << endl;
+	cout << g.calcModularity(cs) << endl;
+	cout << cs.calcModularity(g) << endl;
 
-	//cs.print();
+	cs.print();
 
 	printf("------------\ndone\n");
 	return 0;

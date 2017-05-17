@@ -31,6 +31,7 @@ struct Edge {
 };
 class Graph {
 	vector<Edge> edges;
+	double getSumWeighted() const;
 	int max_node_id = -1;
 	void addEdge(int x, int y, double w = 1);
 	bool Weighted;
@@ -65,10 +66,11 @@ public:
 	bool create_dot_file(char *fn);
 	void showPic(void);
 
-	double calcModularity(const Communities & cs);	//计算模块度
+	double calcModularity(const Communities & cs) const;	//计算模块度
 	vector<int> getDegree() const;	//返回每个结点的度
-	vector<int> getCommInterEdgeNum(const Communities & cs) const;	//返回每个社团内部的边数
-	vector<int> getCommInterNodesDegree(const Communities & cs) const;	//返回社团内部点的度数之和
+	vector<double> getCommInterEdgeNum(const Communities & cs) const;	//返回每个社团内部的边数
+	vector<double> getCommInterNodesDegree(vector<double> &comm_inter_edge_num, vector<double> & comm_out_edge_num) const;	//返回社团内部点的度数之和
+	vector<double> getCommOutEdgeNum(const Communities & cs) const;	//返回社团连接其他社团的边数
 
 	friend class Communities;
 };

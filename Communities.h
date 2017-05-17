@@ -63,6 +63,7 @@ public:
 	vector<vector<int> > getCommsOfEveryid() const;
 
 	static vector<int> intersection(vector<int> & a, vector<int> & b);
+	static vector<int> difference(vector<int> & a, vector<int> & b);
 
 	friend class Graph;
 

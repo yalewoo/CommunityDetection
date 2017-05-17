@@ -15,7 +15,7 @@ using std::string;
 using std::stringstream;
 using std::cout;
 using std::endl;
-using std::set_intersection;
+
 
 
 void Communities::load(const char * fn)
@@ -296,7 +296,19 @@ vector<int> Communities::intersection(vector<int>& a, vector<int>& b)
 	sort(b.begin(), b.end());
 
 	vector<int> res(max(a.size(), b.size()));
-	auto iter = set_intersection(a.begin(), a.end(), b.begin(), b.end(), res.begin());
+	auto iter = std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), res.begin());
+	res.resize(iter - res.begin());
+
+	return res;
+}
+
+vector<int> Communities::difference(vector<int>& a, vector<int>& b)
+{
+	sort(a.begin(), a.end());
+	sort(b.begin(), b.end());
+
+	vector<int> res(max(a.size(), b.size()));
+	auto iter = std::set_difference(a.begin(), a.end(), b.begin(), b.end(), res.begin());
 	res.resize(iter - res.begin());
 
 	return res;
@@ -304,18 +316,7 @@ vector<int> Communities::intersection(vector<int>& a, vector<int>& b)
 
 double Communities::calcModularity(const Graph & g)
 {
-	int nc = size();
-	vector<int> comm_inter_edge_num = g.getCommInterEdgeNum(*this);
-	vector<int> comm_inter_nodes_degree = g.getCommInterNodesDegree(*this);
-	double m = g.edges.size();	//×Ü±ßÊý
-
-	double Q = 0;
-	for (size_t i = 0; i < nc; ++i)
-	{
-		Q += (comm_inter_edge_num[i] / m) - (comm_inter_nodes_degree[i] / (2 * m)) * (comm_inter_nodes_degree[i] / (2 * m));
-	}
-
-	this->Q = Q;
+	this->Q = g.calcModularity(*this);
 	return Q;
 }
 

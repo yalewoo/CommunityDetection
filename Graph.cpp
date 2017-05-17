@@ -8,6 +8,16 @@
 using std::unique;
 using std::swap;
 
+double Graph::getSumWeighted() const
+{
+	double res = 0;
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		res += edges[i].w;
+	}
+	return res;
+}
+
 void Graph::addEdge(int x, int y, double w)
 {
 	max_node_id = max(max_node_id, y);
@@ -278,19 +288,22 @@ void Graph::showPic(void)
 	getchar();
 }
 
-double Graph::calcModularity(const Communities & cs)
+double Graph::calcModularity(const Communities & cs)  const
 {
 	//社团个数
 	int nc = cs.size();	
 
 	//社团内部的边数
-	vector<int> comm_inter_edge_num = getCommInterEdgeNum(cs);
+	vector<double> comm_inter_edge_num = getCommInterEdgeNum(cs);
+
+	//社团连出的边数
+	vector<double> comm_out_edge_num = getCommOutEdgeNum(cs);
 
 	//社团内部点的度数之和
-	vector<int> comm_inter_nodes_degree = getCommInterNodesDegree(cs);
+	vector<double> comm_inter_nodes_degree = getCommInterNodesDegree(comm_inter_edge_num, comm_out_edge_num);
 
 	//总边数
-	double m = edges.size();
+	double m = getSumWeighted();
 
 	double Q = 0;
 	for (size_t i = 0; i < nc; ++i)
@@ -316,21 +329,26 @@ vector<int> Graph::getDegree() const
 }
 
 //社团内部的边数
-vector<int> Graph::getCommInterEdgeNum(const Communities & cs) const
+vector<double> Graph::getCommInterEdgeNum(const Communities & cs) const
 {
-	vector<int> v(cs.size(), 0);
+	vector<double> v(cs.size(), 0);
+
+	vector<vector<int> > csid = cs.getCommsOfEveryid();
 
 	for (size_t i = 0; i < edges.size(); ++i)
 	{
 		int x = edges[i].x;
 		int y = edges[i].y;
+		double w = edges[i].w;
 
-		vector<vector<int> > csid = cs.getCommsOfEveryid();
+		
 
 		vector<int> cap = Communities::intersection(csid[x], csid[y]);
+		double cx = csid[x].size();	//cx个社团包含结点x
+		double cy = csid[y].size();	//cy个社团包含结点y
 		for (size_t j = 0; j < cap.size(); ++j)
 		{
-			++v[cap[j]];
+			v[cap[j]] += 0.5 * (1/cx + 1/cy) * w;
 		}
 	}
 
@@ -338,15 +356,47 @@ vector<int> Graph::getCommInterEdgeNum(const Communities & cs) const
 }
 
 //社团内部结点的度数之和
-vector<int> Graph::getCommInterNodesDegree(const Communities & cs) const
+vector<double> Graph::getCommInterNodesDegree(vector<double> &comm_inter_edge_num, vector<double> & comm_out_edge_num) const
 {
-	vector<int> degree = getDegree();
-	vector<int> v(cs.size(), 0);
+	vector<double> v(comm_inter_edge_num.size(), 0);
 
-	for (size_t i = 0; i < cs.size(); ++i)
+	for (size_t i = 0; i < comm_inter_edge_num.size(); ++i)
 	{
-		for (size_t j = 0; j < cs.comms[i].nodes.size(); ++j)
-			v[i] += degree[cs.comms[i].nodes[j]];
+		v[i] = 2 * comm_inter_edge_num[i] + comm_out_edge_num[i];
+	}
+
+	return v;
+}
+
+vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
+{
+	vector<double> v(cs.size(), 0);
+	vector<vector<int> > csid = cs.getCommsOfEveryid();
+
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		int x = edges[i].x;
+		int y = edges[i].y;
+		double w = edges[i].w;
+
+		
+
+		vector<int> cap = Communities::difference(csid[x], csid[y]);
+		double cx = csid[x].size();	//cx个社团包含结点x
+		double cy = csid[y].size();	//cy个社团包含结点y
+		for (size_t j = 0; j < cap.size(); ++j)
+		{
+			v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
+		}
+
+		swap(x, y);
+		cap = Communities::difference(csid[x], csid[y]);
+		cx = csid[x].size();	//cx个社团包含结点x
+		cy = csid[y].size();	//cy个社团包含结点y
+		for (size_t j = 0; j < cap.size(); ++j)
+		{
+			v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
+		}
 	}
 
 	return v;
