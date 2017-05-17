@@ -10,7 +10,8 @@ int main()
 
 	Graph g;
 	//从edge list的文本文件读入图
-	g.load("F:/Project/CommunityDetection/graph.txt");
+	//g.load("F:/Project/CommunityDetection/graph.txt");
+	g.load("graph.txt");
 
 
 	g.runInfomap().save("result/Infomap.gen");

@@ -29,6 +29,7 @@ struct Edge {
 };
 class Graph {
 	vector<Edge> edges;
+	int max_node_id = -1;
 	void addEdge(int x, int y, double w = 1);
 	bool Weighted;
 	bool Directed;

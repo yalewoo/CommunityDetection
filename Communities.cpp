@@ -19,6 +19,7 @@ using std::set_intersection;
 void Communities::loadInfomap(const char * fn)
 {
 	clear();
+	vector<int> cid(max_node_id + 1);
 
 	FILE *fp = fopen(fn, "r");
 	if (!fp)
@@ -30,8 +31,8 @@ void Communities::loadInfomap(const char * fn)
 	int n;
 	int lastn = 0;
 	int node;
-	int nc = -1;
 
+	Community c;
 	while (fgets(buff, 512, fp))
 	{
 		//定位到倒数第二个数字 三层时1:2:3 会读出2
@@ -59,19 +60,11 @@ void Communities::loadInfomap(const char * fn)
 		//节点号
 		sscanf(buff + i, "%d", &node);
 
-		if (n != lastn)	//开始新的社团
-		{
-			++nc;
-			Community c;
-			c.add(node);
-			addCommunity(c);
-		}
-		else
-		{
-			comms[nc].add(node);
-		}
-		lastn = n;
+		
+		cid[node] = n;
 	}
+	getCommsByCid(cid);
+	removeSmallComm(1);
 }
 
 void Communities::loadLinkComm(const char * fn)
@@ -103,6 +96,7 @@ void Communities::loadLinkComm(const char * fn)
 			addCommunity(c);
 
 	}
+	removeSmallComm(1);
 }
 
 void Communities::loadOSLOM2(const char * fn)
@@ -132,6 +126,7 @@ void Communities::loadOSLOM2(const char * fn)
 		if (c.nodes.size() > 0)
 			addCommunity(c);
 	}
+	removeSmallComm(1);
 }
 
 void Communities::loadGCE(const char * fn)
@@ -159,6 +154,7 @@ void Communities::loadGCE(const char * fn)
 		if (c.nodes.size() > 0)
 			addCommunity(c);
 	}
+	removeSmallComm(1);
 }
 
 void Communities::loadDemon(const char * fn)
@@ -192,6 +188,7 @@ void Communities::loadDemon(const char * fn)
 		if (c.nodes.size() > 0)
 			addCommunity(c);
 	}
+	removeSmallComm(1);
 }
 
 void Communities::loadCFinder(const char * fn)
@@ -228,11 +225,13 @@ void Communities::loadCFinder(const char * fn)
 		if (c.nodes.size() > 0)
 			addCommunity(c);
 	}
+	removeSmallComm(1);
 }
 
 void Communities::loadMod(const char * fn)
 {
 	clear();
+	vector<int> cid(max_node_id + 1);
 
 	ifstream f(fn, std::ios::in);
 
@@ -250,6 +249,8 @@ void Communities::loadMod(const char * fn)
 	c.clear();
 	while (!f.eof())
 	{
+		cid[node_id] = comm_id;
+
 		last = comm_id;
 		c.add(node_id);
 
@@ -257,18 +258,13 @@ void Communities::loadMod(const char * fn)
 		stringstream stream2;
 		stream2 << s;
 		stream2 >> node_id >> comm_id;
-		if (last != comm_id)
-		{
-			c.sort();
-			if (c.nodes.size() > 0)
-				addCommunity(c);
-			c.clear();
-			if (comm_id == 0)
-				break;
-		}
-
+		
+		if (comm_id == 0)
+			break;
 		
 	}
+	getCommsByCid(cid);
+	removeSmallComm(1);
 }
 
 vector<vector<int> > Communities::getCommsOfEveryid() const
@@ -297,6 +293,29 @@ vector<int> Communities::intersection(vector<int>& a, vector<int>& b)
 	res.resize(iter - res.begin());
 
 	return res;
+}
+
+void Communities::getCommsByCid(const vector<int> &cid)
+{
+	int max_comm_id = *std::max_element(cid.begin(), cid.end());
+	comms.resize(max_comm_id + 1);
+	for (int i = 0; i < cid.size(); ++i)
+	{
+		comms[cid[i]].add(i);
+	}
+	removeSmallComm(1);
+}
+
+void Communities::removeSmallComm(int size)
+{
+	for (auto it = comms.begin(); it != comms.end();)
+	{
+		if (it->size() <= size)
+			it = comms.erase(it);    //删除元素，返回值指向已删除元素的下一个位置    
+		else
+			++it;    //指向下一个位置
+	}
+
 }
 
 void Communities::print()

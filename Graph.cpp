@@ -6,9 +6,11 @@
 
 
 using std::unique;
+using std::swap;
 
 void Graph::addEdge(int x, int y, double w)
 {
+	max_node_id = max(max_node_id, y);
 	edges.push_back(Edge(x, y, w));
 }
 
@@ -79,6 +81,7 @@ Communities Graph::runInfomap(char * args)
 	cmd(Infomap + " tmp.graph . -z -i link-list");
 
 	Communities cs;
+	cs.setMaxNodeid(max_node_id);
 	cs.loadInfomap("tmp.tree");
 	return cs;
 }
@@ -189,6 +192,7 @@ Communities Graph::runMod(char * args)
 	
 
 	Communities cs;
+	cs.setMaxNodeid(max_node_id);
 	cs.loadMod("mod.result");
 	return cs;
 
@@ -281,8 +285,22 @@ void Graph::loadWeightedGraph(FILE * fp)
 	double w;
 	while (fscanf(fp, "%d%d%lf", &x, &y, &w) != -1)
 	{	
-		if (x != y)
-			edges.push_back(Edge(x, y, w));
+		if (Directed)
+		{
+			if (x != y)
+				addEdge(x, y, w);
+		}
+		else
+		{
+			if (x != y)
+			{
+				if (x > y)
+					swap(x, y);
+				addEdge(x, y, w);
+			}
+				
+		}
+		
 	}
 }
 
@@ -291,8 +309,23 @@ void Graph::loadUnweightedGraph(FILE * fp)
 	int x, y;
 	while (fscanf(fp, "%d%d", &x, &y) != -1)
 	{
-		if (x != y)
-			edges.push_back(Edge(x, y));
+		if (Directed)
+		{
+			if (x != y)
+				addEdge(x, y);
+		}
+		else
+		{
+			if (x != y)
+			{
+				if (x > y)
+					swap(x, y);
+				addEdge(x, y);
+			}
+				
+			
+		}
+		
 	}
 }
 
