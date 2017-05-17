@@ -16,6 +16,34 @@ using std::endl;
 using std::set_intersection;
 
 
+void Communities::load(const char * fn)
+{
+	clear();
+
+	ifstream f(fn, std::ios::in);
+
+
+	while (!f.eof())
+	{
+		string s;
+		getline(f, s);
+
+
+		stringstream stream;
+		stream << s;
+		int id;
+		Community c;
+		while (stream >> id)
+		{
+			c.add(id);
+		}
+		c.sort();
+		if (c.nodes.size() > 0)
+			addCommunity(c);
+	}
+	removeSmallComm(1);
+}
+
 void Communities::loadInfomap(const char * fn)
 {
 	clear();
@@ -131,30 +159,7 @@ void Communities::loadOSLOM2(const char * fn)
 
 void Communities::loadGCE(const char * fn)
 {
-	clear();
-
-	ifstream f(fn, std::ios::in);
-
-
-	while (!f.eof())
-	{
-		string s;
-		getline(f, s);
-
-
-		stringstream stream;
-		stream << s;
-		int id;
-		Community c;
-		while (stream >> id)
-		{
-			c.add(id);
-		}
-		c.sort();
-		if (c.nodes.size() > 0)
-			addCommunity(c);
-	}
-	removeSmallComm(1);
+	load(fn);
 }
 
 void Communities::loadDemon(const char * fn)
@@ -347,3 +352,4 @@ bool Communities::save(const char * fn)
 	fclose(fp);
 	return true;
 }
+

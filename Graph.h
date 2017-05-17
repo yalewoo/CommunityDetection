@@ -62,6 +62,11 @@ public:
 	void print();
 	bool create_dot_file(char *fn);
 	void showPic(void);
+
+	double calcModularity(const Communities & cs);	//计算模块度
+	vector<int> getDegree();	//返回每个结点的度
+	vector<int> getCommInterEdgeNum(const Communities & cs);	//返回每个社团内部的边数
+	vector<int> getCommInterNodesDegree(const Communities & cs);	//返回社团内部点的度数之和
 };
 
 

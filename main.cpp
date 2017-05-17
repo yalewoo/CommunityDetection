@@ -1,5 +1,8 @@
 #include <cstdio>
+#include <iostream>
 #include "Graph.h"
+
+using std::cout;
 
 map<string, string> Graph::config;
 
@@ -13,7 +16,7 @@ int main()
 	//g.load("F:/Project/CommunityDetection/graph.txt");
 	g.load("graph.txt");
 
-
+	/*
 	g.runInfomap().save("result/Infomap.gen");
 	g.runLinkComm().save("result/LC.gen");
 	g.runOSLOM2().save("result/OSLOM.gen");
@@ -28,6 +31,10 @@ int main()
 	g = g.remove(cs);
 	g.print();
 	g.showPic();*/
+	Communities cs;
+	cs.load("res.gen");
+
+	cout << g.calcModularity(cs);
 
 	printf("------------\ndone\n");
 	return 0;

@@ -278,6 +278,70 @@ void Graph::showPic(void)
 	getchar();
 }
 
+double Graph::calcModularity(const Communities & cs)
+{
+	int nc = cs.size();
+	vector<int> comm_inter_edge_num = getCommInterEdgeNum(cs);
+	vector<int> comm_inter_nodes_degree = getCommInterNodesDegree(cs);
+	double m = edges.size();	//×Ü±ßÊý
+
+	double Q = 0;
+	for (size_t i = 0; i < nc; ++i)
+	{
+		Q += (comm_inter_edge_num[i] / m) - (comm_inter_nodes_degree[i] / (2 * m)) * (comm_inter_nodes_degree[i] / (2 * m));
+	}
+
+
+	return Q;
+}
+
+vector<int> Graph::getDegree()
+{
+	vector<int> d(max_node_id + 1, 0);
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		++d[edges[i].x];
+		++d[edges[i].y];
+	}
+
+	return d;
+}
+
+vector<int> Graph::getCommInterEdgeNum(const Communities & cs)
+{
+	vector<int> v(cs.size(), 0);
+
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		int x = edges[i].x;
+		int y = edges[i].y;
+
+		vector<vector<int> > csid = cs.getCommsOfEveryid();
+
+		vector<int> cap = Communities::intersection(csid[x], csid[y]);
+		for (size_t j = 0; j < cap.size(); ++j)
+		{
+			++v[cap[j]];
+		}
+	}
+
+	return v;
+}
+
+vector<int> Graph::getCommInterNodesDegree(const Communities & cs)
+{
+	vector<int> degree = getDegree();
+	vector<int> v(cs.size(), 0);
+
+	for (size_t i = 0; i < cs.size(); ++i)
+	{
+		for (size_t j = 0; j < cs.comms[i].nodes.size(); ++j)
+			v[i] += degree[cs.comms[i].nodes[j]];
+	}
+
+	return v;
+}
+
 
 void Graph::loadWeightedGraph(FILE * fp)
 {
@@ -331,6 +395,7 @@ void Graph::loadUnweightedGraph(FILE * fp)
 
 void Graph::cmd(string s)
 {
+	s += " >> log.txt";
 	cmd(s.c_str());
 }
 

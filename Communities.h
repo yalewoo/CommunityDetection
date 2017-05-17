@@ -15,17 +15,17 @@ struct Community
 	vector<int> nodes;
 	int max_node_id = -1;
 
-	Community()	{		nodes.clear();	}
-	void add(int n)	{
+	Community() { nodes.clear(); }
+	void add(int n) {
 		max_node_id = max(max_node_id, n);
 		nodes.push_back(n);
 	}
-	void sort()	{
+	void sort() {
 		std::sort(nodes.begin(), nodes.end());
 		nodes.erase(unique(nodes.begin(), nodes.end()), nodes.end());
 	}
-	void clear() { nodes.clear();	}
-	int size() { return nodes.size(); }
+	void clear() { nodes.clear(); }
+	int size() const { return nodes.size(); }
 };
 class Communities
 {
@@ -48,9 +48,9 @@ public:
 	void removeSmallComm(int size = 1);	//去掉结点数小于size的社团
 	void print();
 	bool save(const char * fn);
-	int size() { return comms.size(); }
+	int size() const { return comms.size(); }
 
-
+	void load(const char * fn);
 	void loadInfomap(const char * fn);
 	void loadLinkComm(const char * fn);
 	void loadOSLOM2(const char * fn);
@@ -62,6 +62,9 @@ public:
 	vector<vector<int> > getCommsOfEveryid() const;
 
 	static vector<int> intersection(vector<int> & a, vector<int> & b);
+
+	friend class Graph;
+
 	
 };
 
