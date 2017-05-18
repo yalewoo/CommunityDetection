@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Communities.h" />
     <ClInclude Include="..\..\Graph.h" />
+    <ClInclude Include="..\..\save.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,12 +1,16 @@
 #include "Graph.h"
 
 #include <cstdlib>
-
+#include <iostream>
 #include <algorithm>
 
+using std::cout;
+using std::endl;
 
 using std::unique;
 using std::swap;
+
+#include "save.h"
 
 double Graph::getSumWeighted() const
 {
@@ -295,13 +299,13 @@ double Graph::calcModularity(const Communities & cs)  const
 
 	//社团内部的边数
 	vector<double> comm_inter_edge_num = getCommInterEdgeNum(cs);
-
+	cout << "内部边数ok" << endl;
 	//社团连出的边数
 	vector<double> comm_out_edge_num = getCommOutEdgeNum(cs);
-
+	cout << "连出边数ok" << endl;
 	//社团内部点的度数之和
 	vector<double> comm_inter_nodes_degree = getCommInterNodesDegree(comm_inter_edge_num, comm_out_edge_num);
-
+	cout << "度数之和ok" << endl;
 	//总边数
 	double m = getSumWeighted();
 
@@ -310,6 +314,8 @@ double Graph::calcModularity(const Communities & cs)  const
 	{
 		Q += (comm_inter_edge_num[i] / m) - (comm_inter_nodes_degree[i] / (2 * m)) * (comm_inter_nodes_degree[i] / (2 * m));
 	}
+	saveVector(comm_inter_edge_num, "comm_inter_edge_num.txt");
+	saveVector(comm_out_edge_num, "comm_out_edge_num.txt");
 
 
 	return Q;
@@ -367,7 +373,7 @@ vector<double> Graph::getCommInterNodesDegree(vector<double> &comm_inter_edge_nu
 
 	return v;
 }
-
+//社团连出去的边数
 vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 {
 	vector<double> v(cs.size(), 0);
@@ -386,7 +392,8 @@ vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 		double cy = csid[y].size();	//cy个社团包含结点y
 		for (size_t j = 0; j < cap.size(); ++j)
 		{
-			v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
+			//v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
+			v[cap[j]] += (1 / cx + 1) * w;
 		}
 
 		swap(x, y);
@@ -395,7 +402,8 @@ vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 		cy = csid[y].size();	//cy个社团包含结点y
 		for (size_t j = 0; j < cap.size(); ++j)
 		{
-			v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
+			//v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
+			v[cap[j]] += (1 / cx + 1) * w;
 		}
 	}
 
@@ -407,6 +415,7 @@ void Graph::loadWeightedGraph(FILE * fp)
 {
 	int x, y;
 	double w;
+	int count = 0;
 	while (fscanf(fp, "%d%d%lf", &x, &y, &w) != -1)
 	{	
 		if (Directed)
@@ -424,6 +433,9 @@ void Graph::loadWeightedGraph(FILE * fp)
 			}
 				
 		}
+		++count;
+		if (count % 1000 == 0)
+			std::cout << count << std::endl;
 		
 	}
 }
