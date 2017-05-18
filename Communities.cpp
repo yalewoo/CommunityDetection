@@ -325,44 +325,78 @@ double Communities::calcModularity(const Graph & g)
 double Communities::calcNMI(Communities & cs)
 {
 	double res = 0;
+	Communities & X = *this;
+	Communities & Y = cs;
 
-	res = (2 * calcMI(cs)) / (calcH() + cs.calcH());
+	//res = 1 - 0.5 * (H(X, Y) / H(X) + H(Y, X) / H(Y));
+	res = 1 - 0.5 * (H(X, Y) + H(Y, X));
 	return res;
 }
 
 
-//return I(x,y)
-double Communities::calcMI(Communities & cs)
-{
-	double I = 0;
-	for (size_t i = 0; i < comms.size(); ++i)
-	{
-		for (size_t j = 0; j < cs.comms.size(); ++j)
-		{
-			vector<int> cap = intersection(comms[i].nodes, cs.comms[j].nodes);
-			double pxy = cap.size();
-			int px = comms[i].nodes.size();
-			int py = cs.comms[j].nodes.size();
-			if (pxy > 0 && px > 0 && py > 0)
-			{
-				I += pxy * log(pxy / (px * py));
-			}
-		}
 
+double Communities::H(Communities & X)
+{
+	double res = 0;
+	for (size_t i = 0; i < X.comms.size(); ++i)
+	{
+		int px = X.comms[i].nodes.size();
+		if (px > 0)
+			res += h(px, max_node_id) + h(max_node_id - px, max_node_id);
 	}
-	return I;
+	return res;
 }
 
-double Communities::calcH()
+
+double Communities::H(Community & c1, Community & c2) const
 {
-	double h = 0;
-	for (size_t i = 0; i < comms.size(); ++i)
+	vector<int> & X = c1.nodes;
+	vector<int> & Y = c2.nodes;
+
+	int n = max_node_id;
+
+	vector<int> inter = intersection(X, Y);
+	vector<int> X_Y = difference(X, Y);
+	vector<int> Y_X = difference(Y, X);
+
+	int d = inter.size(); //1 1
+	int b = Y_X.size();	// 0 1
+	int c = X_Y.size(); // 1 0
+	int a = n - d - b - c; // 0 0
+
+	if (h(a, n) + h(d, n) >= h(b, n) + h(c, n))
 	{
-		int px = comms[i].nodes.size();
-		if (px > 0)
-			h += -1 * (px * log(px));
+		return h(a, n) + h(b, n) + h(c, n) + h(d, n) - h(b + d, n) - h(a + c, n);
 	}
-	return h;
+	else
+	{
+		return h(c + d, n) + h(a + b, n);
+	}
+
+	return 0.0;
+}
+
+double Communities::H(Community & c, Communities & cs) const
+{
+	double res = H(c, cs.comms[0]);
+	for (size_t i = 1; i < cs.size(); ++i)
+	{
+		res = std::min(res, H(c, cs.comms[i]));
+	}
+
+
+	return res;
+}
+
+double Communities::H(Communities & X, Communities & Y) const
+{
+	double res = 0;
+	for (size_t i = 1; i < X.size(); ++i)
+	{
+		res += H(X.comms[i], Y);
+	}
+
+	return res;
 }
 
 void Communities::getCommsByCid(const vector<int> &cid)

@@ -26,6 +26,8 @@ struct Community
 	}
 	void clear() { nodes.clear(); }
 	int size() const { return nodes.size(); }
+
+	
 };
 class Communities
 {
@@ -70,8 +72,15 @@ public:
 	double calcModularity(const Graph & g);	//¼ÆËãÄ£¿é¶È
 
 	double calcNMI(Communities & cs) ;
-	double calcMI(Communities & cs) ;
-	double calcH();
+
+
+	double H(Communities & X);
+
+	double H(Community & c1, Community & c2) const;
+	double H(Community & c, Communities & cs) const;	// = min H_c_c
+	double H(Communities & X, Communities & Y) const;	// = min H_c_c
+
+	double h(double w, double n) const { return -1 * w * log(w / n); }
 };
 
 
