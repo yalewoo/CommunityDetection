@@ -8,6 +8,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <cmath>
+
 #include "Graph.h"
 
 using std::ifstream;
@@ -318,6 +320,49 @@ double Communities::calcModularity(const Graph & g)
 {
 	this->Q = g.calcModularity(*this);
 	return Q;
+}
+
+double Communities::calcNMI(Communities & cs)
+{
+	double res = 0;
+
+	res = (2 * calcMI(cs)) / (calcH() + cs.calcH());
+	return res;
+}
+
+
+//return I(x,y)
+double Communities::calcMI(Communities & cs)
+{
+	double I = 0;
+	for (size_t i = 0; i < comms.size(); ++i)
+	{
+		for (size_t j = 0; j < cs.comms.size(); ++j)
+		{
+			vector<int> cap = intersection(comms[i].nodes, cs.comms[j].nodes);
+			double pxy = cap.size();
+			int px = comms[i].nodes.size();
+			int py = cs.comms[j].nodes.size();
+			if (pxy > 0 && px > 0 && py > 0)
+			{
+				I += pxy * log(pxy / (px * py));
+			}
+		}
+
+	}
+	return I;
+}
+
+double Communities::calcH()
+{
+	double h = 0;
+	for (size_t i = 0; i < comms.size(); ++i)
+	{
+		int px = comms[i].nodes.size();
+		if (px > 0)
+			h += -1 * (px * log(px));
+	}
+	return h;
 }
 
 void Communities::getCommsByCid(const vector<int> &cid)

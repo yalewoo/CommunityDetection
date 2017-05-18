@@ -68,6 +68,10 @@ public:
 	friend class Graph;
 
 	double calcModularity(const Graph & g);	//¼ÆËãÄ£¿é¶È
+
+	double calcNMI(Communities & cs) ;
+	double calcMI(Communities & cs) ;
+	double calcH();
 };
 
 

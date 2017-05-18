@@ -22,6 +22,7 @@ int main()
 	cout << "load graph ok" << endl;
 
 	Communities cs;
+	Communities cs2;
 
 	// cs = g.runInfomap();
 	// cs.calcModularity(g);
@@ -62,10 +63,13 @@ int main()
 	g.print();
 	g.showPic();*/
 	//Communities cs;
-	cs.load("comm2.txt");
+	cs.load("comm.txt");
+	cs2.load("comm2.txt");
+	cout << cs.calcNMI(cs2) << endl;
+	cout << cs2.calcNMI(cs) << endl;
 
-	cout << g.calcModularity(cs) << endl;
-	cout << cs.calcModularity(g) << endl;
+	//cout << g.calcModularity(cs) << endl;
+	//cout << cs.calcModularity(g) << endl;
 
 	//cs.print();
 
