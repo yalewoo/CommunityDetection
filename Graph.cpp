@@ -392,8 +392,8 @@ vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 		double cy = csid[y].size();	//cy个社团包含结点y
 		for (size_t j = 0; j < cap.size(); ++j)
 		{
-			//v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
-			v[cap[j]] += (1 / cx + 1) * w;
+			v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
+			//v[cap[j]] += 0.5*(1 / cx + 1) * w;
 		}
 
 		swap(x, y);
@@ -402,8 +402,8 @@ vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 		cy = csid[y].size();	//cy个社团包含结点y
 		for (size_t j = 0; j < cap.size(); ++j)
 		{
-			//v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
-			v[cap[j]] += (1 / cx + 1) * w;
+			v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
+			//v[cap[j]] += 0.5*(1 / cx + 1) * w;
 		}
 	}
 

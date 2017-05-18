@@ -12,11 +12,12 @@ int main()
 	//读配置文件，该文件记录社团检测算法的具体路径
 	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
 
-	Graph g(true);
+	//Graph g(true);
+	Graph g;
 	//从edge list的文本文件读入图
 	//g.load("F:/Project/CommunityDetection/graph.txt");
 	//g.load("graph.txt");
-	g.load("graph");
+	g.load("graph.txt");
 
 	cout << "load graph ok" << endl;
 
@@ -61,10 +62,10 @@ int main()
 	g.print();
 	g.showPic();*/
 	//Communities cs;
-	cs.load("person.txt");
+	cs.load("comm2.txt");
 
 	cout << g.calcModularity(cs) << endl;
-	//cout << cs.calcModularity(g) << endl;
+	cout << cs.calcModularity(g) << endl;
 
 	//cs.print();
 
