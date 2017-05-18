@@ -3,15 +3,15 @@
 
 ## 常用社团检测算法
 
-本程序是使用常用社团检测算法的打包，目前支持以下7种算法：
+本程序是使用常用社团检测算法的打包，目前支持调用以下7种算法（通过命令行调用其提供的可执行文件）：
 
-* Louvain Modularity
-* Link Communities
-* OSLOM
-* Infomap
-* Greedy Clique Expansion（GCE）
-* DEMON
-* CFinder
+* [Louvain Modularity](https://sourceforge.net/p/louvain/code/ci/default/tree/)
+* [Link Communities](https://github.com/bagrow/linkcomm)
+* [OSLOM](http://www.oslom.org/)
+* [Infomap](http://www.mapequation.org/code.html)
+* [Greedy Clique Expansion（GCE）](https://sites.google.com/site/greedycliqueexpansion/)
+* [DEMON](http://www.michelecoscia.com/?page_id=42)
+* [CFinder](http://www.cfinder.org/)
 
 
 ### 使用示例
