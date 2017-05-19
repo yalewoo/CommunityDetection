@@ -77,22 +77,18 @@ int main()
 	cout << "NMI(cs,cs2) = " << cs.calcNMI(cs2) << endl;
 	cout << "NMI(cs2,cs) = " << cs2.calcNMI(cs) << endl;
 
-	for (int i = 0; i < cs.comms.size(); ++i)
+	for (int j = 0; j < cs2.comms.size(); ++j)
 	{
-		showVector(cs.comms[i].nodes);
-		showVector(cs2.comms[0].nodes);
-		cout << cs.H_Xi_given_Yj(cs.comms[i], cs2.comms[0]) << endl;
-		cout << cs.H_Xi_given_Yj(cs2.comms[0], cs.comms[i]) << endl;
+		for (int i = 0; i < cs.comms.size(); ++i)
+		{
+			showVector(cs.comms[i].nodes);
+			showVector(cs2.comms[j].nodes);
+			cout << cs.H_Xi_given_Yj(cs.comms[i], cs2.comms[j]) << endl;
+			cout << cs.H_Xi_given_Yj(cs2.comms[j], cs.comms[i]) << endl;
+		}
 	}
+	
 
-
-	for (int i = 0; i < cs.comms.size(); ++i)
-	{
-		showVector(cs.comms[i].nodes);
-		showVector(cs2.comms[1].nodes);
-		cout << cs.H_Xi_given_Yj(cs.comms[i], cs2.comms[1]) << endl;
-		cout << cs.H_Xi_given_Yj(cs2.comms[1], cs.comms[i]) << endl;
-	}
 
 
 	//cout << g.calcModularity(cs) << endl;
