@@ -9,6 +9,10 @@
 #include <iostream>
 
 #include <cmath>
+double log2(double x)
+{
+	return log(x) / log(2);
+}
 
 #include "Graph.h"
 
@@ -328,9 +332,36 @@ double Communities::calcNMI(Communities & cs)
 	Communities & X = *this;
 	Communities & Y = cs;
 
-	//res = 1 - 0.5 * (H(X, Y) / H(X) + H(Y, X) / H(Y));
-	res = 1 - 0.5 * (H(X, Y) + H(Y, X));
+	if (X.size() == 0 || Y.size() == 0)
+		return 0;
+
+	nmi_max_node = max(X.max_node_id, Y.max_node_id) + 1;
+	//nmi_max_node = max(X.max_node_id, Y.max_node_id);
+	
+	double H_X_Y = H_X_given_Y_norm(X, Y);
+	double H_Y_X = H_X_given_Y_norm(Y, X);
+	//res = 1 - 0.5 * (H_X_Y + H_Y_X);
+	double HX = H(X);
+	double HY = H(Y);
+	res = 1 - 0.5 * (H_X_Y + H_Y_X);
 	return res;
+}
+
+
+/*
+信息熵 H(X)，X是一个社团
+例如： X = [2, 4, 5] 表示结点2,4,5在该社团中
+若图中共有n=9个结点（编号0-8） 则X还可以看做一个表的形式
+X = [0,0,1,0,1,1,0,0,0] X的取值有2种，即0和1
+1出现的概率是p1 = (X.size()/n) = 3/9 , 0出现的概率是p0 = (n-X.size())/n = 6/9 
+则 H(X) = h(p0)+h(p1)   //h(x)=-x*log2(x)
+*/
+double Communities::H(Community & X) const
+{
+	double n = nmi_max_node;
+	double p1 = X.nodes.size() / n;
+	double p0 = 1 - p1;
+	return h(p0) + h(p1);
 }
 
 
@@ -342,62 +373,125 @@ double Communities::H(Communities & X)
 	{
 		int px = X.comms[i].nodes.size();
 		if (px > 0)
-			res += h(px, max_node_id) + h(max_node_id - px, max_node_id);
+			res += H(X.comms[i]);
 	}
 	return res;
 }
 
-
-double Communities::H(Community & c1, Community & c2) const
+/*X和Y的联合熵H(Xi,Yj)
+X和Y共有4种组合(X=1,Y=1)(X=0,Y=1)(X=1,Y=0)(X=0,Y=0)
+P(X=1,Y=1) = |X ∩ Y|
+P(X=0,Y=1) = |Y - X|
+P(X=1,Y=0) = |X - Y|
+P(X=0,Y=0) = n - |X ∪ Y|
+H(X,Y) = h(P(X=1,Y=1)) + h(P(X=0,Y=1)) 
+       + h(P(X=1,Y=0)) + h(P(X=0,Y=0))  //h(x)=-x*log2(x)
+       
+*/
+double Communities::H_Xi_joint_Yj(Community & Xi, Community & Yj)
 {
-	vector<int> & X = c1.nodes;
-	vector<int> & Y = c2.nodes;
+	vector<int> & X = Xi.nodes;
+	vector<int> & Y = Yj.nodes;
 
-	int n = max_node_id;
+	double n = nmi_max_node;
 
 	vector<int> inter = intersection(X, Y);
 	vector<int> X_Y = difference(X, Y);
 	vector<int> Y_X = difference(Y, X);
 
-	int d = inter.size(); //1 1
-	int b = Y_X.size();	// 0 1
-	int c = X_Y.size(); // 1 0
-	int a = n - d - b - c; // 0 0
+	int n11 = inter.size(); //1 1
+	int n01 = Y_X.size();	// 0 1
+	int n10 = X_Y.size(); // 1 0
+	int n00 = n - n11 - n01 - n10; // 0 0
 
-	if (h(a, n) + h(d, n) >= h(b, n) + h(c, n))
+	double p11 = n11 / n;
+	double p01 = n01 / n;
+	double p10 = n10 / n;
+	double p00 = n00 / n;
+
+	//如果这个条件没有满足 nmi_half_more_nodes_positive不会变为true
+	if (h(p11) + h(p00) >= h(p01) + h(p10))
 	{
-		return h(a, n) + h(b, n) + h(c, n) + h(d, n) - h(b + d, n) - h(a + c, n);
+		
 	}
 	else
 	{
-		return h(c + d, n) + h(a + b, n);
+		//return -log(0);
+		nmi_half_more_nodes_positive = false;
+		return H(Xi);	//多加H(Yj)是因为在H_Xi_given_Yj中减去
 	}
 
-	return 0.0;
+	return h(p11) + h(p01) + h(p10) + h(p00);
 }
 
-double Communities::H(Community & c, Communities & cs) const
+/*条件熵H(Xi|Yj) = H(Xi,Yj) - H(Yj)
+*/
+double Communities::H_Xi_given_Yj(Community & Xi, Community & Yj)
 {
-	double res = H(c, cs.comms[0]);
-	for (size_t i = 1; i < cs.size(); ++i)
+	nmi_half_more_nodes_positive = true;
+	double HXY = H_Xi_joint_Yj(Xi, Yj);
+	if (nmi_half_more_nodes_positive == false)
 	{
-		res = std::min(res, H(c, cs.comms[i]));
+		return HXY;
+	}
+	else
+	{
+		return HXY - H(Yj);
+	}
+}
+double Communities::h(double w, double n) const
+{
+	return w > 0 ? -1 * (w/n) * log2(w / n) : 0;
+}
+double Communities::h(double x) const
+{
+	return x > 0 ? -1 * x * log2(x) : 0;
+}
+
+/*H(Xi|Y) = min { H(Xi|Yj) ,for all j }
+if [ h(p11) + h(p00) > h(p01) + h(p10) ] never occur, H(Xi|Y) = H(Xi)
+*/
+double Communities::H_Xi_given_Y(Community & Xi, Communities & Y)
+{
+	double res = H_Xi_given_Yj(Xi, Y.comms[0]);
+	for (size_t i = 1; i < Y.size(); ++i)
+	{
+		res = std::min(res, H_Xi_given_Yj(Xi, Y.comms[i]));
 	}
 
 
 	return res;
 }
+/*H(Xi|Y)_norm = H(Xi|Y) / H(Xi)
+*/
+double Communities::H_Xi_given_Y_norm(Community & Xi, Communities & Y)
+{
+	return H_Xi_given_Y(Xi, Y) / H(Xi);
+}
 
-double Communities::H(Communities & X, Communities & Y) const
+
+
+
+/*
+X有k个社团
+				  1    _k_   
+H(X|Y)_norm =   -----  \  `  H(Xi|Y)_norm
+				  k    /__,   
+				       i=1
+*/
+double Communities::H_X_given_Y_norm(Communities & X, Communities & Y)
 {
 	double res = 0;
-	for (size_t i = 1; i < X.size(); ++i)
+	for (size_t i = 0; i < X.size(); ++i)
 	{
-		res += H(X.comms[i], Y);
+		res += H_Xi_given_Y_norm(X.comms[i], Y);
 	}
+	res /= X.size();
 
 	return res;
 }
+
+
 
 void Communities::getCommsByCid(const vector<int> &cid)
 {

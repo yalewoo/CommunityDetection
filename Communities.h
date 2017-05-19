@@ -31,11 +31,14 @@ struct Community
 };
 class Communities
 {
-
+public:
 	vector< Community > comms;
 	double Q = 0;
 	void getCommsByCid(const vector<int> &cid);	//×ª»»cidµ½comms
 	int max_node_id = -1;
+	int nmi_max_node;
+	bool nmi_half_more_nodes_positive;
+
 public:
 	void setMaxNodeid(int max_nodeid) { max_node_id = max_nodeid; }
 	void clear() { comms.clear(); }
@@ -74,13 +77,17 @@ public:
 	double calcNMI(Communities & cs) ;
 
 
+	double H(Community & X) const;
 	double H(Communities & X);
 
-	double H(Community & c1, Community & c2) const;
-	double H(Community & c, Communities & cs) const;	// = min H_c_c
-	double H(Communities & X, Communities & Y) const;	// = min H_c_c
+	double H_Xi_joint_Yj(Community & c1, Community & c2);
+	double H_Xi_given_Yj(Community & Xi, Community & Yj);
+	double H_Xi_given_Y(Community & c, Communities & cs);
+	double H_Xi_given_Y_norm(Community & c, Communities & cs);
+	double H_X_given_Y_norm(Communities & X, Communities & Y);	// = min H_c_c
 
-	double h(double w, double n) const { return -1 * w * log(w / n); }
+	double h(double w, double n) const;
+	double h(double x) const;
 };
 
 

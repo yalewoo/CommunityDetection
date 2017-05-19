@@ -7,6 +7,15 @@ using std::endl;
 
 map<string, string> Graph::config;
 
+
+void showVector(vector<int> & v)
+{
+	cout << "vector= ";
+	for (size_t i = 0; i < v.size(); ++i)
+		cout << v[i] << " ";
+	cout << endl;
+}
+
 int main()
 {
 	//读配置文件，该文件记录社团检测算法的具体路径
@@ -65,8 +74,26 @@ int main()
 	//Communities cs;
 	cs.load("comm.txt");
 	cs2.load("comm2.txt");
-	cout << cs.calcNMI(cs2) << endl;
-	cout << cs2.calcNMI(cs) << endl;
+	cout << "NMI(cs,cs2) = " << cs.calcNMI(cs2) << endl;
+	cout << "NMI(cs2,cs) = " << cs2.calcNMI(cs) << endl;
+
+	for (int i = 0; i < cs.comms.size(); ++i)
+	{
+		showVector(cs.comms[i].nodes);
+		showVector(cs2.comms[0].nodes);
+		cout << cs.H_Xi_given_Yj(cs.comms[i], cs2.comms[0]) << endl;
+		cout << cs.H_Xi_given_Yj(cs2.comms[0], cs.comms[i]) << endl;
+	}
+
+
+	for (int i = 0; i < cs.comms.size(); ++i)
+	{
+		showVector(cs.comms[i].nodes);
+		showVector(cs2.comms[1].nodes);
+		cout << cs.H_Xi_given_Yj(cs.comms[i], cs2.comms[1]) << endl;
+		cout << cs.H_Xi_given_Yj(cs2.comms[1], cs.comms[i]) << endl;
+	}
+
 
 	//cout << g.calcModularity(cs) << endl;
 	//cout << cs.calcModularity(g) << endl;
