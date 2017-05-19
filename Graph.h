@@ -33,6 +33,7 @@ class Graph {
 	vector<Edge> edges;
 	double getSumWeighted() const;
 	int max_node_id = -1;
+	int min_node_id = INT_MAX;
 	void addEdge(int x, int y, double w = 1);
 	bool Weighted;
 	bool Directed;

@@ -24,6 +24,7 @@ double Graph::getSumWeighted() const
 
 void Graph::addEdge(int x, int y, double w)
 {
+	min_node_id = min(min_node_id, x);
 	max_node_id = max(max_node_id, y);
 	edges.push_back(Edge(x, y, w));
 }

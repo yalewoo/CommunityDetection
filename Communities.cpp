@@ -21,6 +21,7 @@ using std::string;
 using std::stringstream;
 using std::cout;
 using std::endl;
+using std::min;
 
 
 
@@ -335,7 +336,7 @@ double Communities::calcNMI(Communities & cs)
 	if (X.size() == 0 || Y.size() == 0)
 		return 0;
 
-	nmi_max_node = max(X.max_node_id, Y.max_node_id) + 1;
+	nmi_max_node = max(X.max_node_id, Y.max_node_id) - min(X.min_node_id, Y.min_node_id) + 1;
 	//nmi_max_node = max(X.max_node_id, Y.max_node_id);
 	
 	double H_X_Y = H_X_given_Y_norm(X, Y);

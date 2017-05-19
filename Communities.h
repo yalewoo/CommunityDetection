@@ -8,16 +8,19 @@ using std::vector;
 using std::unique;
 using std::sort;
 using std::max;
+using std::min;
 using std::set;
 
 struct Community
 {
 	vector<int> nodes;
 	int max_node_id = -1;
+	int min_node_id = INT_MAX;
 
-	Community() { nodes.clear(); }
+
 	void add(int n) {
 		max_node_id = max(max_node_id, n);
+		min_node_id = min(min_node_id, n);
 		nodes.push_back(n);
 	}
 	void sort() {
@@ -36,18 +39,17 @@ public:
 	double Q = 0;
 	void getCommsByCid(const vector<int> &cid);	//×ª»»cidµ½comms
 	int max_node_id = -1;
+	int min_node_id = INT_MAX;
 	int nmi_max_node;
 	bool nmi_half_more_nodes_positive;
 
 public:
 	void setMaxNodeid(int max_nodeid) { max_node_id = max_nodeid; }
 	void clear() { comms.clear(); }
-	Communities()
-	{
-		comms.clear();
-	}
+
 	void addCommunity(Community c)
 	{
+		min_node_id = min(min_node_id, c.min_node_id);
 		max_node_id = max(max_node_id, c.max_node_id);
 		comms.push_back(c);
 	}
