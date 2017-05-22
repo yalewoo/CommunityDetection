@@ -4,12 +4,17 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <utility>
+
 using std::vector;
 using std::unique;
 using std::sort;
 using std::max;
 using std::min;
 using std::set;
+using std::pair;
+
+class Communities;
 
 struct Community
 {
@@ -30,7 +35,9 @@ struct Community
 	void clear() { nodes.clear(); }
 	int size() const { return nodes.size(); }
 
-	
+	//返回值，下标
+	pair<double, int> Precision(Communities & truth);
+
 };
 class Communities
 {
@@ -58,6 +65,9 @@ public:
 	bool save(const char * fn);
 	int size() const { return comms.size(); }
 
+	//所有社团结点数之和
+	int sizeOfCommsSum() const;
+
 	void load(const char * fn);
 	void loadInfomap(const char * fn);
 	void loadLinkComm(const char * fn);
@@ -71,6 +81,7 @@ public:
 
 	static vector<int> intersection(vector<int> & a, vector<int> & b);
 	static vector<int> difference(vector<int> & a, vector<int> & b);
+	static vector<int> setunion(vector<int> & a, vector<int> & b);
 
 	friend class Graph;
 
@@ -90,6 +101,11 @@ public:
 
 	double h(double w, double n) const;
 	double h(double x) const;
+
+
+	static double Precision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value);
+	static double Recall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value);
+	static double F1Score(Communities & Detected, Communities & truth);
 };
 
 

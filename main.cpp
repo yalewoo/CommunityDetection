@@ -8,9 +8,9 @@ using std::endl;
 map<string, string> Graph::config;
 
 
-void showVector(vector<int> & v)
+void showVector(vector<int> & v, string name = "vector", int id = 0)
 {
-	cout << "vector= ";
+	cout << name << " " << id << " = ";
 	for (size_t i = 0; i < v.size(); ++i)
 		cout << v[i] << " ";
 	cout << endl;
@@ -26,9 +26,9 @@ int main()
 	//从edge list的文本文件读入图
 	//g.load("F:/Project/CommunityDetection/graph.txt");
 	//g.load("graph.txt");
-	g.load("graph.txt");
+	//g.load("graph.txt");
 
-	cout << "load graph ok" << endl;
+	//cout << "load graph ok" << endl;
 
 	Communities cs;
 	Communities cs2;
@@ -72,24 +72,48 @@ int main()
 	g.print();
 	g.showPic();*/
 	//Communities cs;
-	cs.load("comm.txt");
-	cs2.load("comm2.txt");
-	cout << "NMI(cs,cs2) = " << cs.calcNMI(cs2) << endl;
-	cout << "NMI(cs2,cs) = " << cs2.calcNMI(cs) << endl;
+	//cs.load("F:/HICODE_SUB/result/syn/Framework_ReduceP/maxLayer/Layer1.gen");
+	//cs2.load("F:/HICODE_SUB/result/syn/truth.gen");
+	//cout << "NMI(cs,cs2) = " << cs.calcNMI(cs2) << endl;
+	//cout << "NMI(cs2,cs) = " << cs2.calcNMI(cs) << endl;
 
-	for (int j = 0; j < cs2.comms.size(); ++j)
+	//cs.print();
+	//cs2.print();
+
+	// for (int j = 0; j < cs2.comms.size(); ++j)
+	// {
+	// 	for (int i = 0; i < cs.comms.size(); ++i)
+	// 	{
+	// 		showVector(cs.comms[i].nodes);
+	// 		showVector(cs2.comms[j].nodes);
+	// 		cout << cs.H_Xi_given_Yj(cs.comms[i], cs2.comms[j]) << endl;
+	// 		cout << cs.H_Xi_given_Yj(cs2.comms[j], cs.comms[i]) << endl;
+	// 	}
+	// }
+	
+	Communities detected;
+	Communities truth;
+	detected.load("F:/HICODE_SUB/result/syn/Framework_ReduceP/maxLayer/Layer1.gen");
+	truth.load("F:/HICODE_SUB/result/syn/truth.gen");
+	vector<int> v_index;
+	vector<double> v_value;
+	cout << Communities::Precision(detected, truth, v_index, v_value) << endl;
+	for (size_t i = 0; i < v_index.size(); ++i)
 	{
-		for (int i = 0; i < cs.comms.size(); ++i)
-		{
-			showVector(cs.comms[i].nodes);
-			showVector(cs2.comms[j].nodes);
-			cout << cs.H_Xi_given_Yj(cs.comms[i], cs2.comms[j]) << endl;
-			cout << cs.H_Xi_given_Yj(cs2.comms[j], cs.comms[i]) << endl;
-		}
+		cout << "--------Precision = " << v_value[i] << "--------" << endl;
+		showVector(detected.comms[i].nodes, "detect", i);
+		showVector(truth.comms[v_index[i]].nodes, "truth" , v_index[i]);
+	}
+
+	cout << Communities::Recall(detected, truth, v_index, v_value) << endl;
+	for (size_t i = 0; i < v_index.size(); ++i)
+	{
+		cout << "--------Recall = " << v_value[i] << "--------" << endl;
+		showVector(truth.comms[i].nodes, "truth", i);
+		showVector(detected.comms[v_index[i]].nodes, "detected", v_index[i]);
 	}
 	
-
-
+	cout << Communities::F1Score(detected, truth) << endl;
 
 	//cout << g.calcModularity(cs) << endl;
 	//cout << cs.calcModularity(g) << endl;

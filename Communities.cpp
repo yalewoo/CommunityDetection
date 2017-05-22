@@ -22,8 +22,19 @@ using std::stringstream;
 using std::cout;
 using std::endl;
 using std::min;
+using std::make_pair;
 
 
+
+int Communities::sizeOfCommsSum() const
+{
+	int res = 0;
+	for (size_t i = 0; i < comms.size(); ++i)
+	{
+		res += comms[i].nodes.size();
+	}
+	return res;
+}
 
 void Communities::load(const char * fn)
 {
@@ -321,6 +332,18 @@ vector<int> Communities::difference(vector<int>& a, vector<int>& b)
 	return res;
 }
 
+vector<int> Communities::setunion(vector<int>& a, vector<int>& b)
+{
+	sort(a.begin(), a.end());
+	sort(b.begin(), b.end());
+
+	vector<int> res(a.size() + b.size());
+	auto iter = std::set_union(a.begin(), a.end(), b.begin(), b.end(), res.begin());
+	res.resize(iter - res.begin());
+
+	return res;
+}
+
 double Communities::calcModularity(const Graph & g)
 {
 	this->Q = g.calcModularity(*this);
@@ -469,6 +492,40 @@ double Communities::h(double x) const
 	return x > 0 ? -1 * x * log2(x) : 0;
 }
 
+//v_index[i]保存和i最相思的truth编号
+double Communities::Precision(Communities & Detected, Communities & truth, vector<int>& v_index, vector<double> &v_value)
+{
+	v_index.clear();
+	v_value.clear();
+	v_index.resize(Detected.size());
+	v_value.resize(Detected.size());
+	double m = Detected.sizeOfCommsSum();
+	double res = 0;
+	for (size_t i = 0; i < Detected.size(); ++i)
+	{
+		pair<double, int> p = Detected.comms[i].Precision(truth);
+		v_value[i] = p.first;
+		res += p.first * Detected.comms[i].size() / m;
+		v_index[i] = p.second;
+	}
+
+	return res;
+}
+
+double Communities::Recall(Communities & Detected, Communities & truth, vector<int>& v_index, vector<double> &v_value)
+{
+	return Precision(truth, Detected, v_index, v_value);
+}
+
+double Communities::F1Score(Communities & Detected, Communities & truth)
+{
+	vector<int> tmp;
+	vector<double> tmpd;
+	double P = Precision(Detected, truth, tmp, tmpd);
+	double R = Recall(Detected, truth, tmp, tmpd);
+	return 2 * P * R / (P + R);
+}
+
 /*H(Xi|Y) = min { H(Xi|Yj) ,for all j }
 if [ h(p11) + h(p00) > h(p01) + h(p10) ] never occur, H(Xi|Y) = H(Xi)
 */
@@ -544,6 +601,7 @@ void Communities::print()
 	printf("%d communities:\n", comms.size());
 	for (size_t i = 0; i < comms.size(); ++i)
 	{
+		printf("-----comm %u-----\n", i);
 		for (size_t j = 0; j < comms[i].nodes.size(); ++j)
 		{
 			printf("%d ", comms[i].nodes[j]);
@@ -568,3 +626,26 @@ bool Communities::save(const char * fn)
 	return true;
 }
 
+pair<double, int> Community::Precision(Communities & truth)
+{
+	if (truth.size() == 0)
+		return make_pair(0,0);
+
+	double res = 0;
+	int index = 0;
+	for (size_t i = 0; i < truth.size(); ++i)
+	{
+		vector<int> cap = Communities::intersection(this->nodes, truth.comms[i].nodes);
+		vector<int> join = Communities::setunion(this->nodes, truth.comms[i].nodes);
+		double d1 = cap.size();
+		double d2 = join.size();
+		double r = d1 / d2;
+		if (r > res)
+		{
+			res = r;
+			index = i;
+		}
+	}
+
+	return make_pair(res, index);
+}
