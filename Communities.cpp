@@ -327,6 +327,25 @@ double Communities::calcModularity(const Graph & g)
 	return Q;
 }
 
+//返回X和Y中不重复元素个数
+int getNodesNum(Communities & cs, Communities & cs2)
+{
+	vector<Community> & X = cs.comms;
+	vector<Community> & Y = cs2.comms;
+	set<int> s;
+	for (size_t i = 0; i < X.size(); ++i)
+	{
+		for (size_t j = 0; j < X[i].size(); ++j)
+			s.insert(X[i].nodes[j]);
+	}
+	for (size_t i = 0; i < Y.size(); ++i)
+	{
+		for (size_t j = 0; j < Y[i].size(); ++j)
+			s.insert(Y[i].nodes[j]);
+	}
+	return s.size();
+}
+
 double Communities::calcNMI(Communities & cs)
 {
 	double res = 0;
@@ -336,7 +355,8 @@ double Communities::calcNMI(Communities & cs)
 	if (X.size() == 0 || Y.size() == 0)
 		return 0;
 
-	nmi_max_node = max(X.max_node_id, Y.max_node_id) - min(X.min_node_id, Y.min_node_id) + 1;
+	nmi_max_node = getNodesNum(*this, cs);
+	//nmi_max_node = max(X.max_node_id, Y.max_node_id) - min(X.min_node_id, Y.min_node_id) + 1;
 	//nmi_max_node = max(X.max_node_id, Y.max_node_id);
 	
 	double H_X_Y = H_X_given_Y_norm(X, Y);
