@@ -54,7 +54,7 @@ Graph::Graph(char *filename, char *filename_w, int type) {
   // Read links: 4 bytes for each link (each link is counted twice)
   nb_links=degrees[nb_nodes-1];
   links.resize(nb_links);
-  finput.read((char *)(&links[0]), (long)nb_links*8);  
+  finput.read((char *)(&links[0]), (long)nb_links*4);  
 
   // IF WEIGHTED : read weights: 4 bytes for each link (each link is counted twice)
   weights.resize(0);
@@ -158,6 +158,6 @@ Graph::display_binary(char *outfile) {
   foutput.open(outfile ,fstream::out | fstream::binary);
 
   foutput.write((char *)(&nb_nodes),4);
-  foutput.write((char *)(&degrees[0]),4*nb_nodes);
-  foutput.write((char *)(&links[0]),8*nb_links);
+  foutput.write((char *)(&degrees[0]),8*nb_nodes);
+  foutput.write((char *)(&links[0]),4*nb_links);
 }

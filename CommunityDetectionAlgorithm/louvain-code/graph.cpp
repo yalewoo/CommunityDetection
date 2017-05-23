@@ -141,7 +141,7 @@ Graph::display_binary(char *filename, char *filename_w, int type) {
   // outputs cumulative degree sequence
   long long tot=0;
   for (unsigned int i=0 ; i<s ; i++) {
-    tot+=(long)links[i].size();
+    tot+=(long long)links[i].size();
     foutput.write((char *)(&tot),8);
   }
 

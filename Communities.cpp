@@ -292,10 +292,10 @@ void Communities::loadMod(const char * fn)
 	removeSmallComm(1);
 }
 
-vector<vector<int> > Communities::getCommsOfEveryid() const
+vector<vector<int> > Communities::getCommsOfEveryid(int max_id) const
 {
 	vector<vector<int> > res;
-	res.resize(max_node_id+1);
+	res.resize(max(max_id, max_node_id) +1);
 	for (size_t i = 0; i < comms.size(); ++i)
 	{
 		const vector<int> & nodes = comms[i].nodes;
@@ -601,7 +601,7 @@ void Communities::print()
 	printf("%d communities:\n", comms.size());
 	for (size_t i = 0; i < comms.size(); ++i)
 	{
-		printf("-----comm %u-----\n", i);
+		printf("-----comm %u,size=%u-----\n", i, comms[i].nodes.size());
 		for (size_t j = 0; j < comms[i].nodes.size(); ++j)
 		{
 			printf("%d ", comms[i].nodes[j]);

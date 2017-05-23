@@ -8,7 +8,7 @@ using std::vector;
 using std::string;
 using std::map;
 
-#define SHOW_CMD false
+#define SHOW_CMD true
 #define LINE_BUFF_SIZE 1024
 
 #include "Communities.h"
@@ -47,6 +47,7 @@ class Graph {
 	void cmd(const char * s);
 
 public:
+	void setWeighted(bool weighted) { Weighted = weighted; }
 	bool load(char * graph_path);
 	bool save(char *graph_path);
 	static bool loadConfig(char * config_path);

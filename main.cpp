@@ -21,14 +21,18 @@ int main()
 	//读配置文件，该文件记录社团检测算法的具体路径
 	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
 
-	//Graph g(true);
-	Graph g;
+	Graph g(true);
+	//Graph g;
 	//从edge list的文本文件读入图
 	//g.load("F:/Project/CommunityDetection/graph.txt");
 	//g.load("graph.txt");
-	//g.load("graph.txt");
+	
 
-	//cout << "load graph ok" << endl;
+	//g.print();
+	g.load("F:/HICODE_SUB/result/syn/syn3000.txt");
+	g.setWeighted(true);
+
+	cout << "load graph ok" << endl;
 
 	Communities cs;
 	Communities cs2;
@@ -51,19 +55,20 @@ int main()
 	// cs = g.runCFinder();
 	// cs.calcModularity(g);
 	// cs.print();
-	// cs = g.runMod();
-	// cs.calcModularity(g);
-	// cs.print();
+	cs = g.runMod();
+	cs.calcModularity(g);
+	cs.print();
+	cs.save("mod.gen");
 
 
-	/*
-	g.runInfomap().save("result/Infomap.gen");
-	g.runLinkComm().save("result/LC.gen");
-	g.runOSLOM2().save("result/OSLOM.gen");
-	g.runGCE().save("result/GCE.gen");
-	g.runDemon().save("result/Demon.gen");
-	g.runCFinder().save("result/CFinder.gen");
-	g.runMod().save("result/Mod.gen");
+	
+	// g.runInfomap().save("result/Infomap.gen");
+	// g.runLinkComm().save("result/LC.gen");
+	//g.runOSLOM2().save("result/OSLOM.gen");
+	// g.runGCE().save("result/GCE.gen");
+	// g.runDemon().save("result/Demon.gen");
+	// g.runCFinder().save("result/CFinder.gen");
+	// g.runMod().save("result/Mod.gen");
 
 	/*
 	g.showPic();
@@ -91,34 +96,37 @@ int main()
 	// 	}
 	// }
 	
-	Communities detected;
-	Communities truth;
-	detected.load("F:/HICODE_SUB/result/syn/Framework_ReduceP/maxLayer/Layer1.gen");
-	truth.load("F:/HICODE_SUB/result/syn/truth.gen");
-	vector<int> v_index;
-	vector<double> v_value;
-	cout << Communities::Precision(detected, truth, v_index, v_value) << endl;
-	for (size_t i = 0; i < v_index.size(); ++i)
-	{
-		cout << "--------Precision = " << v_value[i] << "--------" << endl;
-		showVector(detected.comms[i].nodes, "detect", i);
-		showVector(truth.comms[v_index[i]].nodes, "truth" , v_index[i]);
-	}
+	// Communities detected;
+	// Communities truth;
+	// detected.load("F:/HICODE_SUB/result/syn/Framework_ReduceP/maxLayer/Layer1.gen");
+	// truth.load("F:/HICODE_SUB/result/syn/truth.gen");
+	// vector<int> v_index;
+	// vector<double> v_value;
+	// cout << Communities::Precision(detected, truth, v_index, v_value) << endl;
+	// for (size_t i = 0; i < v_index.size(); ++i)
+	// {
+	// 	cout << "--------Precision = " << v_value[i] << "--------" << endl;
+	// 	showVector(detected.comms[i].nodes, "detect", i);
+	// 	showVector(truth.comms[v_index[i]].nodes, "truth" , v_index[i]);
+	// }
 
-	cout << Communities::Recall(detected, truth, v_index, v_value) << endl;
-	for (size_t i = 0; i < v_index.size(); ++i)
-	{
-		cout << "--------Recall = " << v_value[i] << "--------" << endl;
-		showVector(truth.comms[i].nodes, "truth", i);
-		showVector(detected.comms[v_index[i]].nodes, "detected", v_index[i]);
-	}
+	// cout << Communities::Recall(detected, truth, v_index, v_value) << endl;
+	// for (size_t i = 0; i < v_index.size(); ++i)
+	// {
+	// 	cout << "--------Recall = " << v_value[i] << "--------" << endl;
+	// 	showVector(truth.comms[i].nodes, "truth", i);
+	// 	showVector(detected.comms[v_index[i]].nodes, "detected", v_index[i]);
+	// }
 	
-	cout << Communities::F1Score(detected, truth) << endl;
+	// cout << Communities::F1Score(detected, truth) << endl;
 
 	//cout << g.calcModularity(cs) << endl;
 	//cout << cs.calcModularity(g) << endl;
 
 	//cs.print();
+
+	//cs.load("F:/HICODE_SUB/result/sc/truth.gen");
+	//cout << g.calcModularity(cs) << endl;
 
 	printf("------------\ndone\n");
 	return 0;

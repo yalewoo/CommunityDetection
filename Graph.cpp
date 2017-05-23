@@ -197,7 +197,7 @@ Communities Graph::runMod(char * args)
 	if (Weighted)
 	{
 		cmd(convert + " -i tmp.graph -o graph.bin -w graph.weights");
-		cmd(community + " graph.bin  -l -1 -w graph.weights > graph.tree");
+		cmd(community + " graph.bin  -l -1 -w graph.weights > mod.result");
 	}
 	else
 	{
@@ -215,7 +215,7 @@ Communities Graph::runMod(char * args)
 
 Graph Graph::remove(const Communities & cs)
 {
-	vector<vector<int> > cid = cs.getCommsOfEveryid();
+	vector<vector<int> > cid = cs.getCommsOfEveryid(this->max_node_id);
 	Graph g;
 	for (size_t i = 0; i < edges.size(); ++i)
 	{
@@ -340,7 +340,7 @@ vector<double> Graph::getCommInterEdgeNum(const Communities & cs) const
 {
 	vector<double> v(cs.size(), 0);
 
-	vector<vector<int> > csid = cs.getCommsOfEveryid();
+	vector<vector<int> > csid = cs.getCommsOfEveryid(this->max_node_id);
 
 	for (size_t i = 0; i < edges.size(); ++i)
 	{
@@ -378,7 +378,7 @@ vector<double> Graph::getCommInterNodesDegree(vector<double> &comm_inter_edge_nu
 vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 {
 	vector<double> v(cs.size(), 0);
-	vector<vector<int> > csid = cs.getCommsOfEveryid();
+	vector<vector<int> > csid = cs.getCommsOfEveryid(this->max_node_id);
 
 	for (size_t i = 0; i < edges.size(); ++i)
 	{
@@ -391,16 +391,23 @@ vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 		vector<int> cap = Communities::difference(csid[x], csid[y]);
 		double cx = csid[x].size();	//cx个社团包含结点x
 		double cy = csid[y].size();	//cy个社团包含结点y
-		for (size_t j = 0; j < cap.size(); ++j)
+		if (cx != 0)
 		{
-			v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
-			//v[cap[j]] += 0.5*(1 / cx + 1) * w;
+			if (cy == 0) cy = 1;	
+			for (size_t j = 0; j < cap.size(); ++j)
+			{
+				v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
+				//v[cap[j]] += 0.5*(1 / cx + 1) * w;
+			}
 		}
 
 		swap(x, y);
 		cap = Communities::difference(csid[x], csid[y]);
 		cx = csid[x].size();	//cx个社团包含结点x
 		cy = csid[y].size();	//cy个社团包含结点y
+		if (cx == 0)
+			continue;
+		if (cy == 0) cy = 1;
 		for (size_t j = 0; j < cap.size(); ++j)
 		{
 			v[cap[j]] += (1 / cx + 1 - 1 / cy) * w;
@@ -468,7 +475,7 @@ void Graph::loadUnweightedGraph(FILE * fp)
 
 void Graph::cmd(string s)
 {
-	s += " >> log.txt";
+	//s += " >> log.txt";
 	cmd(s.c_str());
 }
 

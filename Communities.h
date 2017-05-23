@@ -77,7 +77,7 @@ public:
 	void loadCFinder(const char * fn);
 	void loadMod(const char * fn);
 
-	vector<vector<int> > getCommsOfEveryid() const;
+	vector<vector<int> > getCommsOfEveryid(int max_id = 0) const;
 
 	static vector<int> intersection(vector<int> & a, vector<int> & b);
 	static vector<int> difference(vector<int> & a, vector<int> & b);
