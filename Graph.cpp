@@ -4,6 +4,13 @@
 #include <iostream>
 #include <algorithm>
 
+#include <fstream>
+#include <sstream>
+#include <string>
+
+using std::fstream;
+using std::string;
+using std::stringstream;
 using std::cout;
 using std::endl;
 
@@ -31,9 +38,42 @@ void Graph::addEdge(int x, int y, double w)
 
 bool Graph::load(char * graph_path)
 {
+	bool first_line_is_node_num = false;
+	ifstream f(graph_path, std::ios::in);
+	string s;
+	getline(f, s);
+	stringstream stream;
+	stream << s;
+	int id;
+	int c = 0;
+	while (stream >> id)
+	{
+		++c;
+	}
+	if (c == 1)
+		first_line_is_node_num = true;
+
+	getline(f, s);
+	stream.clear();
+	stream << s;
+	c = 0;
+	while (stream >> id)
+	{
+		++c;
+	}
+	if (c == 3)
+		Weighted = true;
+	f.close();
+
 	FILE *fp = fopen(graph_path, "r");
 	if (!fp)
 		return false;
+	if (first_line_is_node_num)
+	{
+		char buff[256];
+		fgets(buff, 256, fp);
+	}
+		
 	
 	if (Weighted)
 		loadWeightedGraph(fp);
@@ -59,6 +99,18 @@ bool Graph::save(char * graph_path)
 			fprintf(fp, "%d\t%d\t%lf\n", edges[i].x, edges[i].y, edges[i].w);
 		else
 			fprintf(fp, "%d\t%d\n", edges[i].x, edges[i].y);
+	}
+	fclose(fp);
+}
+bool Graph::saveUnweighted(char * graph_path)
+{
+	FILE *fp = fopen(graph_path, "w");
+	if (!fp)
+		return false;
+
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		fprintf(fp, "%d\t%d\n", edges[i].x, edges[i].y);
 	}
 	fclose(fp);
 }
@@ -113,9 +165,9 @@ Communities Graph::runLinkComm(char * args)
 	clusterJaccards += "clusterJaccards\"";
 
 
-	save("tmp.graph");
+	saveUnweighted("tmp.graph");
 	cmd(calcJaccards + " tmp.graph net.jaccs");
-	cmd(clusterJaccards + " tmp.graph net.jaccs net.clusters net.mc_nc 0.2");
+	cmd(clusterJaccards + " tmp.graph net.jaccs net.clusters net.mc_nc 0.1");
 
 	Communities cs;
 	cs.loadLinkComm("net.clusters");
@@ -235,11 +287,27 @@ Graph Graph::remove(const Communities & cs)
 void Graph::print()
 {
 	printf("-----------------\n");
+	if (Weighted)
+		printf("Weighted Graph: ");
+	else
+		printf("UnWeighted Graph: ");
 	printf("%d edges:\n", edges.size());
-	for (size_t i = 0; i < edges.size(); ++i)
+
+	if (Weighted)
 	{
-		printf("%d %d\n", edges[i].x, edges[i].y);
+		for (size_t i = 0; i < edges.size(); ++i)
+		{
+			printf("%d %d %lf\n", edges[i].x, edges[i].y, edges[i].w);
+		}
 	}
+	else
+	{
+		for (size_t i = 0; i < edges.size(); ++i)
+		{
+			printf("%d %d\n", edges[i].x, edges[i].y);
+		}
+	}
+	
 }
 bool Graph::create_dot_file(char *fn)
 {

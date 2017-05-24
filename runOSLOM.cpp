@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	Graph g;
 	//Graph g;
 	//从edge list的文本文件读入图
-	g.load("F:/HICODE_SUB/result/sc/Data/graph");
+	g.load(argv[1]);
 	//g.load("graph.txt");
 	//g.print();
 	//g.load("graph.txt");
@@ -69,14 +69,13 @@ int main(int argc, char *argv[])
 	// cs.print();
 	// cs.save("mod.gen");
 
-	string dir = "result/";
-	if (argc>2)
-		dir = argv[2];
+
+	string dir = argv[2];
 	Communities::mkdir(dir);
 
 	//g.runInfomap().save(dir + "Infomap.gen");
-	g.runLinkComm().save(dir + "LC.gen");
-	//g.runOSLOM2().save(dir + "OSLOM.gen");
+	//g.runLinkComm().save(dir + "LC.gen");
+	g.runOSLOM2().save(dir + "OSLOM.gen");
 	//g.runGCE().save(dir + "GCE.gen");
 	//g.runDemon().save(dir + "Demon.gen");
 	//g.runCFinder().save(dir + "CFinder.gen");

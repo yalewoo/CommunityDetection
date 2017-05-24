@@ -5,7 +5,7 @@
 #include <set>
 #include <algorithm>
 #include <utility>
-
+#include <string>
 using std::vector;
 using std::unique;
 using std::sort;
@@ -13,6 +13,7 @@ using std::max;
 using std::min;
 using std::set;
 using std::pair;
+using std::string;
 
 class Communities;
 
@@ -36,7 +37,7 @@ struct Community
 	int size() const { return nodes.size(); }
 
 	//返回值，下标
-	pair<double, int> Precision(Communities & truth);
+	pair<double, int> Precision(Communities & truth, FILE * fp);
 
 };
 class Communities
@@ -61,8 +62,9 @@ public:
 		comms.push_back(c);
 	}
 	void removeSmallComm(int size = 1);	//去掉结点数小于size的社团
-	void print();
+	void print(bool show_nodes = false);
 	bool save(const char * fn);
+	bool save(string fn);
 	int size() const { return comms.size(); }
 
 	//所有社团结点数之和
@@ -103,9 +105,11 @@ public:
 	double h(double x) const;
 
 
-	static double Precision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value);
-	static double Recall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value);
-	static double F1Score(Communities & Detected, Communities & truth);
+	static double Jaccard(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, FILE * fp);
+	static double Recall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
+	static double Precision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
+	static double F1Score(Communities & Detected, Communities & truth, string dir);
+	static bool mkdir(string dir);
 };
 
 

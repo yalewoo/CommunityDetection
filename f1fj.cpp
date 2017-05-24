@@ -19,21 +19,12 @@ void showVector(vector<int> & v, string name = "vector", int id = 0)
 int main(int argc, char *argv[])
 {
 	//读配置文件，该文件记录社团检测算法的具体路径
-	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
+	//Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
 
-	if (argc != 4)
-	{
-		//printf("ustage: runAll graph outdir\n");
-		//return 0;
-	}
-
-
-	Graph g;
+	// Graph g(true);
 	//Graph g;
 	//从edge list的文本文件读入图
-	g.load("F:/HICODE_SUB/result/sc/Data/graph");
-	//g.load("graph.txt");
-	//g.print();
+	//g.load("F:/Project/CommunityDetection/graph.txt");
 	//g.load("graph.txt");
 	
 
@@ -69,18 +60,15 @@ int main(int argc, char *argv[])
 	// cs.print();
 	// cs.save("mod.gen");
 
-	string dir = "result/";
-	if (argc>2)
-		dir = argv[2];
-	Communities::mkdir(dir);
 
-	//g.runInfomap().save(dir + "Infomap.gen");
-	g.runLinkComm().save(dir + "LC.gen");
-	//g.runOSLOM2().save(dir + "OSLOM.gen");
-	//g.runGCE().save(dir + "GCE.gen");
-	//g.runDemon().save(dir + "Demon.gen");
-	//g.runCFinder().save(dir + "CFinder.gen");
-	//g.runMod().save(dir + "Mod.gen");
+	
+	// g.runInfomap().save("result/Infomap.gen");
+	// g.runLinkComm().save("result/LC.gen");
+	//g.runOSLOM2().save("result/OSLOM.gen");
+	// g.runGCE().save("result/GCE.gen");
+	// g.runDemon().save("result/Demon.gen");
+	// g.runCFinder().save("result/CFinder.gen");
+	// g.runMod().save("result/Mod.gen");
 
 	/*
 	g.showPic();
@@ -107,17 +95,21 @@ int main(int argc, char *argv[])
 	// 		cout << cs.H_Xi_given_Yj(cs2.comms[j], cs.comms[i]) << endl;
 	// 	}
 	// }
-	
-	// Communities detected;
-	// Communities truth;
-	// detected.load(argv[1]);
-	// truth.load(argv[2]);
-	// detected.removeSmallComm(2);
-	// truth.removeSmallComm(2);
+	if (argc != 4)
+	{
+		printf("ustage: f1fj detected.gen truth.gen outdir\n");
+		return 0;
+	}
+	Communities detected;
+	Communities truth;
+	detected.load(argv[1]);
+	truth.load(argv[2]);
+	detected.removeSmallComm(2);
+	truth.removeSmallComm(2);
 	//detected.print();
-	// vector<int> v_index;
-	// vector<double> v_value;
-	// string outdir = argv[3];
+	vector<int> v_index;
+	vector<double> v_value;
+	string outdir = argv[3];
 	// cout << Communities::Precision(detected, truth, v_index, v_value, outdir) << endl;
 	// for (size_t i = 0; i < v_index.size(); ++i)
 	// {
@@ -134,7 +126,7 @@ int main(int argc, char *argv[])
 	// 	showVector(detected.comms[v_index[i]].nodes, "detected", v_index[i]+1);
 	// }
 	
-	//cout << "F1=" << Communities::F1Score(detected, truth, outdir) << endl;
+	cout << "F1=" << Communities::F1Score(detected, truth, outdir) << endl;
 
 	//cout << g.calcModularity(cs) << endl;
 	//cout << cs.calcModularity(g) << endl;

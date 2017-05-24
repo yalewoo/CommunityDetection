@@ -43,13 +43,14 @@ class Graph {
 	void loadWeightedGraph(FILE * fp);
 	void loadUnweightedGraph(FILE * fp);
 
-	void cmd(string s);
-	void cmd(const char * s);
+	static void cmd(string s);
+	static void cmd(const char * s);
 
 public:
 	void setWeighted(bool weighted) { Weighted = weighted; }
 	bool load(char * graph_path);
 	bool save(char *graph_path);
+	bool saveUnweighted(char * graph_path);
 	static bool loadConfig(char * config_path);
 	
 	Graph(bool weighted = false, bool directed = false) : Weighted(weighted), Directed(directed) {}
