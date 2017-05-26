@@ -37,6 +37,7 @@ struct Community
 	int size() const { return nodes.size(); }
 
 	//返回值，下标
+	pair<double, int> JaccardPrecision(Communities & truth, FILE * fp);
 	pair<double, int> Precision(Communities & truth, FILE * fp);
 
 };
@@ -89,7 +90,7 @@ public:
 
 	double calcModularity(const Graph & g);	//计算模块度
 
-	double calcNMI(Communities & cs) ;
+	double calcNMI(Communities & cs, string outdir = "") ;
 
 
 	double H(Community & X) const;
@@ -105,10 +106,16 @@ public:
 	double h(double x) const;
 
 
-	static double Jaccard(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, FILE * fp);
-	static double Recall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
-	static double Precision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
-	static double F1Score(Communities & Detected, Communities & truth, string dir);
+	static pair<double, double> Jaccard(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, FILE * fp);
+	static pair<double, double> JaccardRecall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
+	static pair<double, double> JaccardPrecision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
+	static pair<double, double> JaccardF1Score(Communities & Detected, Communities & truth, string dir);
+
+	static pair<double, double> PRGeneral(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, FILE * fp);
+	static pair<double, double> Recall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
+	static pair<double, double> Precision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
+	static pair<double, double> F1Score(Communities & Detected, Communities & truth, string dir);
+
 	static bool mkdir(string dir);
 };
 

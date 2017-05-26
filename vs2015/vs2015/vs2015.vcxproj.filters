@@ -21,7 +21,7 @@
     <ClCompile Include="..\..\Graph.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\main.cpp">
+    <ClCompile Include="..\..\examples\run.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

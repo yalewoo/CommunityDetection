@@ -47,6 +47,8 @@ class Graph {
 	static void cmd(const char * s);
 
 public:
+	int getNodeNum() { return max_node_id - min_node_id + 1; }
+	int getEdgeNum() { return edges.size(); }
 	void setWeighted(bool weighted) { Weighted = weighted; }
 	bool load(char * graph_path);
 	bool save(char *graph_path);
