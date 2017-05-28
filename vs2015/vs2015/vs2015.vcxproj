@@ -143,8 +143,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Communities.cpp" />
-    <ClCompile Include="..\..\examples\run.cpp" />
     <ClCompile Include="..\..\Graph.cpp" />
+    <ClCompile Include="..\..\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Communities.h" />

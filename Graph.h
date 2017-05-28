@@ -47,7 +47,7 @@ class Graph {
 	static void cmd(const char * s);
 
 public:
-	int getNodeNum() { return max_node_id - min_node_id + 1; }
+	int getNodeNum();
 	int getEdgeNum() { return edges.size(); }
 	void setWeighted(bool weighted) { Weighted = weighted; }
 	bool load(char * graph_path);
@@ -78,6 +78,9 @@ public:
 	vector<double> getCommOutEdgeNum(const Communities & cs) const;	//返回社团连接其他社团的边数
 
 	friend class Communities;
+
+
+	Graph reduceWeight(Communities & cs);
 };
 
 

@@ -486,6 +486,109 @@ vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 	return v;
 }
 
+Graph Graph::reduceWeight(Communities & cs)
+{
+	vector<vector<int> > cid = cs.getCommsOfEveryid(max_node_id);
+
+	vector<double> d(cs.size(),0);	//保存社团内边数+社团连出的边数
+
+	vector<double> e(cs.size(), 0);	//保存社团内部边数
+
+	int n = this->getNodeNum();
+
+	Graph g;
+
+
+	for (size_t i_edges = 0; i_edges < edges.size(); ++i_edges)
+	{
+		int x = edges[i_edges].x;
+		int y = edges[i_edges].y;
+		double w = edges[i_edges].w;
+
+		vector<int> cxs = cid[x];
+		vector<int> cys = cid[y];
+
+		//社团内部边加了两次，一个节点在社团里的边加了1次
+		for (size_t i = 0; i < cxs.size(); ++i)
+		{
+			int cx = cxs[i];	//x属于社团cx
+			d[cx] += w;
+		}
+		for (size_t j = 0; j < cys.size(); ++j)
+		{
+			int cy = cys[j];	//y属于社团cy
+			d[cy] += w;
+		}
+
+
+		bool not_in_community_edge = true;
+
+		//e 社团内部的边数 每个边加一次
+		for (size_t i = 0; i < cxs.size(); ++i)
+		{
+			int cx = cxs[i];	//x属于社团cx
+			for (size_t j = 0; j < cys.size(); ++j)
+			{
+				int cy = cys[i];
+				if (cx == cy)
+				{
+					not_in_community_edge = false;
+					e[cx] += w;
+				}
+			}
+		}
+
+		//不是同一个社团内部的边不受影响
+		if (not_in_community_edge)
+		{
+			g.addEdge(x, y, w);
+		}
+
+	}
+
+
+	//处理社团内部的边 每个边只会reduce一次
+	for (size_t i_edges = 0; i_edges < edges.size(); ++i_edges)
+	{
+		int x = edges[i_edges].x;
+		int y = edges[i_edges].y;
+		double w = edges[i_edges].w;
+
+		vector<int> cxs = cid[x];
+		vector<int> cys = cid[y];
+
+		for (size_t i = 0; i < cxs.size(); ++i)
+		{
+			bool reduced = false;
+			int cx = cxs[i];	//x属于社团cx
+			for (size_t j = 0; j < cys.size(); ++j)
+			{
+				int cy = cys[i];
+				
+				if (cx == cy)
+				{
+					int k = cx;
+					int nk = cs.comms[k].size();
+					double pk = e[k] / (0.5 * nk * (nk - 1));
+					double qk = (d[k] - 2 * e[k]) / (nk * (n - nk));
+					if (pk > 0)
+						g.addEdge(x, y, w*qk / pk);
+
+					reduced = true;
+					break;
+				}
+			}
+			if (reduced)
+				break;
+		}
+
+	}
+
+
+
+	return g;
+}
+
 
 void Graph::loadWeightedGraph(FILE * fp)
 {
@@ -552,4 +655,16 @@ void Graph::cmd(const char * s)
 	if (SHOW_CMD)
 		printf("Call: %s\n", s);
 	system(s);
+}
+
+int Graph::getNodeNum()
+{
+	set<int> s;
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		s.insert(edges[i].x);
+		s.insert(edges[i].y);
+	}
+
+	return 0;
 }
