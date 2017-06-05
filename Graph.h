@@ -67,7 +67,7 @@ public:
 
 	Graph remove(const Communities & cs);
 
-	void print(bool show_detail = false);
+	string print(bool show_detail = false);
 	bool create_dot_file(char *fn);
 	void showPic(void);
 

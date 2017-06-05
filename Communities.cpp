@@ -112,8 +112,8 @@ void Communities::loadInfomap(const char * fn)
 		
 		cid[node] = n;
 	}
-	getCommsByCid(cid);
-	removeSmallComm(2);
+	getCommsByCid(comms, cid);
+	removeSmallComm(comms, 2);
 }
 
 void Communities::loadLinkComm(const char * fn)
@@ -256,14 +256,44 @@ void Communities::loadCFinder(const char * fn)
 
 void Communities::loadMod(const char * fn, int level)
 {
+	
+	string hierarchy = "\"" + Graph::config["Mod_dir"] + "hierarchy\"";
+
+	Graph::cmd(hierarchy + " mod.result -n > mod_num.txt");
+
+	FILE * fp = fopen("mod_num.txt", "r");
+	char buff[256];
+	fgets(buff, 256, fp);
+	int i = 0;
+	for (; i < 256; ++i)
+	{
+		if (buff[i] == ':')
+			break;
+	}
+	int n;
+	sscanf(buff + i + 1, "%d", &n);
+	printf("%d\n", n);
+
+	for (i = n - 1; i > 0; --i)
+	{
+		sprintf(buff, " mod.result -l %d > mod_layer.txt", i);
+		Graph::cmd(hierarchy + buff);
+
+		vector<Community> vc;
+		layers.push_back(vc);
+		
+
+		loadCid(layers[layer], "mod_layer.txt");
+		++layer;
+	}
+	comms = layers[0];
+
+}
+
+void Communities::loadCid(vector< Community > & comm, const char * fn)
+{
 	clear();
 	vector<int> cid(max_node_id + 1);
-
-	
-
-
-
-
 
 
 	ifstream f(fn, std::ios::in);
@@ -278,27 +308,24 @@ void Communities::loadMod(const char * fn, int level)
 	int comm_id;
 	stream >> node_id >> comm_id;
 	int last;
-	Community c;
-	c.clear();
+
 	while (!f.eof())
 	{
 		cid[node_id] = comm_id;
 
 		last = comm_id;
-		c.add(node_id);
 
 		getline(f, s);
 		stringstream stream2;
 		stream2 << s;
 		stream2 >> node_id >> comm_id;
-		
+
 		if (node_id == 0)
 			break;
-		
+
 	}
-	getCommsByCid(cid);
-	removeSmallComm(2);
-	
+	getCommsByCid(comm, cid);
+	removeSmallComm(comm, 2);
 }
 
 vector<vector<int> > Communities::getCommsOfEveryid(int max_id) const
@@ -731,57 +758,107 @@ double Communities::H_X_given_Y_norm(Communities & X, Communities & Y)
 
 
 
-void Communities::getCommsByCid(const vector<int> &cid)
+void Communities::getCommsByCid(vector< Community > & comm, const vector<int> &cid)
 {
+	comm.clear();
 	int max_comm_id = *std::max_element(cid.begin(), cid.end());
-	comms.resize(max_comm_id + 1);
+	comm.resize(max_comm_id + 1);
 	for (int i = 0; i < cid.size(); ++i)
 	{
-		comms[cid[i]].add(i);
+		comm[cid[i]].add(i);
 	}
-	removeSmallComm(1);
+	removeSmallComm(comms, 1);
 }
 
-void Communities::removeSmallComm(int size)
+void Communities::removeSmallComm(vector< Community > & comm, int size)
 {
-	sort(comms.begin(), comms.end());
-	for (auto it = comms.begin(); it != comms.end();)
+	sort(comm.begin(), comm.end());
+	for (auto it = comm.begin(); it != comm.end();)
 	{
 		if (it->size() <= size)
-			it = comms.erase(it);    //删除元素，返回值指向已删除元素的下一个位置    
+			it = comm.erase(it);    //删除元素，返回值指向已删除元素的下一个位置    
 		else
 			++it;    //指向下一个位置
 	}
 
 }
 
-void Communities::print(bool show_detail, bool show_nodes)
+string Communities::print(bool show_detail, bool show_nodes)
 {
+	string res;
+	char buff[256];
 	printf("-------------------------\n");
 	printf("Modularity: %lf\n", Q);
 	printf("%d communities:\n", comms.size());
+	sprintf(buff, "-------------------------\n");
+	res += buff;
+	sprintf(buff, "Modularity: %lf\n", Q);
+	res += buff;
+	sprintf(buff, "%d communities:\n", comms.size());
+	res += buff;
 	if (show_detail)
 	{
 		for (size_t i = 0; i < comms.size(); ++i)
 		{
 			printf("-----comm %u,size=%u-----\n", i+1, comms[i].nodes.size());
+			sprintf(buff, "-----comm %u,size=%u-----\n", i+1, comms[i].nodes.size());
+			res += buff;
 			if (show_nodes)
 			{
 				for (size_t j = 0; j < comms[i].nodes.size(); ++j)
 				{
 					printf("%d ", comms[i].nodes[j]);
+					sprintf(buff, "%d ", comms[i].nodes[j]);
+					res += buff;
 				}
 				printf("\n");
+				sprintf(buff, "\n");
+				res += buff;
 			}
 		
 		
 		}
 	}
 
+	return res;
+
 }
 bool Communities::save(string fn)
 {
 	return save(fn.c_str());
+}
+Communities Communities::merge(Communities & other)
+{
+	Communities res;
+	res.max_node_id = max(max_node_id, other.max_node_id);
+	res.min_node_id = min(min_node_id, other.min_node_id);
+	size_t i = 0, j = 0;
+	while (i < comms.size() && j < other.comms.size())
+	{
+		if (comms[i] < other.comms[j])
+		{
+			res.addCommunity(comms[i]);
+			++i;
+		}
+		else
+		{
+			res.addCommunity(other.comms[j]);
+			++j;
+		}
+	}
+	while (i < comms.size())
+	{
+		res.addCommunity(comms[i]);
+		++i;
+	}
+	while (j < other.comms.size())
+	{
+		res.addCommunity(other.comms[j]);
+		++j;
+	}
+
+
+	return res;
 }
 bool Communities::save(const char * fn)
 {
@@ -796,6 +873,27 @@ bool Communities::save(const char * fn)
 		fprintf(fp, "\n");
 	}
 	fclose(fp);
+
+
+	char buff[256];
+	for (int l = 1; l < layer; ++l)
+	{
+		sprintf(buff, "%s_layer%d", fn, l);
+
+		fp = fopen(buff, "w");
+		if (!fp) return false;
+		vector<Community> & comm = layers[l];
+		for (size_t i = 0; i < comm.size(); ++i)
+		{
+			for (size_t j = 0; j < comm[i].nodes.size(); ++j)
+			{
+				fprintf(fp, "%d ", comm[i].nodes[j]);
+			}
+			fprintf(fp, "\n");
+		}
+		fclose(fp);
+	}
+	
 	return true;
 }
 

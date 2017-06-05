@@ -22,6 +22,7 @@ class Graph;
 
 struct Community
 {
+	int parent;	//在上一层中所属的社团
 	vector<int> nodes;
 	int max_node_id = -1;
 	int min_node_id = INT_MAX;
@@ -44,7 +45,13 @@ struct Community
 	pair<double, int> Precision(Communities & truth, FILE * fp);
 
 	bool operator<(Community & e) {
-		return nodes.size() > e.nodes.size();
+		//return nodes.size() > e.nodes.size();
+		if (nodes.size() > e.nodes.size())
+			return true;
+		else if (nodes.size() < e.nodes.size())
+			return false;
+		else
+			return nodes[0] < e.nodes[0];
 	}
 
 };
@@ -53,9 +60,15 @@ class Communities
 public:
 	vector< Community > comms;
 	double Q = 0;
-	void getCommsByCid(const vector<int> &cid);	//转换cid到comms
+	void getCommsByCid(vector< Community > & comms, const vector<int> &cid);	//转换cid到comms
 	int max_node_id = -1;
 	int min_node_id = INT_MAX;
+
+	int layer = 0;
+	vector<vector<Community> > layers;
+
+private:
+	//计算时的临时变量
 	int nmi_max_node;
 	bool nmi_half_more_nodes_positive;
 
@@ -69,11 +82,14 @@ public:
 		max_node_id = max(max_node_id, c.max_node_id);
 		comms.push_back(c);
 	}
-	void removeSmallComm(int size = 1);	//去掉结点数小于size的社团
-	void print(bool show_detail = false,  bool show_nodes = false);
+	void removeSmallComm(vector< Community > & comm, int size);	//去掉结点数小于size的社团
+	string print(bool show_detail = false,  bool show_nodes = false);
 	bool save(const char * fn);
 	bool save(string fn);
 	int size() const { return comms.size(); }
+
+	Communities merge(Communities & other);
+
 
 	//所有社团结点数之和
 	int sizeOfCommsSum() const;
@@ -86,6 +102,7 @@ public:
 	void loadDemon(const char * fn);
 	void loadCFinder(const char * fn);
 	void loadMod(const char * fn, int level = -1);
+	void loadCid(vector< Community > & comms, const char * fn);
 
 	vector<vector<int> > getCommsOfEveryid(int max_id = 0) const;
 

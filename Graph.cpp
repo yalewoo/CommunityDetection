@@ -249,7 +249,7 @@ Communities Graph::runMod(char * args, int layer)
 {
 	string convert = "\"" + config["Mod_dir"] + "convert\"";
 	string community = "\"" + config["Mod_dir"] + "community\"";
-	string hierarchy = "\"" + config["Mod_dir"] + "hierarchy\"";
+	
 
 	save("tmp.graph");
 
@@ -265,46 +265,11 @@ Communities Graph::runMod(char * args, int layer)
 	}
 
 	
-	cmd(hierarchy + " mod.result -n > mod_num.txt");
-
-	FILE * fp = fopen("mod_num.txt", "r");
-	char buff[256];
-	fgets(buff, 256, fp);
-	int i = 0;
-	for (; i < 256; ++i)
-	{
-		if (buff[i] == ':')
-			break;
-	}
-	int n;
-	sscanf(buff + i + 1, "%d", &n);
-	printf("%d\n", n);
-
-	if (layer == -1)	//顶层
-	{
-		sprintf(buff, " mod.result -l %d > mod_top_layer.txt", n - 1);
-		cmd(hierarchy + buff);
-
-		Communities cs;
-		cs.setMaxNodeid(max_node_id);
-		cs.loadMod("mod_top_layer.txt");
-		return cs;
-	}
-	else if (layer == 1)	//叶子层
-	{
-
-		Communities cs;
-		cs.setMaxNodeid(max_node_id);
-		cs.loadMod("mod.result");
-		return cs;
-	}
-	else
-	{
-		Communities cs;
-		cs.setMaxNodeid(max_node_id);
-		cs.loadMod("mod.result");
-		return cs;
-	}
+	Communities cs;
+	cs.setMaxNodeid(max_node_id);
+	cs.loadMod("mod.result");
+	return cs;
+	
 
 
 }
@@ -328,14 +293,27 @@ Graph Graph::remove(const Communities & cs)
 	return g;
 }
 
-void Graph::print(bool show_detail)
+string Graph::print(bool show_detail)
 {
+	string res;
+	char buff[256];
 	printf("-----------------\n");
 	if (Weighted)
+	{
 		printf("Weighted Graph: ");
+		sprintf(buff, "Weighted Graph: ");
+		res += buff;
+	}
 	else
+	{
 		printf("UnWeighted Graph: ");
+		sprintf(buff, "UnWeighted Graph: ");
+		res += buff;
+	}
+		
 	printf("%d edges:\n", edges.size());
+	sprintf(buff, "%d edges:\n", edges.size());
+	res += buff;
 
 	if (show_detail)
 	{
@@ -344,6 +322,8 @@ void Graph::print(bool show_detail)
 			for (size_t i = 0; i < edges.size(); ++i)
 			{
 				printf("%d %d %lf\n", edges[i].x, edges[i].y, edges[i].w);
+				sprintf(buff, "%d %d %lf\n", edges[i].x, edges[i].y, edges[i].w);
+				res += buff;
 			}
 		}
 		else
@@ -351,10 +331,13 @@ void Graph::print(bool show_detail)
 			for (size_t i = 0; i < edges.size(); ++i)
 			{
 				printf("%d %d\n", edges[i].x, edges[i].y);
+				sprintf(buff, "%d %d\n", edges[i].x, edges[i].y);
+				res += buff;
 			}
 		}
 	}
-	
+
+	return res;	
 	
 }
 bool Graph::create_dot_file(char *fn)

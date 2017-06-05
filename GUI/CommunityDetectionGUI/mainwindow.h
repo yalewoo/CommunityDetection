@@ -18,12 +18,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
-    void on_button_graph_path_clicked();
+protected:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 
-    void on_button_load_graph_clicked();
 
-    void on_button_comm1_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -32,6 +31,12 @@ private:
 
 public:
     Graph g;
+    Communities c1;
+    Communities c2;
+private slots:
+    void on_pushButton_clicked();
+    void on_loadcomm1_clicked();
+    void on_loadcomm2_clicked();
 };
 
 #endif // MAINWINDOW_H

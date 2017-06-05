@@ -7,109 +7,112 @@
     <x>0</x>
     <y>0</y>
     <width>836</width>
-    <height>649</height>
+    <height>690</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QLineEdit" name="input_graph_path">
+   <widget class="QTextEdit" name="path">
     <property name="geometry">
      <rect>
-      <x>82</x>
-      <y>40</y>
-      <width>171</width>
-      <height>21</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="button_graph_path">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>40</y>
-      <width>51</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>浏览</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="button_load_graph">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>40</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>载入</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_graph_info">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
+      <x>30</x>
       <y>20</y>
-      <width>351</width>
-      <height>41</height>
+      <width>771</width>
+      <height>51</height>
      </rect>
     </property>
-    <property name="text">
-     <string>未载入</string>
-    </property>
    </widget>
-   <widget class="QPushButton" name="button_comm1">
+   <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>238</x>
-      <y>180</y>
-      <width>51</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>浏览</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="button_load_comm1">
-    <property name="geometry">
-     <rect>
-      <x>298</x>
-      <y>180</y>
+      <x>100</x>
+      <y>150</y>
       <width>93</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>载入</string>
+     <string>载入graph</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_comm1_info">
+   <widget class="QPushButton" name="loadcomm1">
     <property name="geometry">
      <rect>
-      <x>428</x>
-      <y>160</y>
-      <width>351</width>
-      <height>41</height>
+      <x>90</x>
+      <y>300</y>
+      <width>93</width>
+      <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>未载入</string>
+     <string>载入社团1</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="input_comm1">
+   <widget class="QPushButton" name="loadcomm2">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>180</y>
-      <width>171</width>
-      <height>21</height>
+      <x>90</x>
+      <y>430</y>
+      <width>93</width>
+      <height>28</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>载入社团2</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="graph_info">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>120</y>
+      <width>361</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="comm2_info">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>410</y>
+      <width>361</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="comm1_info">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>280</y>
+      <width>361</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="comm12">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>520</y>
+      <width>521</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
     </property>
    </widget>
   </widget>

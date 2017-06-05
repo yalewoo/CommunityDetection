@@ -21,10 +21,10 @@
     <ClCompile Include="..\..\Graph.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\examples\HICODE.cpp">
+    <ClCompile Include="..\..\draw.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\draw.cpp">
+    <ClCompile Include="..\..\examples\run.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

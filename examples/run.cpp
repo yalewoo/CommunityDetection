@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
 	char tmp[256];
 	strftime(tmp, sizeof(tmp), "%Y/%m/%d %X", localtime(&start));
 	fprintf(ftime, "-----------------------\n%s\n", tmp);
-	fprintf(ftime, "OutDir: %s\n", argv[2]);
-	fprintf(ftime, "Graph: %s\n", argv[1]);
+	//fprintf(ftime, "OutDir: %s\n", argv[2]);
+	//fprintf(ftime, "Graph: %s\n", argv[1]);
 
 	fclose(ftime);
 	ftime = fopen("time.txt", "a");
@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
 	Graph g;
 	//Graph g;
 	//从edge list的文本文件读入图
-	g.load(argv[1]);
+	//g.load(argv[1]);
+	g.load("F:/HICODE_SUB/result/syn/graph");
 	fprintf(ftime, "%d nodes, %d edges\n", g.getNodeNum(), g.getEdgeNum());
 	fprintf(ftime, "------Time Statistical (second)------\n");
 
@@ -51,7 +52,8 @@ int main(int argc, char *argv[])
 	fclose(ftime);
 	ftime = fopen("time.txt", "a");
 
-	string dir = argv[2];
+	//string dir = argv[2];
+	string dir = "run/";
 	Communities::mkdir(dir);
 
 	//Infomap
@@ -70,6 +72,7 @@ int main(int argc, char *argv[])
 	fclose(ftime);
 	ftime = fopen("time.txt", "a");
 
+	return 0;
 	//Demon
 	start = time(NULL);
 	g.runDemon().save(dir + "Demon.gen");
