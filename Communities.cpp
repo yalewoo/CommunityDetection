@@ -1,6 +1,7 @@
 #include "Communities.h"
 
 #include <cctype>
+#include <cstring>
 #include "Communities.h"
 
 #include <fstream>
@@ -50,7 +51,7 @@ void Communities::load(const char * fn)
 
 
 		stringstream stream;
-		stream << s;
+		stream.str(s);
 		int id;
 		Community c;
 		while (stream >> id)
@@ -83,7 +84,7 @@ void Communities::loadInfomap(const char * fn)
 	Community c;
 	while (fgets(buff, 512, fp))
 	{
-		//¶¨Î»µ½µ¹ÊıµÚ¶ş¸öÊı×Ö Èı²ãÊ±1:2:3 »á¶Á³ö2
+		//å®šä½åˆ°å€’æ•°ç¬¬äºŒä¸ªæ•°å­— ä¸‰å±‚æ—¶1:2:3 ä¼šè¯»å‡º2
 		int i = 0;
 		while (buff[i] != ' ')
 			++i;
@@ -98,14 +99,14 @@ void Communities::loadInfomap(const char * fn)
 		}
 
 		++i;
-		//ÉçÍÅ±àºÅ
+		//ç¤¾å›¢ç¼–å·
 		sscanf(buff + i, "%d", &n);
 
 		i = strlen(buff);
 		while (buff[i] != ' ')
 			--i;
 		++i;
-		//½ÚµãºÅ
+		//èŠ‚ç‚¹å·
 		sscanf(buff + i, "%d", &node);
 
 		
@@ -132,7 +133,7 @@ void Communities::loadLinkComm(const char * fn)
 			if (s[i] == ',') s[i] = ' ';
 		}
 		stringstream stream;
-		stream << s;
+		stream.str(s);
 		int id;
 		Community c;
 		while (stream >> id)
@@ -163,7 +164,7 @@ void Communities::loadOSLOM2(const char * fn)
 			continue;
 
 		stringstream stream;
-		stream << s;
+		stream.str(s);
 		int id;
 		Community c;
 		while (stream >> id)
@@ -201,9 +202,9 @@ void Communities::loadDemon(const char * fn)
 
 
 		stringstream stream;
-		stream << s;
+		stream.str(s);
 		int id;
-		stream >> id;	//µÚÒ»¸öÊı×ÖÊÇÉçÍÅºÅÉáÆú
+		stream >> id;	//ç¬¬ä¸€ä¸ªæ•°å­—æ˜¯ç¤¾å›¢å·èˆå¼ƒ
 		Community c;
 		while (stream >> id)
 		{
@@ -238,9 +239,9 @@ void Communities::loadCFinder(const char * fn)
 
 
 		stringstream stream;
-		stream << s;
+		stream.str(s);
 		int id;
-		stream >> id;	//µÚÒ»¸öÊı×ÖÊÇÉçÍÅºÅÉáÆú
+		stream >> id;	//ç¬¬ä¸€ä¸ªæ•°å­—æ˜¯ç¤¾å›¢å·èˆå¼ƒ
 		Community c;
 		while (stream >> id)
 		{
@@ -253,10 +254,17 @@ void Communities::loadCFinder(const char * fn)
 	//removeSmallComm(1);
 }
 
-void Communities::loadMod(const char * fn)
+void Communities::loadMod(const char * fn, int level)
 {
 	clear();
 	vector<int> cid(max_node_id + 1);
+
+	
+
+
+
+
+
 
 	ifstream f(fn, std::ios::in);
 
@@ -265,7 +273,7 @@ void Communities::loadMod(const char * fn)
 	getline(f, s);
 
 	stringstream stream;
-	stream << s;
+	stream.str(s);
 	int node_id;
 	int comm_id;
 	stream >> node_id >> comm_id;
@@ -290,6 +298,7 @@ void Communities::loadMod(const char * fn)
 	}
 	getCommsByCid(cid);
 	removeSmallComm(2);
+	
 }
 
 vector<vector<int> > Communities::getCommsOfEveryid(int max_id) const
@@ -347,10 +356,11 @@ vector<int> Communities::setunion(vector<int>& a, vector<int>& b)
 double Communities::calcModularity(const Graph & g)
 {
 	this->Q = g.calcModularity(*this);
+
 	return Q;
 }
 
-//·µ»ØXºÍYÖĞ²»ÖØ¸´ÔªËØ¸öÊı
+//è¿”å›Xå’ŒYä¸­ä¸é‡å¤å…ƒç´ ä¸ªæ•°
 int getNodesNum(Communities & cs, Communities & cs2)
 {
 	vector<Community> & X = cs.comms;
@@ -403,12 +413,12 @@ double Communities::calcNMI(Communities & cs, string outdir)
 
 
 /*
-ĞÅÏ¢ìØ H(X)£¬XÊÇÒ»¸öÉçÍÅ
-ÀıÈç£º X = [2, 4, 5] ±íÊ¾½áµã2,4,5ÔÚ¸ÃÉçÍÅÖĞ
-ÈôÍ¼ÖĞ¹²ÓĞn=9¸ö½áµã£¨±àºÅ0-8£© ÔòX»¹¿ÉÒÔ¿´×öÒ»¸ö±íµÄĞÎÊ½
-X = [0,0,1,0,1,1,0,0,0] XµÄÈ¡ÖµÓĞ2ÖÖ£¬¼´0ºÍ1
-1³öÏÖµÄ¸ÅÂÊÊÇp1 = (X.size()/n) = 3/9 , 0³öÏÖµÄ¸ÅÂÊÊÇp0 = (n-X.size())/n = 6/9 
-Ôò H(X) = h(p0)+h(p1)   //h(x)=-x*log2(x)
+ä¿¡æ¯ç†µ H(X)ï¼ŒXæ˜¯ä¸€ä¸ªç¤¾å›¢
+ä¾‹å¦‚ï¼š X = [2, 4, 5] è¡¨ç¤ºç»“ç‚¹2,4,5åœ¨è¯¥ç¤¾å›¢ä¸­
+è‹¥å›¾ä¸­å…±æœ‰n=9ä¸ªç»“ç‚¹ï¼ˆç¼–å·0-8ï¼‰ åˆ™Xè¿˜å¯ä»¥çœ‹åšä¸€ä¸ªè¡¨çš„å½¢å¼
+X = [0,0,1,0,1,1,0,0,0] Xçš„å–å€¼æœ‰2ç§ï¼Œå³0å’Œ1
+1å‡ºç°çš„æ¦‚ç‡æ˜¯p1 = (X.size()/n) = 3/9 , 0å‡ºç°çš„æ¦‚ç‡æ˜¯p0 = (n-X.size())/n = 6/9 
+åˆ™ H(X) = h(p0)+h(p1)   //h(x)=-x*log2(x)
 */
 double Communities::H(Community & X) const
 {
@@ -432,12 +442,12 @@ double Communities::H(Communities & X)
 	return res;
 }
 
-/*XºÍYµÄÁªºÏìØH(Xi,Yj)
-XºÍY¹²ÓĞ4ÖÖ×éºÏ(X=1,Y=1)(X=0,Y=1)(X=1,Y=0)(X=0,Y=0)
-P(X=1,Y=1) = |X ¡É Y|
+/*Xå’ŒYçš„è”åˆç†µH(Xi,Yj)
+Xå’ŒYå…±æœ‰4ç§ç»„åˆ(X=1,Y=1)(X=0,Y=1)(X=1,Y=0)(X=0,Y=0)
+P(X=1,Y=1) = |X âˆ© Y|
 P(X=0,Y=1) = |Y - X|
 P(X=1,Y=0) = |X - Y|
-P(X=0,Y=0) = n - |X ¡È Y|
+P(X=0,Y=0) = n - |X âˆª Y|
 H(X,Y) = h(P(X=1,Y=1)) + h(P(X=0,Y=1)) 
        + h(P(X=1,Y=0)) + h(P(X=0,Y=0))  //h(x)=-x*log2(x)
        
@@ -463,7 +473,7 @@ double Communities::H_Xi_joint_Yj(Community & Xi, Community & Yj)
 	double p10 = n10 / n;
 	double p00 = n00 / n;
 
-	//Èç¹ûÕâ¸öÌõ¼şÃ»ÓĞÂú×ã nmi_half_more_nodes_positive²»»á±äÎªtrue
+	//å¦‚æœè¿™ä¸ªæ¡ä»¶æ²¡æœ‰æ»¡è¶³ nmi_half_more_nodes_positiveä¸ä¼šå˜ä¸ºtrue
 	if (h(p11) + h(p00) >= h(p01) + h(p10))
 	{
 		
@@ -472,13 +482,13 @@ double Communities::H_Xi_joint_Yj(Community & Xi, Community & Yj)
 	{
 		//return -log(0);
 		nmi_half_more_nodes_positive = false;
-		return H(Xi);	//¶à¼ÓH(Yj)ÊÇÒòÎªÔÚH_Xi_given_YjÖĞ¼õÈ¥
+		return H(Xi);	//å¤šåŠ H(Yj)æ˜¯å› ä¸ºåœ¨H_Xi_given_Yjä¸­å‡å»
 	}
 
 	return h(p11) + h(p01) + h(p10) + h(p00);
 }
 
-/*Ìõ¼şìØH(Xi|Yj) = H(Xi,Yj) - H(Yj)
+/*æ¡ä»¶ç†µH(Xi|Yj) = H(Xi,Yj) - H(Yj)
 */
 double Communities::H_Xi_given_Yj(Community & Xi, Community & Yj)
 {
@@ -502,7 +512,7 @@ double Communities::h(double x) const
 	return x > 0 ? -1 * x * log2(x) : 0;
 }
 
-//v_index[i]±£´æºÍi×îÏàË¼µÄtruth±àºÅ
+//v_index[i]ä¿å­˜å’Œiæœ€ç›¸æ€çš„truthç¼–å·
 pair<double,double> Communities::Jaccard(Communities & Detected, Communities & truth, vector<int>& v_index, vector<double> &v_value,FILE * fp)
 {
 	v_index.clear();
@@ -701,7 +711,7 @@ double Communities::H_Xi_given_Y_norm(Community & Xi, Communities & Y)
 
 
 /*
-XÓĞk¸öÉçÍÅ
+Xæœ‰kä¸ªç¤¾å›¢
 				  1    _k_   
 H(X|Y)_norm =   -----  \  `  H(Xi|Y)_norm
 				  k    /__,   
@@ -734,35 +744,40 @@ void Communities::getCommsByCid(const vector<int> &cid)
 
 void Communities::removeSmallComm(int size)
 {
+	sort(comms.begin(), comms.end());
 	for (auto it = comms.begin(); it != comms.end();)
 	{
 		if (it->size() <= size)
-			it = comms.erase(it);    //É¾³ıÔªËØ£¬·µ»ØÖµÖ¸ÏòÒÑÉ¾³ıÔªËØµÄÏÂÒ»¸öÎ»ÖÃ    
+			it = comms.erase(it);    //åˆ é™¤å…ƒç´ ï¼Œè¿”å›å€¼æŒ‡å‘å·²åˆ é™¤å…ƒç´ çš„ä¸‹ä¸€ä¸ªä½ç½®    
 		else
-			++it;    //Ö¸ÏòÏÂÒ»¸öÎ»ÖÃ
+			++it;    //æŒ‡å‘ä¸‹ä¸€ä¸ªä½ç½®
 	}
 
 }
 
-void Communities::print(bool show_nodes)
+void Communities::print(bool show_detail, bool show_nodes)
 {
 	printf("-------------------------\n");
 	printf("Modularity: %lf\n", Q);
 	printf("%d communities:\n", comms.size());
-	for (size_t i = 0; i < comms.size(); ++i)
+	if (show_detail)
 	{
-		printf("-----comm %u,size=%u-----\n", i+1, comms[i].nodes.size());
-		if (show_nodes)
+		for (size_t i = 0; i < comms.size(); ++i)
 		{
-			for (size_t j = 0; j < comms[i].nodes.size(); ++j)
+			printf("-----comm %u,size=%u-----\n", i+1, comms[i].nodes.size());
+			if (show_nodes)
 			{
-				printf("%d ", comms[i].nodes[j]);
+				for (size_t j = 0; j < comms[i].nodes.size(); ++j)
+				{
+					printf("%d ", comms[i].nodes[j]);
+				}
+				printf("\n");
 			}
-			printf("\n");
+		
+		
 		}
-		
-		
 	}
+
 }
 bool Communities::save(string fn)
 {

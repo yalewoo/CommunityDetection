@@ -36,14 +36,15 @@ void Graph::addEdge(int x, int y, double w)
 	edges.push_back(Edge(x, y, w));
 }
 
-bool Graph::load(char * graph_path)
+bool Graph::load(char const *graph_path)
 {
+	//å…ˆè¯»ä¸€ä¸‹å›¾æ–‡ä»¶ çœ‹æ˜¯å¦ç¬¬ä¸€è¡Œæ˜¯ç»“ç‚¹ä¸ªæ•° æ˜¯æœ‰æƒè¿˜æ˜¯æ— æƒ
 	bool first_line_is_node_num = false;
 	ifstream f(graph_path, std::ios::in);
 	string s;
 	getline(f, s);
 	stringstream stream;
-	stream << s;
+	stream.str(s);
 	int id;
 	int c = 0;
 	while (stream >> id)
@@ -55,7 +56,7 @@ bool Graph::load(char * graph_path)
 
 	getline(f, s);
 	stream.clear();
-	stream << s;
+	stream.str(s);
 	c = 0;
 	while (stream >> id)
 	{
@@ -65,9 +66,12 @@ bool Graph::load(char * graph_path)
 		Weighted = true;
 	f.close();
 
+
 	FILE *fp = fopen(graph_path, "r");
 	if (!fp)
 		return false;
+
+	//è‹¥ç¬¬ä¸€è¡Œæ˜¯ç»“ç‚¹ä¸ªæ•° è·³è¿‡è¿™ä¸€è¡Œ
 	if (first_line_is_node_num)
 	{
 		char buff[256];
@@ -82,6 +86,7 @@ bool Graph::load(char * graph_path)
 
 	fclose(fp);
 
+	//è¾¹(x,y)æŒ‰ç…§xå‡åºï¼Œxç›¸åŒæ˜¯æŒ‰ç…§yå‡åº
 	sort(edges.begin(), edges.end());
 	edges.erase(unique(edges.begin(), edges.end()), edges.end());
 
@@ -102,6 +107,8 @@ bool Graph::save(char * graph_path)
 	}
 	fclose(fp);
 }
+
+//ä¿å­˜ä¸ºæ— æƒå›¾
 bool Graph::saveUnweighted(char * graph_path)
 {
 	FILE *fp = fopen(graph_path, "w");
@@ -238,11 +245,11 @@ Communities Graph::runCFinder(char * args)
 	return cs;
 }
 
-Communities Graph::runMod(char * args)
+Communities Graph::runMod(char * args, int layer)
 {
 	string convert = "\"" + config["Mod_dir"] + "convert\"";
 	string community = "\"" + config["Mod_dir"] + "community\"";
-
+	string hierarchy = "\"" + config["Mod_dir"] + "hierarchy\"";
 
 	save("tmp.graph");
 
@@ -256,12 +263,49 @@ Communities Graph::runMod(char * args)
 		cmd(convert + " -i tmp.graph -o graph.bin");
 		cmd(community + " graph.bin  -l -1 -v > mod.result");
 	}
-	
 
-	Communities cs;
-	cs.setMaxNodeid(max_node_id);
-	cs.loadMod("mod.result");
-	return cs;
+	
+	cmd(hierarchy + " mod.result -n > mod_num.txt");
+
+	FILE * fp = fopen("mod_num.txt", "r");
+	char buff[256];
+	fgets(buff, 256, fp);
+	int i = 0;
+	for (; i < 256; ++i)
+	{
+		if (buff[i] == ':')
+			break;
+	}
+	int n;
+	sscanf(buff + i + 1, "%d", &n);
+	printf("%d\n", n);
+
+	if (layer == -1)	//é¡¶å±‚
+	{
+		sprintf(buff, " mod.result -l %d > mod_top_layer.txt", n - 1);
+		cmd(hierarchy + buff);
+
+		Communities cs;
+		cs.setMaxNodeid(max_node_id);
+		cs.loadMod("mod_top_layer.txt");
+		return cs;
+	}
+	else if (layer == 1)	//å¶å­å±‚
+	{
+
+		Communities cs;
+		cs.setMaxNodeid(max_node_id);
+		cs.loadMod("mod.result");
+		return cs;
+	}
+	else
+	{
+		Communities cs;
+		cs.setMaxNodeid(max_node_id);
+		cs.loadMod("mod.result");
+		return cs;
+	}
+
 
 }
 
@@ -284,7 +328,7 @@ Graph Graph::remove(const Communities & cs)
 	return g;
 }
 
-void Graph::print()
+void Graph::print(bool show_detail)
 {
 	printf("-----------------\n");
 	if (Weighted)
@@ -293,20 +337,24 @@ void Graph::print()
 		printf("UnWeighted Graph: ");
 	printf("%d edges:\n", edges.size());
 
-	if (Weighted)
+	if (show_detail)
 	{
-		for (size_t i = 0; i < edges.size(); ++i)
+		if (Weighted)
 		{
-			printf("%d %d %lf\n", edges[i].x, edges[i].y, edges[i].w);
+			for (size_t i = 0; i < edges.size(); ++i)
+			{
+				printf("%d %d %lf\n", edges[i].x, edges[i].y, edges[i].w);
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < edges.size(); ++i)
+			{
+				printf("%d %d\n", edges[i].x, edges[i].y);
+			}
 		}
 	}
-	else
-	{
-		for (size_t i = 0; i < edges.size(); ++i)
-		{
-			printf("%d %d\n", edges[i].x, edges[i].y);
-		}
-	}
+	
 	
 }
 bool Graph::create_dot_file(char *fn)
@@ -315,23 +363,23 @@ bool Graph::create_dot_file(char *fn)
 	if (!fp)
 		return false;
 
-	if (Weighted)	//ÓĞÈ¨Í¼
+	if (Weighted)	//æœ‰æƒå›¾
 	{
-		if (!Directed)	//ÎŞÏòÍ¼ ÓĞÈ¨
+		if (!Directed)	//æ— å‘å›¾ æœ‰æƒ
 		{
 			for (size_t i = 0; i < edges.size(); ++i)
 			{
 				
 			}
 		}
-		else //ÓĞÏòÍ¼ ÓĞÈ¨
+		else //æœ‰å‘å›¾ æœ‰æƒ
 		{
 
 		}
 	}
 	else
 	{
-		if (!Directed)	//ÎŞÏòÍ¼ ÎŞÈ¨Í¼
+		if (!Directed)	//æ— å‘å›¾ æ— æƒå›¾
 		{
 			fprintf(fp, "graph g {\n");
 
@@ -341,7 +389,7 @@ bool Graph::create_dot_file(char *fn)
 			}
 			fprintf(fp, "}");
 		}
-		else //ÓĞÏòÍ¼ ÎŞÈ¨Í¼
+		else //æœ‰å‘å›¾ æ— æƒå›¾
 		{
 
 		}
@@ -363,19 +411,22 @@ void Graph::showPic(void)
 
 double Graph::calcModularity(const Communities & cs)  const
 {
-	//ÉçÍÅ¸öÊı
+	if (edges.size() == 0)
+		return 0;
+
+	//ç¤¾å›¢ä¸ªæ•°
 	int nc = cs.size();	
 
-	//ÉçÍÅÄÚ²¿µÄ±ßÊı
+	//ç¤¾å›¢å†…éƒ¨çš„è¾¹æ•°
 	vector<double> comm_inter_edge_num = getCommInterEdgeNum(cs);
-	cout << "ÄÚ²¿±ßÊıok" << endl;
-	//ÉçÍÅÁ¬³öµÄ±ßÊı
+	//cout << "å†…éƒ¨è¾¹æ•°ok" << endl;
+	//ç¤¾å›¢è¿å‡ºçš„è¾¹æ•°
 	vector<double> comm_out_edge_num = getCommOutEdgeNum(cs);
-	cout << "Á¬³ö±ßÊıok" << endl;
-	//ÉçÍÅÄÚ²¿µãµÄ¶ÈÊıÖ®ºÍ
+	//cout << "è¿å‡ºè¾¹æ•°ok" << endl;
+	//ç¤¾å›¢å†…éƒ¨ç‚¹çš„åº¦æ•°ä¹‹å’Œ
 	vector<double> comm_inter_nodes_degree = getCommInterNodesDegree(comm_inter_edge_num, comm_out_edge_num);
-	cout << "¶ÈÊıÖ®ºÍok" << endl;
-	//×Ü±ßÊı
+	//cout << "åº¦æ•°ä¹‹å’Œok" << endl;
+	//æ€»è¾¹æ•°
 	double m = getSumWeighted();
 
 	double Q = 0;
@@ -390,7 +441,7 @@ double Graph::calcModularity(const Communities & cs)  const
 	return Q;
 }
 
-//·µ»ØÃ¿¸ö½áµãµÄ¶È
+//è¿”å›æ¯ä¸ªç»“ç‚¹çš„åº¦
 vector<int> Graph::getDegree() const
 {
 	vector<int> d(max_node_id + 1, 0);
@@ -403,7 +454,7 @@ vector<int> Graph::getDegree() const
 	return d;
 }
 
-//ÉçÍÅÄÚ²¿µÄ±ßÊı
+//ç¤¾å›¢å†…éƒ¨çš„è¾¹æ•°
 vector<double> Graph::getCommInterEdgeNum(const Communities & cs) const
 {
 	vector<double> v(cs.size(), 0);
@@ -419,8 +470,8 @@ vector<double> Graph::getCommInterEdgeNum(const Communities & cs) const
 		
 
 		vector<int> cap = Communities::intersection(csid[x], csid[y]);
-		double cx = csid[x].size();	//cx¸öÉçÍÅ°üº¬½áµãx
-		double cy = csid[y].size();	//cy¸öÉçÍÅ°üº¬½áµãy
+		double cx = csid[x].size();	//cxä¸ªç¤¾å›¢åŒ…å«ç»“ç‚¹x
+		double cy = csid[y].size();	//cyä¸ªç¤¾å›¢åŒ…å«ç»“ç‚¹y
 		for (size_t j = 0; j < cap.size(); ++j)
 		{
 			v[cap[j]] += 0.5 * (1/cx + 1/cy) * w;
@@ -430,7 +481,7 @@ vector<double> Graph::getCommInterEdgeNum(const Communities & cs) const
 	return v;
 }
 
-//ÉçÍÅÄÚ²¿½áµãµÄ¶ÈÊıÖ®ºÍ
+//ç¤¾å›¢å†…éƒ¨ç»“ç‚¹çš„åº¦æ•°ä¹‹å’Œ
 vector<double> Graph::getCommInterNodesDegree(vector<double> &comm_inter_edge_num, vector<double> & comm_out_edge_num) const
 {
 	vector<double> v(comm_inter_edge_num.size(), 0);
@@ -442,7 +493,7 @@ vector<double> Graph::getCommInterNodesDegree(vector<double> &comm_inter_edge_nu
 
 	return v;
 }
-//ÉçÍÅÁ¬³öÈ¥µÄ±ßÊı
+//ç¤¾å›¢è¿å‡ºå»çš„è¾¹æ•°
 vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 {
 	vector<double> v(cs.size(), 0);
@@ -457,8 +508,8 @@ vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 		
 
 		vector<int> cap = Communities::difference(csid[x], csid[y]);
-		double cx = csid[x].size();	//cx¸öÉçÍÅ°üº¬½áµãx
-		double cy = csid[y].size();	//cy¸öÉçÍÅ°üº¬½áµãy
+		double cx = csid[x].size();	//cxä¸ªç¤¾å›¢åŒ…å«ç»“ç‚¹x
+		double cy = csid[y].size();	//cyä¸ªç¤¾å›¢åŒ…å«ç»“ç‚¹y
 		if (cx != 0)
 		{
 			if (cy == 0) cy = 1;	
@@ -471,8 +522,8 @@ vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 
 		swap(x, y);
 		cap = Communities::difference(csid[x], csid[y]);
-		cx = csid[x].size();	//cx¸öÉçÍÅ°üº¬½áµãx
-		cy = csid[y].size();	//cy¸öÉçÍÅ°üº¬½áµãy
+		cx = csid[x].size();	//cxä¸ªç¤¾å›¢åŒ…å«ç»“ç‚¹x
+		cy = csid[y].size();	//cyä¸ªç¤¾å›¢åŒ…å«ç»“ç‚¹y
 		if (cx == 0)
 			continue;
 		if (cy == 0) cy = 1;
@@ -486,13 +537,27 @@ vector<double> Graph::getCommOutEdgeNum(const Communities & cs) const
 	return v;
 }
 
+Graph Graph::removeEdgeLessThan(double thres)
+{
+	Graph res;
+	res.Weighted = this->Weighted;
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		if (edges[i].w >= thres)
+		{
+			res.addEdge(edges[i].x, edges[i].y, edges[i].w);
+		}
+	}
+	return res;
+}
+
 Graph Graph::reduceWeight(Communities & cs)
 {
 	vector<vector<int> > cid = cs.getCommsOfEveryid(max_node_id);
 
-	vector<double> d(cs.size(),0);	//±£´æÉçÍÅÄÚ±ßÊı+ÉçÍÅÁ¬³öµÄ±ßÊı
+	vector<double> d(cs.size(),0);	//ä¿å­˜ç¤¾å›¢å†…è¾¹æ•°+ç¤¾å›¢è¿å‡ºçš„è¾¹æ•°
 
-	vector<double> e(cs.size(), 0);	//±£´æÉçÍÅÄÚ²¿±ßÊı
+	vector<double> e(cs.size(), 0);	//ä¿å­˜ç¤¾å›¢å†…éƒ¨è¾¹æ•°
 
 	int n = this->getNodeNum();
 
@@ -508,25 +573,25 @@ Graph Graph::reduceWeight(Communities & cs)
 		vector<int> cxs = cid[x];
 		vector<int> cys = cid[y];
 
-		//ÉçÍÅÄÚ²¿±ß¼ÓÁËÁ½´Î£¬Ò»¸ö½ÚµãÔÚÉçÍÅÀïµÄ±ß¼ÓÁË1´Î
+		//ç¤¾å›¢å†…éƒ¨è¾¹åŠ äº†ä¸¤æ¬¡ï¼Œä¸€ä¸ªèŠ‚ç‚¹åœ¨ç¤¾å›¢é‡Œçš„è¾¹åŠ äº†1æ¬¡
 		for (size_t i = 0; i < cxs.size(); ++i)
 		{
-			int cx = cxs[i];	//xÊôÓÚÉçÍÅcx
+			int cx = cxs[i];	//xå±äºç¤¾å›¢cx
 			d[cx] += w;
 		}
 		for (size_t j = 0; j < cys.size(); ++j)
 		{
-			int cy = cys[j];	//yÊôÓÚÉçÍÅcy
+			int cy = cys[j];	//yå±äºç¤¾å›¢cy
 			d[cy] += w;
 		}
 
 
 		bool not_in_community_edge = true;
 
-		//e ÉçÍÅÄÚ²¿µÄ±ßÊı Ã¿¸ö±ß¼ÓÒ»´Î
+		//e ç¤¾å›¢å†…éƒ¨çš„è¾¹æ•° æ¯ä¸ªè¾¹åŠ ä¸€æ¬¡
 		for (size_t i = 0; i < cxs.size(); ++i)
 		{
-			int cx = cxs[i];	//xÊôÓÚÉçÍÅcx
+			int cx = cxs[i];	//xå±äºç¤¾å›¢cx
 			for (size_t j = 0; j < cys.size(); ++j)
 			{
 				int cy = cys[i];
@@ -538,7 +603,7 @@ Graph Graph::reduceWeight(Communities & cs)
 			}
 		}
 
-		//²»ÊÇÍ¬Ò»¸öÉçÍÅÄÚ²¿µÄ±ß²»ÊÜÓ°Ïì
+		//ä¸æ˜¯åŒä¸€ä¸ªç¤¾å›¢å†…éƒ¨çš„è¾¹ä¸å—å½±å“
 		if (not_in_community_edge)
 		{
 			g.addEdge(x, y, w);
@@ -547,7 +612,7 @@ Graph Graph::reduceWeight(Communities & cs)
 	}
 
 
-	//´¦ÀíÉçÍÅÄÚ²¿µÄ±ß Ã¿¸ö±ßÖ»»áreduceÒ»´Î
+	//å¤„ç†ç¤¾å›¢å†…éƒ¨çš„è¾¹ æ¯ä¸ªè¾¹åªä¼šreduceä¸€æ¬¡
 	for (size_t i_edges = 0; i_edges < edges.size(); ++i_edges)
 	{
 		int x = edges[i_edges].x;
@@ -560,7 +625,7 @@ Graph Graph::reduceWeight(Communities & cs)
 		for (size_t i = 0; i < cxs.size(); ++i)
 		{
 			bool reduced = false;
-			int cx = cxs[i];	//xÊôÓÚÉçÍÅcx
+			int cx = cxs[i];	//xå±äºç¤¾å›¢cx
 			for (size_t j = 0; j < cys.size(); ++j)
 			{
 				int cy = cys[i];
@@ -571,8 +636,18 @@ Graph Graph::reduceWeight(Communities & cs)
 					int nk = cs.comms[k].size();
 					double pk = e[k] / (0.5 * nk * (nk - 1));
 					double qk = (d[k] - 2 * e[k]) / (nk * (n - nk));
-					if (pk > 0)
-						g.addEdge(x, y, w*qk / pk);
+					//TODO qkå¯èƒ½ä¼šå°äº0ï¼Ÿï¼Ÿ
+					if (pk > 0 && qk > 0)
+					{
+						double new_w = w*qk / pk;
+						g.addEdge(x, y, new_w);
+						if (new_w > 1 || new_w < -1)
+							cout << new_w << endl;
+					}
+						
+					//if (qk < 0)
+						//cout << "qk<0" << endl;
+					//cout << qk / pk << endl;
 
 					reduced = true;
 					break;
@@ -613,8 +688,8 @@ void Graph::loadWeightedGraph(FILE * fp)
 				
 		}
 		++count;
-		if (count % 1000 == 0)
-			std::cout << count << std::endl;
+		//if (count % (2 << 10) == 0)
+			//std::cout << count << std::endl;
 		
 	}
 }

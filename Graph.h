@@ -50,7 +50,7 @@ public:
 	int getNodeNum();
 	int getEdgeNum() { return edges.size(); }
 	void setWeighted(bool weighted) { Weighted = weighted; }
-	bool load(char * graph_path);
+	bool load(char const * graph_path);
 	bool save(char *graph_path);
 	bool saveUnweighted(char * graph_path);
 	static bool loadConfig(char * config_path);
@@ -63,21 +63,24 @@ public:
 	Communities runGCE(char * args = 0);
 	Communities runDemon(char * args = 0);
 	Communities runCFinder(char * args = 0);
-	Communities runMod(char * args = 0);
+	Communities runMod(char * args = NULL , int layer = -1);
 
 	Graph remove(const Communities & cs);
 
-	void print();
+	void print(bool show_detail = false);
 	bool create_dot_file(char *fn);
 	void showPic(void);
 
-	double calcModularity(const Communities & cs) const;	//¼ÆËãÄ£¿é¶È
-	vector<int> getDegree() const;	//·µ»ØÃ¿¸ö½áµãµÄ¶È
-	vector<double> getCommInterEdgeNum(const Communities & cs) const;	//·µ»ØÃ¿¸öÉçÍÅÄÚ²¿µÄ±ßÊı
-	vector<double> getCommInterNodesDegree(vector<double> &comm_inter_edge_num, vector<double> & comm_out_edge_num) const;	//·µ»ØÉçÍÅÄÚ²¿µãµÄ¶ÈÊıÖ®ºÍ
-	vector<double> getCommOutEdgeNum(const Communities & cs) const;	//·µ»ØÉçÍÅÁ¬½ÓÆäËûÉçÍÅµÄ±ßÊı
+	double calcModularity(const Communities & cs) const;	//è®¡ç®—æ¨¡å—åº¦
+	vector<int> getDegree() const;	//è¿”å›æ¯ä¸ªç»“ç‚¹çš„åº¦
+	vector<double> getCommInterEdgeNum(const Communities & cs) const;	//è¿”å›æ¯ä¸ªç¤¾å›¢å†…éƒ¨çš„è¾¹æ•°
+	vector<double> getCommInterNodesDegree(vector<double> &comm_inter_edge_num, vector<double> & comm_out_edge_num) const;	//è¿”å›ç¤¾å›¢å†…éƒ¨ç‚¹çš„åº¦æ•°ä¹‹å’Œ
+	vector<double> getCommOutEdgeNum(const Communities & cs) const;	//è¿”å›ç¤¾å›¢è¿æ¥å…¶ä»–ç¤¾å›¢çš„è¾¹æ•°
 
 	friend class Communities;
+	friend class MainWindow;
+
+	Graph removeEdgeLessThan(double thres);
 
 
 	Graph reduceWeight(Communities & cs);

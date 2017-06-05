@@ -143,11 +143,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Communities.cpp" />
+    <ClCompile Include="..\..\draw.cpp" />
+    <ClCompile Include="..\..\examples\HICODE.cpp" />
     <ClCompile Include="..\..\Graph.cpp" />
-    <ClCompile Include="..\..\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Communities.h" />
+    <ClInclude Include="..\..\draw.h" />
     <ClInclude Include="..\..\Graph.h" />
     <ClInclude Include="..\..\save.h" />
   </ItemGroup>

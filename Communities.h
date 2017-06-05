@@ -15,7 +15,10 @@ using std::set;
 using std::pair;
 using std::string;
 
+
+
 class Communities;
+class Graph;
 
 struct Community
 {
@@ -36,9 +39,13 @@ struct Community
 	void clear() { nodes.clear(); }
 	int size() const { return nodes.size(); }
 
-	//·µ»ØÖµ£¬ÏÂ±ê
+	//è¿”å›å€¼ï¼Œä¸‹æ ‡
 	pair<double, int> JaccardPrecision(Communities & truth, FILE * fp);
 	pair<double, int> Precision(Communities & truth, FILE * fp);
+
+	bool operator<(Community & e) {
+		return nodes.size() > e.nodes.size();
+	}
 
 };
 class Communities
@@ -46,7 +53,7 @@ class Communities
 public:
 	vector< Community > comms;
 	double Q = 0;
-	void getCommsByCid(const vector<int> &cid);	//×ª»»cidµ½comms
+	void getCommsByCid(const vector<int> &cid);	//è½¬æ¢cidåˆ°comms
 	int max_node_id = -1;
 	int min_node_id = INT_MAX;
 	int nmi_max_node;
@@ -62,13 +69,13 @@ public:
 		max_node_id = max(max_node_id, c.max_node_id);
 		comms.push_back(c);
 	}
-	void removeSmallComm(int size = 1);	//È¥µô½áµãÊıĞ¡ÓÚsizeµÄÉçÍÅ
-	void print(bool show_nodes = false);
+	void removeSmallComm(int size = 1);	//å»æ‰ç»“ç‚¹æ•°å°äºsizeçš„ç¤¾å›¢
+	void print(bool show_detail = false,  bool show_nodes = false);
 	bool save(const char * fn);
 	bool save(string fn);
 	int size() const { return comms.size(); }
 
-	//ËùÓĞÉçÍÅ½áµãÊıÖ®ºÍ
+	//æ‰€æœ‰ç¤¾å›¢ç»“ç‚¹æ•°ä¹‹å’Œ
 	int sizeOfCommsSum() const;
 
 	void load(const char * fn);
@@ -78,7 +85,7 @@ public:
 	void loadGCE(const char * fn);
 	void loadDemon(const char * fn);
 	void loadCFinder(const char * fn);
-	void loadMod(const char * fn);
+	void loadMod(const char * fn, int level = -1);
 
 	vector<vector<int> > getCommsOfEveryid(int max_id = 0) const;
 
@@ -88,7 +95,7 @@ public:
 
 	friend class Graph;
 
-	double calcModularity(const Graph & g);	//¼ÆËãÄ£¿é¶È
+	double calcModularity(const Graph & g);	//è®¡ç®—æ¨¡å—åº¦
 
 	double calcNMI(Communities & cs, string outdir = "") ;
 
