@@ -7,7 +7,8 @@ Ref/*
 #communities
 vs2015/vs2015/*
 !vs2015/vs2015/vs2015.vcxproj
-!vs2015/vs2015/vs2015.vcxproj.filters
+!vs2015/vs2015/vs2015.vcxproj.
+GUI/build*
 
 # User-specific files
 *.suo
