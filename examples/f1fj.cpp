@@ -29,8 +29,7 @@ int main(int argc, char *argv[])
 	Communities truth;
 	detected.load(argv[2]);
 	truth.load(argv[3]);
-	detected.removeSmallComm(2);
-	truth.removeSmallComm(2);
+
 	//detected.print();
 	vector<int> v_index;
 	vector<double> v_value;

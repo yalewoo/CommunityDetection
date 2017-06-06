@@ -33,10 +33,7 @@ public:
     Graph g;
     Communities c1;
     Communities c2;
-private slots:
-    void on_pushButton_clicked();
-    void on_loadcomm1_clicked();
-    void on_loadcomm2_clicked();
+
 };
 
 #endif // MAINWINDOW_H

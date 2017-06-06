@@ -15,8 +15,11 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     ../../Communities.cpp \
-    ../../Graph.cpp
+    ../../Graph.cpp \
+    comm.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    comm.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    comm.ui

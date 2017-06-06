@@ -24,7 +24,7 @@
     <ClCompile Include="..\..\draw.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\examples\run.cpp">
+    <ClCompile Include="..\..\examples\f1fj.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

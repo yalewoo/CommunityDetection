@@ -670,7 +670,7 @@ pair<double, double> Communities::Precision(Communities & Detected, Communities 
 	FILE * fp = fopen(fn.c_str(), "w");
 	if (fp)
 		fprintf(fp, "Detected id,Detected size,Truth id,Truth size,Precision,intersect\n");
-	return Jaccard(Detected, truth, v_index, v_value, fp);
+	return PRGeneral(Detected, truth, v_index, v_value, fp);
 }
 pair<double, double> Communities::F1Score(Communities & Detected, Communities & truth, string dir)
 {

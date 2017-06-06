@@ -25,6 +25,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString t(g.print().c_str());
     ui->graph_info->setText(t);
+
+
+    ui->comm1->pg = &g;
+    ui->comm1->comm2 = &ui->comm2->comm1;
+
+    ui->comm2->pg = &g;
+    ui->comm2->comm2 = &ui->comm1->comm1;
+
+    ui->comm1->info = ui->info;
+    ui->comm2->info = ui->info;
 }
 
 MainWindow::~MainWindow()
@@ -42,47 +52,13 @@ void MainWindow::dropEvent(QDropEvent *event)
     if (urls.isEmpty())
        return;
     QString fileName = urls.first().toLocalFile();
-    ui->path->setText(fileName);
-}
 
-void MainWindow::on_pushButton_clicked()
-{
-    QString fn = ui->path->toPlainText();
-    fn.remove("file:///");
-    g.load(fn.toStdString().c_str());
+
+
+    g.load(fileName.toStdString().c_str());
 
     QString t(g.print().c_str());
     ui->graph_info->setText(t);
 }
 
-void MainWindow::on_loadcomm1_clicked()
-{
-    QString fn = ui->path->toPlainText();
-    fn.remove("file:///");
-    c1.load(fn.toStdString().c_str());
 
-    c1.calcModularity(g);
-    QString t(c1.print(true).c_str());
-    ui->comm1_info->setText(t);
-
-    double nmi = c1.calcNMI(c2);
-    QString s;
-    s.sprintf("NMI = %lf", nmi);
-    ui->comm12->setText(s);
-}
-
-void MainWindow::on_loadcomm2_clicked()
-{
-    QString fn = ui->path->toPlainText();
-    fn.remove("file:///");
-    c2.load(fn.toStdString().c_str());
-
-    c2.calcModularity(g);
-    QString t(c2.print(true).c_str());
-    ui->comm2_info->setText(t);
-
-    double nmi = c2.calcNMI(c1);
-    QString s;
-    s.sprintf("NMI = %lf", nmi);
-    ui->comm12->setText(s);
-}
