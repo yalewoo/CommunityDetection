@@ -34,6 +34,10 @@ public:
     Communities c1;
     Communities c2;
 
+    QString res;
+
+private slots:
+    void on_pushButton_clicked();
 };
 
 #endif // MAINWINDOW_H

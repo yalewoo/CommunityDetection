@@ -619,7 +619,7 @@ pair<double, double> Communities::JaccardF1Score(Communities & Detected, Communi
 	if (fp)
 		fprintf(fp, "%lf,%lf,%lf", UnWeighted, P, R);
 	
-	
+	fclose(fp);
 	return make_pair(Weighted, UnWeighted);
 }
 
@@ -698,7 +698,7 @@ pair<double, double> Communities::F1Score(Communities & Detected, Communities & 
 	if (fp)
 		fprintf(fp, "%lf,%lf,%lf", UnWeighted, P, R);
 
-
+	fclose(fp);
 	return make_pair(Weighted, UnWeighted);
 }
 

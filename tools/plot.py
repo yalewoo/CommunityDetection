@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import matplotlib.ticker as ticker
 
-l = ["mod","nmi_all_layer","nmi_truth1","nmi_truth2","nmi_last"]
+l = ["mod","nmi_truth","nmi_truth1","nmi_truth2","nmi_truth1_1","nmi_truth1_2","nmi_truth2_1","nmi_truth2_2","nmi_last"]
 
 for fn in l:
     path = "F:/Project/CommunityDetection/vs2015/vs2015/hicode/";

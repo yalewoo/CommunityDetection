@@ -18,6 +18,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
@@ -32,6 +33,8 @@ public:
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
     QLabel *graph_info;
+    QHBoxLayout *horizontalLayout_2;
+    QPushButton *pushButton;
     QLabel *info;
     QWidget *widget;
     QHBoxLayout *horizontalLayout;
@@ -63,13 +66,25 @@ public:
 
         verticalLayout->addWidget(graph_info);
 
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        pushButton = new QPushButton(centralWidget);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
+        pushButton->setMaximumSize(QSize(93, 16777215));
+
+        horizontalLayout_2->addWidget(pushButton);
+
         info = new QLabel(centralWidget);
         info->setObjectName(QStringLiteral("info"));
         sizePolicy.setHeightForWidth(info->sizePolicy().hasHeightForWidth());
         info->setSizePolicy(sizePolicy);
         info->setMinimumSize(QSize(0, 81));
 
-        verticalLayout->addWidget(info);
+        horizontalLayout_2->addWidget(info);
+
+
+        verticalLayout->addLayout(horizontalLayout_2);
 
         widget = new QWidget(centralWidget);
         widget->setObjectName(QStringLiteral("widget"));
@@ -111,6 +126,7 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
         graph_info->setText(QApplication::translate("MainWindow", "TextLabel", 0));
+        pushButton->setText(QApplication::translate("MainWindow", "\345\244\215\345\210\266\346\225\260\345\200\274", 0));
         info->setText(QApplication::translate("MainWindow", "TextLabel", 0));
     } // retranslateUi
 

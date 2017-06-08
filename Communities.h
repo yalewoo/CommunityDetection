@@ -82,6 +82,13 @@ public:
 		max_node_id = max(max_node_id, c.max_node_id);
 		comms.push_back(c);
 	}
+	void addCommunities(Communities & cs)
+	{
+		for (size_t i = 0; i < cs.comms.size(); ++i)
+		{
+			addCommunity(cs.comms[i]);
+		}
+	}
 	void removeSmallComm(vector< Community > & comm, int size);	//去掉结点数小于size的社团
 	string print(bool show_detail = false,  bool show_nodes = false);
 	bool save(const char * fn);
@@ -94,6 +101,7 @@ public:
 	//所有社团结点数之和
 	int sizeOfCommsSum() const;
 
+	void load(string fn) { load(fn.c_str()); }
 	void load(const char * fn);
 	void loadInfomap(const char * fn);
 	void loadLinkComm(const char * fn);

@@ -144,7 +144,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Communities.cpp" />
     <ClCompile Include="..\..\draw.cpp" />
-    <ClCompile Include="..\..\examples\f1fj.cpp" />
+    <ClCompile Include="..\..\examples\Sub.cpp" />
     <ClCompile Include="..\..\Graph.cpp" />
   </ItemGroup>
   <ItemGroup>

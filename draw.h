@@ -3,6 +3,8 @@
 using std::vector;
 using std::string;
 
+#include "../Graph.h"
+
 
 struct Csv2rec {
 	vector<string> header;
@@ -14,6 +16,9 @@ struct Csv2rec {
 
 	Csv2rec() {
 		header.push_back(string("x"));
+
+
+
 	}
 	void addheader(char * s)
 	{

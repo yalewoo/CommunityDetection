@@ -9,6 +9,7 @@
 #include <QList>
 #include <QUrl>
 
+#include <QClipboard>
 
 
 map<string, string> Graph::config;
@@ -35,6 +36,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->comm1->info = ui->info;
     ui->comm2->info = ui->info;
+
+    ui->comm1->w2 = ui->comm2;
+    ui->comm2->w2 = ui->comm1;
+
+    ui->comm1->cliq = &res;
+    ui->comm2->cliq = &res;
 }
 
 MainWindow::~MainWindow()
@@ -62,3 +69,9 @@ void MainWindow::dropEvent(QDropEvent *event)
 }
 
 
+
+void MainWindow::on_pushButton_clicked()
+{
+    QClipboard *board = QApplication::clipboard();//使用 QApplication::clipboard() 函数获得系统剪贴板对象。这个函数的返回值是 QClipboard 指针。
+    board->setText(res); //通过 setText()，setImage() 或者 setPixmap() 函数可以将数据放置到剪贴板内，也就是通常所说的剪贴或者复制的操作；
+}

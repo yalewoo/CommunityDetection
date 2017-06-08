@@ -38,6 +38,7 @@ void Graph::addEdge(int x, int y, double w)
 
 bool Graph::load(char const *graph_path)
 {
+	clear();
 	//先读一下图文件 看是否第一行是结点个数 是有权还是无权
 	bool first_line_is_node_num = false;
 	ifstream f(graph_path, std::ios::in);
@@ -645,6 +646,27 @@ Graph Graph::reduceWeight(Communities & cs)
 
 
 	return g;
+}
+
+Graph Graph::getSubGraph(vector<int>& nodes)
+{
+	Graph res;
+	res.Weighted = this->Weighted;
+
+	set<int> subnodes;
+	for (size_t i = 0; i < nodes.size(); ++i)
+	{
+		subnodes.insert(nodes[i]);
+	}
+
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		if (subnodes.find(edges[i].x) != subnodes.end() && subnodes.find(edges[i].y) != subnodes.end())
+		{
+			res.addEdge(edges[i].x, edges[i].y, edges[i].w);
+		}
+	}
+	return res;
 }
 
 

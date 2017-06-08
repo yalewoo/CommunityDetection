@@ -68,6 +68,9 @@ void Comm::dropEvent(QDropEvent *event)
 
     info->setText(s);
 
+    ui->comm_name_2->setText("Detected  Communities");
+    w2->ui->comm_name_2->setText("Truth Communities");
 
-
+    tmp.sprintf("%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf", nmi, f1, p, r, jf1, jp, jr);
+    *cliq = tmp;
 }

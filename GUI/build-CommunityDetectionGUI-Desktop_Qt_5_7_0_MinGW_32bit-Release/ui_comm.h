@@ -25,6 +25,7 @@ class Ui_Comm
 {
 public:
     QVBoxLayout *verticalLayout;
+    QLabel *comm_name_2;
     QLabel *comm_name;
     QLabel *comm_info;
     QTableWidget *t;
@@ -36,6 +37,11 @@ public:
         Comm->resize(507, 456);
         verticalLayout = new QVBoxLayout(Comm);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        comm_name_2 = new QLabel(Comm);
+        comm_name_2->setObjectName(QStringLiteral("comm_name_2"));
+
+        verticalLayout->addWidget(comm_name_2);
+
         comm_name = new QLabel(Comm);
         comm_name->setObjectName(QStringLiteral("comm_name"));
         comm_name->setMinimumSize(QSize(0, 41));
@@ -63,6 +69,7 @@ public:
     void retranslateUi(QWidget *Comm)
     {
         Comm->setWindowTitle(QApplication::translate("Comm", "Form", 0));
+        comm_name_2->setText(QApplication::translate("Comm", "TextLabel", 0));
         comm_name->setText(QApplication::translate("Comm", "TextLabel", 0));
         comm_info->setText(QApplication::translate("Comm", "TextLabel", 0));
     } // retranslateUi

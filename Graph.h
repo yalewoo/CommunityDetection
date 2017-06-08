@@ -47,9 +47,15 @@ class Graph {
 	static void cmd(const char * s);
 
 public:
+	void clear() {
+		edges.clear();
+		max_node_id = -1;
+		min_node_id = INT_MAX;
+	}
 	int getNodeNum();
 	int getEdgeNum() { return edges.size(); }
 	void setWeighted(bool weighted) { Weighted = weighted; }
+	bool load(string fn) { return load(fn.c_str()); }
 	bool load(char const * graph_path);
 	bool save(char *graph_path);
 	bool saveUnweighted(char * graph_path);
@@ -84,6 +90,10 @@ public:
 
 
 	Graph reduceWeight(Communities & cs);
+
+	Graph getSubGraph(vector<int> & nodes);
+	Graph getSubGraph(Community & c) { return getSubGraph(c.nodes); }
+
 };
 
 

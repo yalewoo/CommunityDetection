@@ -116,18 +116,18 @@ int main(int argc, char *argv[])
 	truth1.load(graph_path + "truth1.gen");
 	truth2.load(graph_path + "truth2.gen");
 
-	
+
 	truth1_1.load(graph_path + "truth1_1.gen");
 	truth1_2.load(graph_path + "truth1_2.gen");
 	truth2_1.load(graph_path + "truth2_1.gen");
 	truth2_2.load(graph_path + "truth2_2.gen");
-	
+
 
 	int iterator_times = 20;
 
 	Graph g;
 	g.load(graph_path + "graph");
-	
+
 	Communities layer1_last, layer2_last;
 
 	layer1 = g.runMod();
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 
 		mod1 = layer1.calcModularity(g);
 		mod2 = layer2.calcModularity(g);
-		csv_mod.addline(iter_i+1);
+		csv_mod.addline(iter_i + 1);
 		csv_mod.adddata(mod1);
 		csv_mod.adddata(mod2);
 

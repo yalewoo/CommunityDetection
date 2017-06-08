@@ -25,6 +25,10 @@ public:
     Communities * comm2;
     QLabel *info;
 
+    Comm * w2;
+
+    QString * cliq;
+
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
