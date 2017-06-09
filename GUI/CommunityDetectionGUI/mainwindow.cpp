@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    setWindowTitle("Modularity,NMI,F1");
+
     setAcceptDrops(true);
 
     g.load("F:/HICODE_SUB/result/syn/graph");
@@ -74,4 +76,46 @@ void MainWindow::on_pushButton_clicked()
 {
     QClipboard *board = QApplication::clipboard();//使用 QApplication::clipboard() 函数获得系统剪贴板对象。这个函数的返回值是 QClipboard 指针。
     board->setText(res); //通过 setText()，setImage() 或者 setPixmap() 函数可以将数据放置到剪贴板内，也就是通常所说的剪贴或者复制的操作；
+}
+
+void MainWindow::updatasubinfo()
+{
+    QString s;
+    s.sprintf("%d nodes", subnodes.size());
+    ui->subinfo->setText(s);
+}
+
+void MainWindow::on_add1_clicked()
+{
+    vector<Community> & comms = ui->comm1->comm1.comms;
+    for (size_t i = 0; i < comms.size(); ++i)
+    {
+        for (size_t j = 0; j < comms[i].size(); ++j)
+        {
+            subnodes.insert(comms[i].nodes[j]);
+        }
+    }
+    updatasubinfo();
+}
+
+void MainWindow::on_add2_clicked()
+{
+    vector<Community> & comms = ui->comm2->comm1.comms;
+    for (size_t i = 0; i < comms.size(); ++i)
+    {
+        for (size_t j = 0; j < comms[i].size(); ++j)
+        {
+            subnodes.insert(comms[i].nodes[j]);
+        }
+    }
+
+    updatasubinfo();
+}
+
+void MainWindow::on_getsub_clicked()
+{
+    Graph subg = g.getSubGraph(subnodes);
+    QString s;
+    s.sprintf("%d nodes, %d edges", subg.getNodeNum(), subg.getEdgeNum());
+    ui->subinfo->setText(s);
 }

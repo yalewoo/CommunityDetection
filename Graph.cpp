@@ -290,7 +290,8 @@ Graph Graph::remove(const Communities & cs)
 			g.addEdge(x, y, w);
 		}
 	}
-
+	g.Weighted = Weighted;
+	g.Directed = Directed;
 	return g;
 }
 
@@ -312,8 +313,8 @@ string Graph::print(bool show_detail)
 		res += buff;
 	}
 		
-	printf("%d edges:\n", edges.size());
-	sprintf(buff, "%d edges:\n", edges.size());
+	printf("%d nodes, %d edges:\n", getNodeNum(), edges.size());
+	sprintf(buff, "%d nodes, %d edges:\n", getNodeNum(), edges.size());
 	res += buff;
 
 	if (show_detail)
@@ -537,6 +538,8 @@ Graph Graph::removeEdgeLessThan(double thres)
 
 Graph Graph::reduceWeight(Communities & cs)
 {
+
+
 	vector<vector<int> > cid = cs.getCommsOfEveryid(max_node_id);
 
 	vector<double> d(cs.size(),0);	//保存社团内边数+社团连出的边数
@@ -546,7 +549,8 @@ Graph Graph::reduceWeight(Communities & cs)
 	int n = this->getNodeNum();
 
 	Graph g;
-
+	g.Weighted = Weighted;
+	g.Directed = Directed;
 
 	for (size_t i_edges = 0; i_edges < edges.size(); ++i_edges)
 	{
@@ -612,13 +616,15 @@ Graph Graph::reduceWeight(Communities & cs)
 			int cx = cxs[i];	//x属于社团cx
 			for (size_t j = 0; j < cys.size(); ++j)
 			{
-				int cy = cys[i];
+				int cy = cys[j];
 				
 				if (cx == cy)
 				{
 					int k = cx;
 					int nk = cs.comms[k].size();
 					double pk = e[k] / (0.5 * nk * (nk - 1));
+					double qk2 = (d[k] - 2 * e[k]) / (nk * (0 - nk));
+					//??? next line works bad
 					double qk = (d[k] - 2 * e[k]) / (nk * (n - nk));
 					//TODO qk可能会小于0？？
 					if (pk > 0 && qk > 0)
@@ -646,6 +652,29 @@ Graph Graph::reduceWeight(Communities & cs)
 
 
 	return g;
+}
+
+Graph Graph::removeEdge(Communities & cs)
+{
+	return remove(cs);
+}
+
+Graph Graph::getSubGraph(set<int>& nodes)
+{
+	Graph res;
+	res.Weighted = this->Weighted;
+
+	set<int> & subnodes = nodes;
+
+
+	for (size_t i = 0; i < edges.size(); ++i)
+	{
+		if (subnodes.find(edges[i].x) != subnodes.end() && subnodes.find(edges[i].y) != subnodes.end())
+		{
+			res.addEdge(edges[i].x, edges[i].y, edges[i].w);
+		}
+	}
+	return res;
 }
 
 Graph Graph::getSubGraph(vector<int>& nodes)
@@ -746,5 +775,6 @@ int Graph::getNodeNum()
 		s.insert(edges[i].y);
 	}
 
-	return 0;
+	return s.size();
+	//return 0;
 }

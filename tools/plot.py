@@ -7,8 +7,10 @@ import matplotlib.ticker as ticker
 l = ["mod","nmi_truth","nmi_truth1","nmi_truth2","nmi_truth1_1","nmi_truth1_2","nmi_truth2_1","nmi_truth2_2","nmi_last"]
 
 for fn in l:
-    path = "F:/Project/CommunityDetection/vs2015/vs2015/hicode/";
-    path = path + fn + ".txt"
+    #opath = "F:/Project/CommunityDetection/vs2015/vs2015/hicode/";
+    #opath = "F:/HICODE_SUB/syn/3000_21/hicode/";
+    opath = "F:/Project/CommunityDetection/vs2015/vs2015/hicode/";
+    path = opath + fn + ".txt"
     r = mlab.csv2rec(path)
     n = r.dtype.names
     r.sort()
@@ -28,6 +30,7 @@ for fn in l:
     
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels, loc=4)
+
     
     
     #图标的标题
@@ -35,10 +38,14 @@ for fn in l:
     
     #显示图片
     plt.grid()
-    plt.show()
     
     #将图片保存到指定目录
-    #plt.savefig("mod.png")
+    plt.savefig(opath + fn + ".png")
+    
+    
+    plt.show()
+    
+    
     
     a = 3
 

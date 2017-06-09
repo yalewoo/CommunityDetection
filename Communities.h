@@ -97,7 +97,8 @@ public:
 
 	Communities merge(Communities & other);
 
-
+	//不重复结点个数
+	int nodesNum();
 	//所有社团结点数之和
 	int sizeOfCommsSum() const;
 

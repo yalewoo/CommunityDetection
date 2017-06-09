@@ -52,7 +52,7 @@ struct Csv2rec {
 	{
 		double nmi1 = layer1.calcNMI(truth);
 		double nmi2 = layer2.calcNMI(truth);
-		addline(line + 1);
+		addline(line);
 		adddata(nmi1);
 		adddata(nmi2);
 	}
@@ -111,7 +111,14 @@ int main(int argc, char *argv[])
 	Communities truth, truth1, truth2;
 	Communities truth1_1, truth1_2, truth2_1, truth2_2;
 
-	string graph_path = "F:/HICODE_SUB/synGene/2000/";
+	string graph_path;
+	if (argc == 2)
+		graph_path = argv[1];
+	else
+		graph_path = "F:/HICODE_SUB/facebook/Harvard1/";
+
+	Communities::mkdir("hicode/");
+
 	truth.load(graph_path + "truth.gen");
 	truth1.load(graph_path + "truth1.gen");
 	truth2.load(graph_path + "truth2.gen");
@@ -135,9 +142,13 @@ int main(int argc, char *argv[])
 	//layer1.print(true);
 
 	Graph g2 = g.reduceWeight(layer1);
+	g2.save("hicode/layer2_0.graph");
 
 	layer2 = g2.runMod();
 	layer2_last = layer2;
+
+	layer1.save("hicode/layer1_0.txt");
+	layer2.save("hicode/layer2_0.txt");
 
 	double mod1, mod2;
 	mod1 = layer1.calcModularity(g);
@@ -186,7 +197,9 @@ int main(int argc, char *argv[])
 
 	int max_iter = 0;
 	double max_mod = 0;
-	for (int iter_i = 0; iter_i < 20; ++iter_i)
+	Communities max_layer1, max_layer2;
+
+	for (int iter_i = 1; iter_i <= iterator_times; ++iter_i)
 	{
 		Graph g3 = g.reduceWeight(layer2);
 
@@ -198,11 +211,17 @@ int main(int argc, char *argv[])
 
 		mod1 = layer1.calcModularity(g);
 		mod2 = layer2.calcModularity(g);
-		csv_mod.addline(iter_i+1);
+		csv_mod.addline(iter_i);
 		csv_mod.adddata(mod1);
 		csv_mod.adddata(mod2);
 
-
+		if (mod1 + mod2 > max_mod)
+		{
+			max_mod = mod1 + mod2;
+			max_iter = iter_i;
+			max_layer1 = layer1;
+			max_layer2 = layer2;
+		}
 
 
 		csv_nmi_truth.addNMI(iter_i, truth);
@@ -222,7 +241,7 @@ int main(int argc, char *argv[])
 		nmi_last2 = layer2.calcNMI(layer2_last);
 		layer1_last = layer1;
 		layer2_last = layer2;
-		csv_last.addline(iter_i + 1);
+		csv_last.addline(iter_i);
 		csv_last.adddata(nmi_last1);
 		csv_last.adddata(nmi_last2);
 
@@ -246,6 +265,13 @@ int main(int argc, char *argv[])
 	csv_nmi_truth1_2.save("hicode/nmi_truth1_2.txt");
 	csv_nmi_truth2_1.save("hicode/nmi_truth2_1.txt");
 	csv_nmi_truth2_2.save("hicode/nmi_truth2_2.txt");
+
+
+	layer1.save("hicode/maxmodlayer1.gen");
+	layer2.save("hicode/maxmodlayer2.gen");
+	FILE * fp = fopen("hicode/maxmod.txt", "w");
+	fprintf(fp, "%d", max_iter);
+	fclose(fp);
 
 	printf("------------\ndone\n");
 	return 0;

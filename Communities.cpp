@@ -27,6 +27,20 @@ using std::make_pair;
 
 
 
+int Communities::nodesNum()
+{
+	set<int> s;
+	for (size_t i = 0; i < comms.size(); ++i)
+	{
+		for (size_t j = 0; j < comms[i].size(); ++j)
+		{
+			s.insert(comms[i].nodes[j]);
+		}
+	}
+
+	return s.size();
+}
+
 int Communities::sizeOfCommsSum() const
 {
 	int res = 0;
@@ -42,6 +56,8 @@ void Communities::load(const char * fn)
 	clear();
 
 	ifstream f(fn, std::ios::in);
+	if (!f)
+		return;
 
 
 	while (!f.eof())
@@ -862,6 +878,8 @@ Communities Communities::merge(Communities & other)
 }
 bool Communities::save(const char * fn)
 {
+	sort(comms.begin(), comms.end());
+
 	FILE * fp = fopen(fn, "w");
 	if (!fp) return false;
 	for (size_t i = 0; i < comms.size(); ++i)

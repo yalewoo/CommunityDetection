@@ -90,7 +90,9 @@ public:
 
 
 	Graph reduceWeight(Communities & cs);
+	Graph removeEdge(Communities & cs);
 
+	Graph getSubGraph(set<int> & nodes);
 	Graph getSubGraph(vector<int> & nodes);
 	Graph getSubGraph(Community & c) { return getSubGraph(c.nodes); }
 

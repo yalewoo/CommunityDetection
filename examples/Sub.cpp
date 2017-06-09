@@ -108,144 +108,53 @@ int main(int argc, char *argv[])
 {
 	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
 
-	Communities truth, truth1, truth2;
-	Communities truth1_1, truth1_2, truth2_1, truth2_2;
 
-	string graph_path = "F:/HICODE_SUB/synGene/2000/";
-	truth.load(graph_path + "truth.gen");
-	truth1.load(graph_path + "truth1.gen");
-	truth2.load(graph_path + "truth2.gen");
+	string graph_path;
+	if (argc == 2)
+		graph_path = argv[1];
+	else
+		graph_path = "F:/HICODE_SUB/syn/3000_21/";
 
+	Communities::mkdir("sub/");
 
-	truth1_1.load(graph_path + "truth1_1.gen");
-	truth1_2.load(graph_path + "truth1_2.gen");
-	truth2_1.load(graph_path + "truth2_1.gen");
-	truth2_2.load(graph_path + "truth2_2.gen");
-
-
-	int iterator_times = 20;
 
 	Graph g;
 	g.load(graph_path + "graph");
 
-	Communities layer1_last, layer2_last;
+	Communities layer1;
+	layer1.load(graph_path + "hicode/maxmodlayer1.gen");
+	Communities layer2;
+	layer2.load(graph_path + "hicode/maxmodlayer2.gen");
 
-	layer1 = g.runMod();
-	layer1_last = layer1;
-	//layer1.print(true);
-
-	Graph g2 = g.reduceWeight(layer1);
-
-	layer2 = g2.runMod();
-	layer2_last = layer2;
-
-	double mod1, mod2;
-	mod1 = layer1.calcModularity(g);
-	mod2 = layer2.calcModularity(g);
-
-
-
-	double nmi1, nmi2;
-	nmi1 = layer1.calcNMI(truth);
-	nmi2 = layer2.calcNMI(truth);
-
-	double t1_nmi1, t1_nmi2, t2_nmi1, t2_nmi2;
-	t1_nmi1 = layer1.calcNMI(truth1);
-	t1_nmi2 = layer2.calcNMI(truth1);
-	t2_nmi1 = layer1.calcNMI(truth2);
-	t2_nmi1 = layer2.calcNMI(truth2);
-
-
-	//记录每次迭代的modularity值
-	Csv2rec csv_mod;
-	csv_mod.adddata(mod1);
-	csv_mod.adddata(mod2);
-
-	//记录每次迭代结果和truth比较
-	Csv2rec csv_nmi_truth;
-	csv_nmi_truth.init(truth);
-	Csv2rec csv_nmi_truth1;
-	csv_nmi_truth1.init(truth1);
-	Csv2rec csv_nmi_truth2;
-	csv_nmi_truth2.init(truth2);
-
-	Csv2rec csv_nmi_truth1_1;
-	csv_nmi_truth1_1.init(truth1_1);
-	Csv2rec csv_nmi_truth1_2;
-	csv_nmi_truth1_2.init(truth1_2);
-	Csv2rec csv_nmi_truth2_1;
-	csv_nmi_truth2_1.init(truth2_1);
-	Csv2rec csv_nmi_truth2_2;
-	csv_nmi_truth2_2.init(truth2_2);
-
-
-	//记录每次迭代变化
-	Csv2rec csv_last;
-	csv_last.adddata(1);
-	csv_last.adddata(1);
-
-	int max_iter = 0;
-	double max_mod = 0;
-	for (int iter_i = 0; iter_i < 20; ++iter_i)
+	Communities sub1;
+	for (size_t i = 0; i < layer1.size(); ++i)
 	{
-		Graph g3 = g.reduceWeight(layer2);
-
-		layer1 = g3.runMod();
-
-		Graph g4 = g.reduceWeight(layer1);
-
-		layer2 = g4.runMod();
-
-		mod1 = layer1.calcModularity(g);
-		mod2 = layer2.calcModularity(g);
-		csv_mod.addline(iter_i + 1);
-		csv_mod.adddata(mod1);
-		csv_mod.adddata(mod2);
-
-
-
-
-		csv_nmi_truth.addNMI(iter_i, truth);
-		csv_nmi_truth1.addNMI(iter_i, truth1);
-		csv_nmi_truth2.addNMI(iter_i, truth2);
-
-		csv_nmi_truth1_1.addNMI(iter_i, truth1_1);
-		csv_nmi_truth1_2.addNMI(iter_i, truth1_2);
-		csv_nmi_truth2_1.addNMI(iter_i, truth2_1);
-		csv_nmi_truth2_2.addNMI(iter_i, truth2_2);
-
-
-
-
-		double nmi_last1, nmi_last2;
-		nmi_last1 = layer1.calcNMI(layer1_last);
-		nmi_last2 = layer2.calcNMI(layer2_last);
-		layer1_last = layer1;
-		layer2_last = layer2;
-		csv_last.addline(iter_i + 1);
-		csv_last.adddata(nmi_last1);
-		csv_last.adddata(nmi_last2);
-
-
-
-
-		char buff[256];
-		sprintf(buff, "hicode/layer1_%d.txt", iter_i);
-		layer1.save(buff);
-
-		sprintf(buff, "hicode/layer2_%d.txt", iter_i);
-		layer2.save(buff);
+		Graph subg = g.getSubGraph(layer1.comms[i]);
+		Communities subcs = subg.runMod();
+		sub1.addCommunities(subcs);
 	}
 
-	csv_mod.save("hicode/mod.txt");
-	csv_nmi_truth.save("hicode/nmi_truth.txt");
-	csv_last.save("hicode/nmi_last.txt");
-	csv_nmi_truth1.save("hicode/nmi_truth1.txt");
-	csv_nmi_truth2.save("hicode/nmi_truth2.txt");
-	csv_nmi_truth1_1.save("hicode/nmi_truth1_1.txt");
-	csv_nmi_truth1_2.save("hicode/nmi_truth1_2.txt");
-	csv_nmi_truth2_1.save("hicode/nmi_truth2_1.txt");
-	csv_nmi_truth2_2.save("hicode/nmi_truth2_2.txt");
+	Communities sub2;
+	for (size_t i = 0; i < layer2.size(); ++i)
+	{
+		Graph subg = g.getSubGraph(layer2.comms[i]);
+		Communities subcs = subg.runMod();
+		sub2.addCommunities(subcs);
+	}
+	sub2.save("sub/sub2.gen");
+
+	Graph g2 = g.reduceWeight(layer1);
+	Communities sub2_reduce;
+	for (size_t i = 0; i < layer2.size(); ++i)
+	{
+		Graph subg = g2.getSubGraph(layer2.comms[i]);
+		Communities subcs = subg.runMod();
+		sub2_reduce.addCommunities(subcs);
+	}
+
+	sub1.save("sub/sub1.gen");
+	sub2.save("sub/sub2.gen");
+	sub2_reduce.save("sub/sub2_reducelayer1.gen");
 
 	printf("------------\ndone\n");
 	return 0;

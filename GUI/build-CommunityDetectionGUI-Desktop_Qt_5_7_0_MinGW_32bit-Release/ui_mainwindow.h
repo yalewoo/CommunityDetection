@@ -40,6 +40,12 @@ public:
     QHBoxLayout *horizontalLayout;
     Comm *comm1;
     Comm *comm2;
+    QHBoxLayout *horizontalLayout_3;
+    QPushButton *add1;
+    QPushButton *add2;
+    QHBoxLayout *horizontalLayout_4;
+    QPushButton *getsub;
+    QLabel *subinfo;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -105,6 +111,41 @@ public:
 
         verticalLayout->addWidget(widget);
 
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        add1 = new QPushButton(centralWidget);
+        add1->setObjectName(QStringLiteral("add1"));
+        add1->setMaximumSize(QSize(93, 28));
+
+        horizontalLayout_3->addWidget(add1);
+
+        add2 = new QPushButton(centralWidget);
+        add2->setObjectName(QStringLiteral("add2"));
+        add2->setMaximumSize(QSize(93, 28));
+
+        horizontalLayout_3->addWidget(add2);
+
+
+        verticalLayout->addLayout(horizontalLayout_3);
+
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        getsub = new QPushButton(centralWidget);
+        getsub->setObjectName(QStringLiteral("getsub"));
+        getsub->setMaximumSize(QSize(93, 28));
+
+        horizontalLayout_4->addWidget(getsub);
+
+        subinfo = new QLabel(centralWidget);
+        subinfo->setObjectName(QStringLiteral("subinfo"));
+
+        horizontalLayout_4->addWidget(subinfo);
+
+
+        verticalLayout->addLayout(horizontalLayout_4);
+
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -128,6 +169,10 @@ public:
         graph_info->setText(QApplication::translate("MainWindow", "TextLabel", 0));
         pushButton->setText(QApplication::translate("MainWindow", "\345\244\215\345\210\266\346\225\260\345\200\274", 0));
         info->setText(QApplication::translate("MainWindow", "TextLabel", 0));
+        add1->setText(QApplication::translate("MainWindow", "add", 0));
+        add2->setText(QApplication::translate("MainWindow", "add", 0));
+        getsub->setText(QApplication::translate("MainWindow", "\347\224\237\346\210\220\345\255\220\345\233\276", 0));
+        subinfo->setText(QApplication::translate("MainWindow", "TextLabel", 0));
     } // retranslateUi
 
 };
