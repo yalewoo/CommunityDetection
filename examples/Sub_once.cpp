@@ -135,12 +135,10 @@ int main(int argc, char *argv[])
 	Graph g;
 	g.load(graph_path + "graph");
 
-	Communities layer1, layer1reduce;
-	layer1.load(graph_path + "hicode/maxmodlayer1.gen");
-	layer1reduce.load(graph_path + "hicode/maxmodlayer1.gen");
-	Communities layer2, layer2reduce;
-	layer2.load(graph_path + "hicode/maxmodlayer2.gen");
-	layer2reduce.load(graph_path + "hicode/maxmodlayer2.gen");
+	Communities layer1;
+	layer1.load("F:/Project/CommunityDetection/vs2015/vs2015/sub_mod/sub1_reduce_4.gen");
+	Communities layer2;
+	layer2.load("F:/Project/CommunityDetection/vs2015/vs2015/sub_mod/sub2_reduce_4.gen");
 	
 	char buff[256];
 
@@ -151,8 +149,10 @@ int main(int argc, char *argv[])
 	csv_last.adddata(0);
 	csv_last.adddata(0);
 
-	for (int iter_i = 1; iter_i <= iterator_times; ++iter_i)
+	for (int iter_i = 6; iter_i <= 6; ++iter_i)
 	{
+		Communities sub1, sub2;
+		/*
 		Communities sub1;
 		for (size_t i = 0; i < layer1.size(); ++i)
 		{
@@ -171,7 +171,6 @@ int main(int argc, char *argv[])
 
 		}
 		sprintf(buff, (outdir + "sub1_%d.gen").c_str(), iter_i);
-		printf((outdir + "sub1_%d.gen").c_str(), iter_i);
 		sub1.save(buff);
 
 
@@ -192,55 +191,49 @@ int main(int argc, char *argv[])
 			}
 		}
 		sprintf(buff, (outdir + "sub2_%d.gen").c_str(), iter_i);
-		printf((outdir + "sub2_%d.gen").c_str(), iter_i);
 		sub1.save(buff);
+		*/
 
-		
-			Graph g1 = g.reduceWeight(layer2reduce);
-			Communities sub1_reduce;
-			
-			for (size_t i = 0; i < layer1reduce.size(); ++i)
+		Graph g1 = g.reduceWeight(layer2);
+		Communities sub1_reduce;
+		for (size_t i = 0; i < layer1.size(); ++i)
+		{
+			if (layer1.comms[i].size() > 9)
 			{
-				if (layer1reduce.comms[i].size() > 9)
-				{
-					Graph subg = g1.getSubGraph(layer1reduce.comms[i]);
-					Communities subcs = subg.runMod();
-					sub1_reduce.addCommunities(subcs);
-				}
-				else
-				{
-					Communities subcs;
-					subcs.addCommunity(layer1reduce.comms[i]);
-					sub1_reduce.addCommunities(subcs);
-				}
+				Graph subg = g1.getSubGraph(layer1.comms[i]);
+				Communities subcs = subg.runMod();
+				sub1_reduce.addCommunities(subcs);
 			}
-			sprintf(buff, (outdir + "sub1_reduce_%d.gen").c_str(), iter_i);
-			printf((outdir + "sub1_reduce_%d.gen").c_str(), iter_i);
-			sub1_reduce.save(buff);
-			
+			else
+			{
+				Communities subcs;
+				subcs.addCommunity(layer1.comms[i]);
+				sub1_reduce.addCommunities(subcs);
+			}
+		}
+		sprintf(buff, (outdir + "sub1_reduce_%d.gen").c_str(), iter_i);
+		sub1_reduce.save(buff);
 
-			Graph g2 = g.reduceWeight(layer1reduce);
-			Communities sub2_reduce;
-			
-			for (size_t i = 0; i < layer2reduce.size(); ++i)
+		Graph g2 = g.reduceWeight(layer1);
+		Communities sub2_reduce;
+		for (size_t i = 0; i < layer2.size(); ++i)
+		{
+			if (layer2.comms[i].size() > 9)
 			{
-				if (layer2reduce.comms[i].size() > 9)
-				{
-					Graph subg = g2.getSubGraph(layer2reduce.comms[i]);
-					Communities subcs = subg.runMod();
-					sub2_reduce.addCommunities(subcs);
-				}
-				else
-				{
-					Communities subcs;
-					subcs.addCommunity(layer2reduce.comms[i]);
-					sub2_reduce.addCommunities(subcs);
-				}
+				Graph subg = g2.getSubGraph(layer2.comms[i]);
+				Communities subcs = subg.runMod();
+				sub2_reduce.addCommunities(subcs);
 			}
-			sprintf(buff, (outdir + "sub2_reduce_%d.gen").c_str(), iter_i);
-			printf((outdir + "sub2_reduce_%d.gen").c_str(), iter_i);
-			sub2_reduce.save(buff);
-			
+			else
+			{
+				Communities subcs;
+				subcs.addCommunity(layer2.comms[i]);
+				sub2_reduce.addCommunities(subcs);
+			}
+		}
+		sprintf(buff, (outdir + "sub2_reduce_%d.gen").c_str(), iter_i);
+		printf((outdir + "sub2_reduce_%d.gen").c_str(), iter_i);
+		sub2_reduce.save(buff);
 
 		double nmi_last1, nmi_last2, nr1, nr2;
 		nmi_last1 = layer1.calcNMI(sub1);
@@ -248,15 +241,12 @@ int main(int argc, char *argv[])
 		nr1 = layer1.calcNMI(sub1_reduce);
 		nr2 = layer2.calcNMI(sub2_reduce);
 		layer1 = sub1;
-		layer1reduce = sub1_reduce;
 		layer2 = sub2;
-		layer2reduce = sub2_reduce;
 		csv_last.addline(iter_i);
 		csv_last.adddata(nmi_last1);
 		csv_last.adddata(nmi_last2);
 		csv_last.adddata(nr1);
 		csv_last.adddata(nr2);
-		
 	}
 
 	csv_last.save((outdir + "nmi_last.txt").c_str());

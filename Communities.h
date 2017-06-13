@@ -74,7 +74,7 @@ private:
 
 public:
 	void setMaxNodeid(int max_nodeid) { max_node_id = max_nodeid; }
-	void clear() { comms.clear(); }
+	void clear() { comms.clear(); layers.clear(); }
 
 	void addCommunity(Community c)
 	{
@@ -105,6 +105,7 @@ public:
 	void load(string fn) { load(fn.c_str()); }
 	void load(const char * fn);
 	void loadInfomap(const char * fn);
+	void loadInfomapHelp();
 	void loadLinkComm(const char * fn);
 	void loadOSLOM2(const char * fn);
 	void loadGCE(const char * fn);

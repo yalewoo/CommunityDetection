@@ -21,7 +21,7 @@
     <ClCompile Include="..\..\Graph.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\draw.cpp">
+    <ClCompile Include="..\..\ylog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\examples\HICODE.cpp">
@@ -39,6 +39,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\draw.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ylog.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

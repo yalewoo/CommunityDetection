@@ -33,10 +33,40 @@ string getName(string path, int layer, int iter)
 	string s = buf;
 	return s;
 }
-
-void calc(Communities &truth, int len, Communities * cs[], char *names[], FILE * fp)
+string getName2(string path, int layer)
 {
-
+	int i = 1;
+	while (true)
+	{
+		char buff[256];
+		sprintf(buff, "hicode/maxmodlayer%d.gen_layer%d", layer, i);
+		string p = path + buff;
+		FILE * fp = fopen(p.c_str(), "r");
+		if (!fp)
+			break;
+		fclose(fp);
+		++i;
+	}
+	--i;
+	char buf[256];
+	if (i == 0)
+		sprintf(buf, "hicode/maxmodlayer%d.gen", layer);
+	else
+		sprintf(buf, "hicode/maxmodlayer%d.gen_layer%d", layer, i);
+	string s = buf;
+	return s;
+}
+struct calcReturn {
+	double nmi;
+	double f1;
+	double jf1;
+};
+calcReturn calc(Communities &truth, int len, Communities * cs[], char *names[], FILE * fp)
+{
+	calcReturn res;
+	double max_nmi = 0;
+	double max_f1 = 0;
+	double max_jf1 = 0;
 	for (int i = 0; i < len; ++i)
 	{
 		Communities detected = *(cs[i]);
@@ -59,7 +89,15 @@ void calc(Communities &truth, int len, Communities * cs[], char *names[], FILE *
 
 
 		fprintf(fp, "%s,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", names[i],nmi, f1, p, r, jf1, jp, jr);
+		max_nmi = max(max_nmi, nmi);
+		max_f1 = max(max_f1, f1);
+		max_jf1 = max(max_jf1, jf1);
 	}
+
+	res.nmi = max_nmi;
+	res.f1 = max_f1;
+	res.jf1 = max_jf1;
+	return res;
 }
 
 int main(int argc, char *argv[])
@@ -75,13 +113,15 @@ int main(int argc, char *argv[])
 	if (argc == 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/HICODE_SUB/syn/3000/";
+		graph_path = "F:/HICODE_SUB/syn/3000_ori/";
 
 	//Communities::mkdir("result/");
 
 	FILE * fp = fopen("Statistics.csv", "w");
-
-
+	FILE * f2 = fopen("maxresult.txt", "w");
+	FILE * f3 = fopen("maxresult_f1.txt", "w");
+	double max_nmi, max_f1;
+	calcReturn calcr;
 
 	truth1_1.load(graph_path + "truth1_1.gen");
 	truth1_2.load(graph_path + "truth1_2.gen");
@@ -95,8 +135,8 @@ int main(int argc, char *argv[])
 	mod0.load(graph_path + "hicode/layer1_0.txt");
 	string l1mod2path = getName(graph_path, 1, 0);
 	mod2.load(graph_path + l1mod2path);
-	l1himod0.load(graph_path + "hicode/layer1_7.txt");
-	string l1himod2path = getName(graph_path, 1, 7);
+	l1himod0.load(graph_path + "hicode/maxmodlayer1.gen");
+	string l1himod2path = getName2(graph_path, 1);
 	l1himod2.load(graph_path + l1himod2path);
 	l1himod0sub.load(graph_path + "sub/sub1.gen");
 
@@ -104,8 +144,8 @@ int main(int argc, char *argv[])
 	l2mod0.load(graph_path + "hicode/layer2_0.txt");
 	string l2mod2path = getName(graph_path, 2, 0);
 	l2mod2.load(graph_path + l2mod2path);
-	l2himod0.load(graph_path + "hicode/layer2_7.txt");
-	string l2himod2path = getName(graph_path, 2, 7);
+	l2himod0.load(graph_path + "hicode/maxmodlayer2.gen");
+	string l2himod2path = getName2(graph_path, 2);
 	l2himod2.load(graph_path + l2himod2path);
 	l2himod0sub.load(graph_path + "sub/sub2.gen");
 	l2himod0sub_reducelayer1.load(graph_path + "sub/sub2_reducelayer1.gen");
@@ -124,13 +164,16 @@ int main(int argc, char *argv[])
 	char *name11[5] = {"mod0", "mod_leaf", "l1himod0", "l1himod_leaf", "l1himod0sub"};
 	fprintf(fp, "truth1_1:%d communities\n", truth1_1.size());
 	fprintf(fp, "Detected,NMI,F1,P,R,JF1,JP,JR\n");
-	calc(truth1_1, 5, cs11, name11, fp);
+	calcr = calc(truth1_1, 5, cs11, name11, fp);
+	fprintf(f2, "%f\n", calcr.nmi);
+	fprintf(f3, "%f\n", calcr.f1);
 
 	//truth1_2
 	fprintf(fp, "truth1_2:%d communities\n", truth1_2.size());
 	fprintf(fp, "Detected,NMI,F1,P,R,JF1,JP,JR\n");
-	calc(truth1_2, 5, cs11, name11, fp);
-
+	calcr = calc(truth1_2, 5, cs11, name11, fp);
+	fprintf(f2, "%f\n", calcr.nmi);
+	fprintf(f3, "%f\n", calcr.f1);
 	//truth2_1
 	Communities * cs21[6];
 	cs21[0] = &mod0;
@@ -142,18 +185,21 @@ int main(int argc, char *argv[])
 	char *name21[6] = { "mod0", "mod_leaf", "l2himod0", "l2himod_leaf", "l2himod0sub","l2himod0sub_reducelayer1" };
 	fprintf(fp, "truth2_1:%d communities\n", truth2_1.size());
 	fprintf(fp, "Detected,NMI,F1,P,R,JF1,JP,JR\n");
-	calc(truth2_1, 6, cs21, name21, fp);
-
+	calcr = calc(truth2_1, 6, cs21, name21, fp);
+	fprintf(f2, "%f\n", calcr.nmi);
+	fprintf(f3, "%f\n", calcr.f1);
 	//truth2_2
 	fprintf(fp, "truth2_2:%d communities\n", truth2_2.size());
 	fprintf(fp, "Detected,NMI,F1,P,R,JF1,JP,JR\n");
-	calc(truth2_2, 6, cs21, name21, fp);
-
+	calcr = calc(truth2_2, 6, cs21, name21, fp);
+	fprintf(f2, "%f\n", calcr.nmi);
+	fprintf(f3, "%f\n", calcr.f1);
 
 
 	
 	fclose(fp);
-
+	fclose(f2);
+	fclose(f3);
 
 
 

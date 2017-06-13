@@ -57,7 +57,11 @@ public:
 	void setWeighted(bool weighted) { Weighted = weighted; }
 	bool load(string fn) { return load(fn.c_str()); }
 	bool load(char const * graph_path);
-	bool save(char *graph_path);
+	bool save(string fn) 
+	{ 
+		return save(fn.c_str()); 
+	}
+	bool save(char const * graph_path);
 	bool saveUnweighted(char * graph_path);
 	static bool loadConfig(char * config_path);
 	
@@ -70,6 +74,8 @@ public:
 	Communities runDemon(char * args = 0);
 	Communities runCFinder(char * args = 0);
 	Communities runMod(char * args = NULL , int layer = -1);
+
+	Communities runAlg(string algname);
 
 	Graph remove(const Communities & cs);
 

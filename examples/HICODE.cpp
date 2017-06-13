@@ -70,6 +70,10 @@ struct Csv2rec {
 	{
 		data[line].push_back(n);
 	}
+	bool save(string fn)
+	{
+		return save(fn.c_str());
+	}
 	bool save(const char * fn)
 	{
 		FILE * fp = fopen(fn, "w");
@@ -112,12 +116,23 @@ int main(int argc, char *argv[])
 	Communities truth1_1, truth1_2, truth2_1, truth2_2;
 
 	string graph_path;
-	if (argc == 2)
+	if (argc >= 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/HICODE_SUB/facebook/Harvard1/";
+		graph_path = "F:/HICODE_SUB/syn/3000_ori/";
 
-	Communities::mkdir("hicode/");
+	string basealg;
+	if (argc >= 3)
+		basealg = argv[2];
+	else
+		basealg = "infomap";
+
+	int iterator_times = 20;
+	if (argc >= 4)
+		iterator_times = atoi(argv[3]);
+
+	string outdir = "hicode_" + basealg + "/";
+	Communities::mkdir(outdir);
 
 	truth.load(graph_path + "truth.gen");
 	truth1.load(graph_path + "truth1.gen");
@@ -130,25 +145,25 @@ int main(int argc, char *argv[])
 	truth2_2.load(graph_path + "truth2_2.gen");
 	
 
-	int iterator_times = 20;
+	
 
 	Graph g;
 	g.load(graph_path + "graph");
 	
 	Communities layer1_last, layer2_last;
 
-	layer1 = g.runMod();
+	layer1 = g.runAlg(basealg);
 	layer1_last = layer1;
 	//layer1.print(true);
 
 	Graph g2 = g.reduceWeight(layer1);
-	g2.save("hicode/layer2_0.graph");
+	g2.save(outdir + "layer2_0.graph");
 
-	layer2 = g2.runMod();
+	layer2 = g2.runAlg(basealg);
 	layer2_last = layer2;
 
-	layer1.save("hicode/layer1_0.txt");
-	layer2.save("hicode/layer2_0.txt");
+	layer1.save(outdir + "layer1_0.txt");
+	layer2.save(outdir + "layer2_0.txt");
 
 	double mod1, mod2;
 	mod1 = layer1.calcModularity(g);
@@ -192,8 +207,8 @@ int main(int argc, char *argv[])
 
 	//记录每次迭代变化
 	Csv2rec csv_last;
-	csv_last.adddata(1);
-	csv_last.adddata(1);
+	csv_last.adddata(0);
+	csv_last.adddata(0);
 
 	int max_iter = 0;
 	double max_mod = 0;
@@ -203,11 +218,11 @@ int main(int argc, char *argv[])
 	{
 		Graph g3 = g.reduceWeight(layer2);
 
-		layer1 = g3.runMod();
+		layer1 = g3.runAlg(basealg);
 
 		Graph g4 = g.reduceWeight(layer1);
 
-		layer2 = g4.runMod();
+		layer2 = g4.runAlg(basealg);
 
 		mod1 = layer1.calcModularity(g);
 		mod2 = layer2.calcModularity(g);
@@ -249,27 +264,30 @@ int main(int argc, char *argv[])
 
 
 		char buff[256];
-		sprintf(buff, "hicode/layer1_%d.txt", iter_i);
+		sprintf(buff, (outdir + "layer1_%d.txt").c_str(), iter_i);
 		layer1.save(buff);
 
-		sprintf(buff, "hicode/layer2_%d.txt", iter_i);
+		sprintf(buff, (outdir + "layer2_%d.txt").c_str(), iter_i);
 		layer2.save(buff);
+
+		if (nmi_last1 == 1 && nmi_last2 == 1)
+			break;
 	}
 
-	csv_mod.save("hicode/mod.txt");
-	csv_nmi_truth.save("hicode/nmi_truth.txt");
-	csv_last.save("hicode/nmi_last.txt");
-	csv_nmi_truth1.save("hicode/nmi_truth1.txt");
-	csv_nmi_truth2.save("hicode/nmi_truth2.txt");
-	csv_nmi_truth1_1.save("hicode/nmi_truth1_1.txt");
-	csv_nmi_truth1_2.save("hicode/nmi_truth1_2.txt");
-	csv_nmi_truth2_1.save("hicode/nmi_truth2_1.txt");
-	csv_nmi_truth2_2.save("hicode/nmi_truth2_2.txt");
+	csv_mod.save(outdir + "mod.txt");
+	csv_nmi_truth.save(outdir + "nmi_truth.txt");
+	csv_last.save(outdir + "nmi_last.txt");
+	csv_nmi_truth1.save(outdir + "nmi_truth1.txt");
+	csv_nmi_truth2.save(outdir + "nmi_truth2.txt");
+	csv_nmi_truth1_1.save(outdir + "nmi_truth1_1.txt");
+	csv_nmi_truth1_2.save(outdir + "nmi_truth1_2.txt");
+	csv_nmi_truth2_1.save(outdir + "nmi_truth2_1.txt");
+	csv_nmi_truth2_2.save(outdir + "nmi_truth2_2.txt");
 
 
-	layer1.save("hicode/maxmodlayer1.gen");
-	layer2.save("hicode/maxmodlayer2.gen");
-	FILE * fp = fopen("hicode/maxmod.txt", "w");
+	layer1.save(outdir + "maxmodlayer1.gen");
+	layer2.save(outdir + "maxmodlayer2.gen");
+	FILE * fp = fopen((outdir + "maxmod.txt").c_str(), "w");
 	fprintf(fp, "%d", max_iter);
 	fclose(fp);
 

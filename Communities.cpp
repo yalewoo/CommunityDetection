@@ -17,6 +17,8 @@ double log2(double x)
 
 #include "Graph.h"
 
+#include "ylog.h"
+
 using std::ifstream;
 using std::string;
 using std::stringstream;
@@ -84,52 +86,81 @@ void Communities::load(const char * fn)
 void Communities::loadInfomap(const char * fn)
 {
 	clear();
-	vector<int> cid(max_node_id + 1);
+
 
 	FILE *fp = fopen(fn, "r");
 	if (!fp)
 		return;
 	char buff[512];
 	fgets(buff, 512, fp);
-	fgets(buff, 512, fp);
-
-	int n;
-	int lastn = 0;
-	int node;
-
-	Community c;
-	while (fgets(buff, 512, fp))
-	{
-		//定位到倒数第二个数字 三层时1:2:3 会读出2
-		int i = 0;
-		while (buff[i] != ' ')
-			++i;
-		while (buff[i] != ':')
-			--i;
+	fclose(fp);
+	int i = strlen(buff);
+	while (buff[i] != 'n')
 		--i;
-		while (isdigit(buff[i]))
+	++i; ++i;
+	int levels;
+	sscanf(buff + i, "%d", &levels);
+
+	for (int level = 0; level < levels - 1; ++level)
+	{
+		vector<Community> vc;
+		layers.push_back(vc);
+
+		fp = fopen(fn, "r");
+		fgets(buff, 512, fp);
+		fgets(buff, 512, fp);
+
+
+		int n;
+		int lastn = 1;
+		int node;
+
+		Community c;
+		while (fgets(buff, 512, fp))
 		{
-			--i;
-			if (i == -1)
-				break;
+			//定位到倒数第二个数字 三层时1:2:3 会读出2
+			int i = 0;
+			int colonnum = 0;
+			while (colonnum < level)
+			{
+				while (buff[i] != ':')
+					++i;
+				++colonnum;
+			}
+			if (level > 0)	++i;
+			//社团编号
+			sscanf(buff + i, "%d", &n);
+
+			if (n != lastn)
+			{
+				layers[level].push_back(c);
+				c.clear();
+			}
+			lastn = n;
+
+			i = strlen(buff);
+			while (buff[i] != ' ')
+				--i;
+			++i;
+			//节点号
+			sscanf(buff + i, "%d", &node);
+
+			c.add(node);
+
+
 		}
+		layers[level].push_back(c);
+		c.clear();
 
-		++i;
-		//社团编号
-		sscanf(buff + i, "%d", &n);
+		removeSmallComm(comms, 2);
 
-		i = strlen(buff);
-		while (buff[i] != ' ')
-			--i;
-		++i;
-		//节点号
-		sscanf(buff + i, "%d", &node);
+		fclose(fp);
 
-		
-		cid[node] = n;
 	}
-	getCommsByCid(comms, cid);
-	removeSmallComm(comms, 2);
+
+	comms = layers[0];
+
+	
 }
 
 void Communities::loadLinkComm(const char * fn)
@@ -192,6 +223,49 @@ void Communities::loadOSLOM2(const char * fn)
 			addCommunity(c);
 	}
 	//removeSmallComm(1);
+	layers.push_back(comms);
+	++layer;
+
+
+	while (true)
+	{
+		char tpname[256];
+		sprintf(tpname, "%s%d", fn, layer);
+
+		ifstream f(tpname, std::ios::in);
+		if (!f)
+			break;
+
+		vector<Community> vc;
+		while (!f.eof())
+		{
+			string s;
+			getline(f, s);
+
+			if (s.size() > 0 && s[0] == '#')
+				continue;
+
+			stringstream stream;
+			stream.str(s);
+			int id;
+			Community c;
+			while (stream >> id)
+			{
+				c.add(id);
+			}
+			c.sort();
+			if (c.nodes.size() > 2)
+			{
+				vc.push_back(c);
+			}
+		}
+
+
+		
+		layers.push_back(vc);
+		++layer;
+	}
+	
 }
 
 void Communities::loadGCE(const char * fn)
@@ -272,12 +346,16 @@ void Communities::loadCFinder(const char * fn)
 
 void Communities::loadMod(const char * fn, int level)
 {
-	
+	ylog("Communities::loadMod begin");
 	string hierarchy = "\"" + Graph::config["Mod_dir"] + "hierarchy\"";
 
 	Graph::cmd(hierarchy + " mod.result -n > mod_num.txt");
 
 	FILE * fp = fopen("mod_num.txt", "r");
+	if (!fp) {
+		ylog("Communities::loadMod openfile mod_num.txt failed");
+		return;
+	}
 	char buff[256];
 	fgets(buff, 256, fp);
 	int i = 0;
@@ -286,12 +364,19 @@ void Communities::loadMod(const char * fn, int level)
 		if (buff[i] == ':')
 			break;
 	}
+	ylog("Communities::loadMod:find: ok i=");
+	ylog(i);
+
 	int n;
 	sscanf(buff + i + 1, "%d", &n);
-	printf("%d\n", n);
+	printf("levels = %d\n", n);
+
+	fclose(fp);
 
 	for (i = n - 1; i > 0; --i)
 	{
+		ylog("Communities::loadMod level=");
+		ylog(i);
 		sprintf(buff, " mod.result -l %d > mod_layer.txt", i);
 		Graph::cmd(hierarchy + buff);
 
@@ -304,26 +389,57 @@ void Communities::loadMod(const char * fn, int level)
 	}
 	comms = layers[0];
 
+	ylog("Communities::loadMod end");
+
 }
 
 void Communities::loadCid(vector< Community > & comm, const char * fn)
 {
-	clear();
-	vector<int> cid(max_node_id + 1);
+	ylog("Communities::loadCid begin");
+	ifstream f1(fn, std::ios::in);
+	if (!f1) return;
+
+	string s;
+	getline(f1, s);
+
+	stringstream stream3;
+	stream3.str(s);
+	int node_id;
+	int comm_id;
+	stream3 >> node_id >> comm_id;
+	int last;
+	int maxnode = 0;
+
+	while (!f1.eof())
+	{
+
+		getline(f1, s);
+		stringstream stream2;
+		stream2 << s;
+		stream2 >> node_id >> comm_id;
+
+		maxnode = max(maxnode, node_id);
+		if (node_id == 0)
+			break;
+	}
+	f1.close();
+
+
+	comm.clear();
+	vector<int> cid(maxnode + 1);
 
 
 	ifstream f(fn, std::ios::in);
 
 
-	string s;
+
 	getline(f, s);
 
 	stringstream stream;
 	stream.str(s);
-	int node_id;
-	int comm_id;
+
 	stream >> node_id >> comm_id;
-	int last;
+
 
 	while (!f.eof())
 	{
@@ -340,8 +456,11 @@ void Communities::loadCid(vector< Community > & comm, const char * fn)
 			break;
 
 	}
+	f.close();
 	getCommsByCid(comm, cid);
 	removeSmallComm(comm, 2);
+
+	ylog("Communities::loadCid end");
 }
 
 vector<vector<int> > Communities::getCommsOfEveryid(int max_id) const
@@ -627,11 +746,13 @@ pair<double, double> Communities::JaccardF1Score(Communities & Detected, Communi
 	double P = P_pair.first;
 	double R = R_pair.first;
 	double Weighted = 2 * P * R / (P + R);
+	if (P + R == 0) Weighted = 0;
 	if (fp)
 		fprintf(fp, "%lf,%lf,%lf,", Weighted, P, R);
 	P = P_pair.second;
 	R = R_pair.second;
 	double UnWeighted = 2 * P * R / (P + R);
+	if (P + R == 0) UnWeighted = 0;
 	if (fp)
 		fprintf(fp, "%lf,%lf,%lf", UnWeighted, P, R);
 	
@@ -706,11 +827,13 @@ pair<double, double> Communities::F1Score(Communities & Detected, Communities & 
 	double P = P_pair.first;
 	double R = R_pair.first;
 	double Weighted = 2 * P * R / (P + R);
+	if (P + R == 0) Weighted = 0;
 	if (fp)
 		fprintf(fp, "%lf,%lf,%lf,", Weighted, P, R);
 	P = P_pair.second;
 	R = R_pair.second;
 	double UnWeighted = 2 * P * R / (P + R);
+	if (P + R == 0) UnWeighted = 0;
 	if (fp)
 		fprintf(fp, "%lf,%lf,%lf", UnWeighted, P, R);
 
@@ -776,6 +899,8 @@ double Communities::H_X_given_Y_norm(Communities & X, Communities & Y)
 
 void Communities::getCommsByCid(vector< Community > & comm, const vector<int> &cid)
 {
+	ylog("Communities::getCommsByCid begin");
+
 	comm.clear();
 	int max_comm_id = *std::max_element(cid.begin(), cid.end());
 	comm.resize(max_comm_id + 1);
@@ -784,10 +909,14 @@ void Communities::getCommsByCid(vector< Community > & comm, const vector<int> &c
 		comm[cid[i]].add(i);
 	}
 	removeSmallComm(comms, 1);
+
+	ylog("Communities::getCommsByCid end");
 }
 
 void Communities::removeSmallComm(vector< Community > & comm, int size)
 {
+	ylog("Communities::removeSmallComm begin");
+
 	sort(comm.begin(), comm.end());
 	for (auto it = comm.begin(); it != comm.end();)
 	{
@@ -796,6 +925,8 @@ void Communities::removeSmallComm(vector< Community > & comm, int size)
 		else
 			++it;    //指向下一个位置
 	}
+
+	ylog("Communities::removeSmallComm end");
 
 }
 
@@ -878,6 +1009,7 @@ Communities Communities::merge(Communities & other)
 }
 bool Communities::save(const char * fn)
 {
+	ylog("save begin");
 	sort(comms.begin(), comms.end());
 
 	FILE * fp = fopen(fn, "w");
@@ -911,6 +1043,8 @@ bool Communities::save(const char * fn)
 		}
 		fclose(fp);
 	}
+
+	ylog("save end");
 	
 	return true;
 }

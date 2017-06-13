@@ -8,6 +8,8 @@
 #include <sstream>
 #include <string>
 
+#include <cctype>
+
 using std::fstream;
 using std::string;
 using std::stringstream;
@@ -18,6 +20,7 @@ using std::unique;
 using std::swap;
 
 #include "save.h"
+#include "ylog.h"
 
 double Graph::getSumWeighted() const
 {
@@ -93,7 +96,7 @@ bool Graph::load(char const *graph_path)
 
 }
 
-bool Graph::save(char * graph_path)
+bool Graph::save(char const * graph_path)
 {
 	FILE *fp = fopen(graph_path, "w");
 	if (!fp)
@@ -248,6 +251,7 @@ Communities Graph::runCFinder(char * args)
 
 Communities Graph::runMod(char * args, int layer)
 {
+	ylog("runMod begin");
 	string convert = "\"" + config["Mod_dir"] + "convert\"";
 	string community = "\"" + config["Mod_dir"] + "community\"";
 	
@@ -269,10 +273,35 @@ Communities Graph::runMod(char * args, int layer)
 	Communities cs;
 	cs.setMaxNodeid(max_node_id);
 	cs.loadMod("mod.result");
+
+	ylog("runMod end");
 	return cs;
 	
 
 
+}
+
+Communities Graph::runAlg(string algname)
+{
+    //transform(algname.begin(), algname.end(), algname.begin(), tolower);
+
+	if (algname == "mod")
+		return runMod();
+	if (algname == "infomap")
+		return runInfomap();
+	if (algname == "lc")
+		return runLinkComm();
+	if (algname == "oslom")
+		return runOSLOM2();
+	if (algname == "gce")
+		return runGCE();
+	if (algname == "demon")
+		return runDemon();
+	if (algname == "cfinder")
+		return runCFinder();
+	
+
+	return Communities();
 }
 
 Graph Graph::remove(const Communities & cs)
@@ -679,6 +708,7 @@ Graph Graph::getSubGraph(set<int>& nodes)
 
 Graph Graph::getSubGraph(vector<int>& nodes)
 {
+	ylog("getSubGraph begin");
 	Graph res;
 	res.Weighted = this->Weighted;
 
@@ -695,6 +725,7 @@ Graph Graph::getSubGraph(vector<int>& nodes)
 			res.addEdge(edges[i].x, edges[i].y, edges[i].w);
 		}
 	}
+	ylog("getSubGraph end");
 	return res;
 }
 
