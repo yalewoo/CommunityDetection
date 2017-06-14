@@ -16,10 +16,12 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     ../../Communities.cpp \
     ../../Graph.cpp \
-    comm.cpp
+    comm.cpp \
+    ../../ylog.cpp
 
 HEADERS  += mainwindow.h \
-    comm.h
+    comm.h \
+    ../../ylog.h
 
 FORMS    += mainwindow.ui \
     comm.ui

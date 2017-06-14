@@ -125,8 +125,7 @@ public:
 	Communities runMod(char * args = NULL , int layer = -1);
 
 
-	//返回  去掉社团内部的所有边 之后的图
-	Graph remove(const Communities & cs);
+	
 
 	//打印图的相关信息，show_detail时会输出每一条边
 	//返回值保存了打印的输出
@@ -149,12 +148,20 @@ public:
 
 	friend class MainWindow;	//Qt使用
 
+
+	//下面对图的消边操作 均不影响原图，而是以返回值的形式返回
+
+	//只保留权值大于等于thres的边
 	Graph removeEdgeLessThan(double thres);
-
-
+	//返回  去掉社团内部的所有边 之后的图
+	Graph remove(const Communities & cs);
+	
+	//reduceWeight消边
 	Graph reduceWeight(Communities & cs);
+	//remove消边
 	Graph removeEdge(Communities & cs);
 
+	//返回只有nodes节点的子图
 	Graph getSubGraph(set<int> & nodes);
 	Graph getSubGraph(vector<int> & nodes);
 	Graph getSubGraph(Community & c) { return getSubGraph(c.nodes); }

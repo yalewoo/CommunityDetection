@@ -18,7 +18,6 @@ for fn in l:
     
     
     #绘图
-    
     plt.xlabel('iter')
     plt.ylabel(fn)
 

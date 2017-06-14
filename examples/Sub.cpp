@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
 	else
 		basealg = "mod";
 
-	int iterator_times = 3;
+	int iterator_times = 1;
 	if (argc >= 4)
 		iterator_times = atoi(argv[3]);
 
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
 		}
 		sprintf(buff, (outdir + "sub2_%d.gen").c_str(), iter_i);
 		printf((outdir + "sub2_%d.gen").c_str(), iter_i);
-		sub1.save(buff);
+		sub2.save(buff);
 
 		
 			Graph g1 = g.reduceWeight(layer2reduce);

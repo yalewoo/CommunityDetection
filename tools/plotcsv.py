@@ -5,15 +5,17 @@ import matplotlib.mlab as mlab
 import matplotlib.ticker as ticker
 
 #读取CSV数据为numpy record array记录
-r = mlab.csv2rec(r"F:\HICODE_SUB\syn\param\allmod.txt")
+
+
+r = mlab.csv2rec(r"F:\HICODE_SUB\syn\lab2\allmod.txt")
 n = r.dtype.names
 r.sort()
 
 
         
 #绘图
-fig = plt.figure()
-ax = fig.add_subplot(111)
+fig = plt.figure(figsize=(8, 10))
+ax = fig.add_subplot(111, )
 
 ax.set_xlabel('p12')
 ax.set_ylabel('modularity & nmi')
@@ -35,7 +37,7 @@ plt.legend(loc='upper center', bbox_to_anchor=(0.6,0.95),ncol=3,fancybox=True,sh
 plt.grid()
 
 #将图片保存到指定目录
-#plt.savefig(opath + fn + ".png")
+#plt.savefig(r"F:\HICODE_SUB\syn\param\allmodf1.png", dpi=100)
 
 
 plt.show()
