@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 	if (argc == 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/Local/Theme/Q_nips/0.001/";
+		graph_path = "F:/HICODE_SUB/syn/param/0.01/";
 
 	string basealg;
 	if (argc >= 3)
@@ -123,12 +123,14 @@ int main(int argc, char *argv[])
 	else
 		basealg = "mod";
 
-	int iterator_times = 5;
+	int iterator_times = 3;
 	if (argc >= 4)
 		iterator_times = atoi(argv[3]);
 
 	string outdir = "sub_" + basealg + "/";
 	Communities::mkdir(outdir);
+
+	string hicode_path = "hicode_" + basealg + "/";
 
 
 
@@ -136,11 +138,11 @@ int main(int argc, char *argv[])
 	g.load(graph_path + "graph");
 
 	Communities layer1, layer1reduce;
-	layer1.load(graph_path + "hicode/maxmodlayer1.gen");
-	layer1reduce.load(graph_path + "hicode/maxmodlayer1.gen");
+	layer1.load(graph_path + hicode_path + "maxmodlayer1.gen");
+	layer1reduce.load(graph_path + hicode_path + "maxmodlayer1.gen");
 	Communities layer2, layer2reduce;
-	layer2.load(graph_path + "hicode/maxmodlayer2.gen");
-	layer2reduce.load(graph_path + "hicode/maxmodlayer2.gen");
+	layer2.load(graph_path + hicode_path + "maxmodlayer2.gen");
+	layer2reduce.load(graph_path + hicode_path + "maxmodlayer2.gen");
 	
 	char buff[256];
 

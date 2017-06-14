@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 	if (argc >= 3)
 		basealg = argv[2];
 	else
-		basealg = "infomap";
+		basealg = "mod";
 
 	int iterator_times = 20;
 	if (argc >= 4)

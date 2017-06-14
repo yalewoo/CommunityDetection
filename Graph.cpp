@@ -45,6 +45,7 @@ bool Graph::load(char const *graph_path)
 	//先读一下图文件 看是否第一行是结点个数 是有权还是无权
 	bool first_line_is_node_num = false;
 	ifstream f(graph_path, std::ios::in);
+	if (!f) return false;
 	string s;
 	getline(f, s);
 	stringstream stream;

@@ -9,6 +9,9 @@ using std::endl;
 
 map<string, string> Graph::config;
 
+string hicode_path;
+string sub_path;
+
 
 string getName(string path, int layer, int iter)
 {
@@ -16,7 +19,7 @@ string getName(string path, int layer, int iter)
 	while (true)
 	{
 		char buff[256];
-		sprintf(buff, "hicode/layer%d_%d.txt_layer%d", layer, iter, i);
+		sprintf(buff, (hicode_path + "layer%d_%d.txt_layer%d").c_str(), layer, iter, i);
 		string p = path + buff;
 		FILE * fp = fopen(p.c_str(), "r");
 		if (!fp)
@@ -27,9 +30,9 @@ string getName(string path, int layer, int iter)
 	--i;
 	char buf[256];
 	if (i == 0)
-		sprintf(buf, "hicode/layer%d_%d.txt", layer, iter);
+		sprintf(buf, (hicode_path + "layer%d_%d.txt").c_str(), layer, iter);
 	else
-		sprintf(buf, "hicode/layer%d_%d.txt_layer%d", layer, iter, i);
+		sprintf(buf, (hicode_path + "layer%d_%d.txt_layer%d").c_str(), layer, iter, i);
 	string s = buf;
 	return s;
 }
@@ -39,7 +42,7 @@ string getName2(string path, int layer)
 	while (true)
 	{
 		char buff[256];
-		sprintf(buff, "hicode/maxmodlayer%d.gen_layer%d", layer, i);
+		sprintf(buff, (hicode_path + "maxmodlayer%d.gen_layer%d").c_str(), layer, i);
 		string p = path + buff;
 		FILE * fp = fopen(p.c_str(), "r");
 		if (!fp)
@@ -50,9 +53,9 @@ string getName2(string path, int layer)
 	--i;
 	char buf[256];
 	if (i == 0)
-		sprintf(buf, "hicode/maxmodlayer%d.gen", layer);
+		sprintf(buf, (hicode_path + "maxmodlayer%d.gen").c_str(), layer);
 	else
-		sprintf(buf, "hicode/maxmodlayer%d.gen_layer%d", layer, i);
+		sprintf(buf, (hicode_path + "maxmodlayer%d.gen_layer%d").c_str(), layer, i);
 	string s = buf;
 	return s;
 }
@@ -110,10 +113,19 @@ int main(int argc, char *argv[])
 	Communities truth1_1, truth1_2, truth2_1, truth2_2;
 
 	string graph_path;
-	if (argc == 2)
+	if (argc >= 2)
 		graph_path = argv[1];
 	else
 		graph_path = "F:/HICODE_SUB/syn/3000_ori/";
+
+	string basealg;
+	if (argc >= 3)
+		basealg = argv[2];
+	else
+		basealg = "mod";
+
+	hicode_path = "hicode_" + basealg + "/";
+	sub_path = "sub_" + basealg + "/";
 
 	//Communities::mkdir("result/");
 
@@ -132,23 +144,23 @@ int main(int argc, char *argv[])
 
 
 	Communities mod0, mod2, l1himod0, l1himod2, l1himod0sub;
-	mod0.load(graph_path + "hicode/layer1_0.txt");
+	mod0.load(graph_path + hicode_path + "layer1_0.txt");
 	string l1mod2path = getName(graph_path, 1, 0);
 	mod2.load(graph_path + l1mod2path);
-	l1himod0.load(graph_path + "hicode/maxmodlayer1.gen");
+	l1himod0.load(graph_path + hicode_path + "maxmodlayer1.gen");
 	string l1himod2path = getName2(graph_path, 1);
 	l1himod2.load(graph_path + l1himod2path);
-	l1himod0sub.load(graph_path + "sub/sub1.gen");
+	l1himod0sub.load(graph_path + sub_path + "sub1_1.gen");
 
 	Communities l2mod0, l2mod2, l2himod0, l2himod2, l2himod0sub, l2himod0sub_reducelayer1;
-	l2mod0.load(graph_path + "hicode/layer2_0.txt");
+	l2mod0.load(graph_path + hicode_path + "layer2_0.txt");
 	string l2mod2path = getName(graph_path, 2, 0);
 	l2mod2.load(graph_path + l2mod2path);
-	l2himod0.load(graph_path + "hicode/maxmodlayer2.gen");
+	l2himod0.load(graph_path + hicode_path + "maxmodlayer2.gen");
 	string l2himod2path = getName2(graph_path, 2);
 	l2himod2.load(graph_path + l2himod2path);
-	l2himod0sub.load(graph_path + "sub/sub2.gen");
-	l2himod0sub_reducelayer1.load(graph_path + "sub/sub2_reducelayer1.gen");
+	l2himod0sub.load(graph_path + sub_path + "sub2_1.gen");
+	l2himod0sub_reducelayer1.load(graph_path + sub_path + "sub2_reduce_1.gen");
 
 
 	string outdir = "f1/";
