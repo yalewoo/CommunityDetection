@@ -566,6 +566,21 @@ Graph Graph::removeEdgeLessThan(double thres)
 	return res;
 }
 
+Graph Graph::reduce(Communities & cs, string & method)
+{
+	string m = method;
+	for (size_t i = 0; i < m.size(); ++i)
+	{
+		m[i] = tolower(m[i]);
+	}
+
+	if (m == "reduceweight")
+		return reduceWeight(cs);
+	if (m == "remove")
+		return removeEdge(cs);
+	return *this;
+}
+
 Graph Graph::reduceWeight(Communities & cs)
 {
 

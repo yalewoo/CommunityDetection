@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include "../Graph.h"
-
+#include "../Config.h"
 
 
 using std::cout;
@@ -9,13 +9,13 @@ using std::endl;
 
 map<string, string> Graph::config;
 
-
-void showVector(vector<int> & v, string name = "vector", int id = 0)
+template <typename T>
+void showVector(vector<T> & v, string name = "vector", int id = 0)
 {
 	cout << name << " " << id << " (size=" << v.size() << ") : " << endl;
-	//for (size_t i = 0; i < v.size(); ++i)
-	//cout << v[i] << " ";
-	//cout << endl;
+	for (size_t i = 0; i < v.size(); ++i)
+		cout << v[i] << "\n";
+	cout << endl;
 }
 
 
@@ -110,35 +110,17 @@ int main(int argc, char *argv[])
 {
 	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
 
+	Config con;
+	con.updateConfig("F:/HICODE_SUB/syn/testGraph/hicode.config");
 
-	string graph_path;
-	if (argc == 2)
-		graph_path = argv[1];
-	else
-		graph_path = "F:/Local/Theme/Q_nips/0.001/";
+	cout << con["truth_path"] << endl;
+	cout << con["truth_path"] << endl;
+	cout << con["truth_path"] << endl;
 
-	string basealg;
-	if (argc >= 3)
-		basealg = argv[2];
-	else
-		basealg = "mod";
+	cout << con["truth_path"].empty() << endl;
 
-	int iterator_times = 5;
-	if (argc >= 4)
-		iterator_times = atoi(argv[3]);
-
-	string outdir = "sub_" + basealg + "/";
-	Communities::mkdir(outdir);
-
-
-
-	Graph g;
-	g.load(graph_path + "graph");
-
+	showVector(con.getValue("base_alg"));
 	
-	Communities cs;
-	cs.loadMod("mod.result");
-	cs.print();
 
 	printf("------------\ndone\n");
 	return 0;

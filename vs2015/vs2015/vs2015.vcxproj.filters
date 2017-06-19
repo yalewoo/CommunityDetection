@@ -24,7 +24,10 @@
     <ClCompile Include="..\..\ylog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\examples\statistics_sub.cpp">
+    <ClCompile Include="..\..\Config.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\HICODE.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -42,6 +45,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ylog.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Config.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
