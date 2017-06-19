@@ -24,7 +24,7 @@
     <ClCompile Include="..\..\ylog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\examples\Sub.cpp">
+    <ClCompile Include="..\..\examples\statistics_sub.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -39,6 +39,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->comm1->info = ui->info;
     ui->comm2->info = ui->info;
 
+    ui->comm1->cinfo = ui->community_info;
+    ui->comm2->cinfo = ui->community_info;
+
     ui->comm1->w2 = ui->comm2;
     ui->comm2->w2 = ui->comm1;
 

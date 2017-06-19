@@ -141,8 +141,10 @@ public:
 	//去掉结点数小于size的社团
 	void removeSmallComm(vector< Community > & comm, int size);	
 
-
+	//打印社团信息 show_detail表示显示每个社团结点个数 show_nodes表示显示每个社团内的所有结点
 	string print(bool show_detail = false,  bool show_nodes = false);
+
+
 	bool save(const char * fn);
 	bool save(string fn);
 	int size() const { return comms.size(); }
@@ -154,10 +156,16 @@ public:
 	//所有社团结点数之和
 	int sizeOfCommsSum() const;
 
+
+	//从文件加载社团
+	//大于2个结点的社团才会被保留
+
+	//普通文件加载 每行一个社团
 	void load(string fn) { load(fn.c_str()); }
 	void load(const char * fn);
+
+
 	void loadInfomap(const char * fn);
-	void loadInfomapHelp();
 	void loadLinkComm(const char * fn);
 	void loadOSLOM2(const char * fn);
 	void loadGCE(const char * fn);

@@ -24,6 +24,7 @@ public:
     Graph * pg;
     Communities * comm2;
     QLabel *info;
+    QLabel * cinfo;
 
     Comm * w2;
 
@@ -32,6 +33,9 @@ public:
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
+
+private slots:
+    void on_t_cellClicked(int row, int column);
 
 private:
     Ui::Comm *ui;

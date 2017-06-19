@@ -112,10 +112,10 @@ int main(int argc, char *argv[])
 
 
 	string graph_path;
-	if (argc == 2)
+	if (argc >= 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/HICODE_SUB/syn/param/0.01/";
+		graph_path = "F:/Local/Theme/Q_nips/0.001/";
 
 	string basealg;
 	if (argc >= 3)

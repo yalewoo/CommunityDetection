@@ -73,4 +73,43 @@ void Comm::dropEvent(QDropEvent *event)
 
     tmp.sprintf("%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf", nmi, f1, p, r, jf1, jp, jr);
     *cliq = tmp;
+
+
+
+    QTableWidget * tableWidget = ui->t;
+    tableWidget->clearContents();
+
+    tableWidget->setRowCount(comm1.size());     //设置行数为10
+    tableWidget->setColumnCount(3);   //设置列数为5
+    QStringList header;
+    header<<"id"<<"size"<<"nodes";
+    tableWidget->setHorizontalHeaderLabels(header);
+
+    for (int i = 0; i < comm1.size(); ++i)
+    {
+        tableWidget->setItem(i,0,new QTableWidgetItem(QString::number(i)));
+        tableWidget->setItem(i,1,new QTableWidgetItem(QString::number(comm1.comms[i].size())));
+        QString qnodes;
+        for (int j = 0; j < comm1.comms[i].nodes.size(); ++j)
+        {
+            qnodes += QString::number(comm1.comms[i].nodes[j]) + " ";
+        }
+        tableWidget->setItem(i,2,new QTableWidgetItem(qnodes));
+    }
+
+    tableWidget->show();
+}
+
+void Comm::on_t_cellClicked(int row, int column)
+{
+    Community & c = comm1.comms[row];
+    pair<double, int> res = c.JaccardPrecision(*comm2, 0);
+    double p = res.first;
+    int index = res.second;
+
+    QString s;
+    s.sprintf("Jaccard = %lf ", p);
+    cinfo->setText(s);
+
+    w2->ui->t->selectRow(index);
 }

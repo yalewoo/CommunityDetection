@@ -39,10 +39,45 @@ int main(int argc, char *argv[])
 	ftime = fopen("baseline/time.txt", "a");
 
 	string graph_path;
-	if (argc == 2)
+	if (argc >= 2)
 		graph_path = argv[1];
 	else
 		graph_path = "F:/HICODE_SUB/syn/3000/";
+
+
+	bool mod = false, infomap = false;
+	bool demon = false, lc = false;
+	bool oslom = false, gce = false, cfinder = false;
+	for (int i = 2; i < argc; ++i)
+	{
+		string algname = argv[i];
+		if (algname == "mod")
+			mod = true;
+		if (algname == "infomap")
+			infomap = true;
+		if (algname == "lc")
+			lc = true;
+		if (algname == "oslom")
+			oslom = true;
+		if (algname == "gce")
+			gce = true;
+		if (algname == "demon")
+			demon = true;
+		if (algname == "cfinder")
+			cfinder = true;
+		if (algname == "all")
+		{
+			mod = true;
+			infomap = true;
+			lc = true;
+			oslom = true;
+			gce = true;
+			demon = true;
+			cfinder = true;
+
+			break;
+		}
+	}
 
 	Graph g;
 	//Graph g;
@@ -59,75 +94,98 @@ int main(int argc, char *argv[])
 
 
 	fclose(ftime);
-	ftime = fopen("baseline/time.txt", "a");
+	
 
 	//string dir = argv[2];
 	
 
-	//Infomap
-	start = time(NULL);
-	g.runInfomap().save(dir + "Infomap.gen");
-	stop = time(NULL);
-	fprintf(ftime, "Infomap time: %ld\n", stop - start);
-	fclose(ftime);
-	ftime = fopen("baseline/time.txt", "a");
-
 	//Mod
-	start = time(NULL);
-	g.runMod().save(dir + "Mod.gen");
-	stop = time(NULL);
-	fprintf(ftime, "Mod time: %ld\n", stop - start);
-	fclose(ftime);
+	if (mod)
+	{
+		ftime = fopen("baseline/time.txt", "a");
+		start = time(NULL);
+		g.runMod().save(dir + "Mod.gen");
+		stop = time(NULL);
+		fprintf(ftime, "Mod time: %ld\n", stop - start);
+		fclose(ftime);
+	}
 
-	//return 0;
+	//Infomap
+	if (infomap)
+	{
+		ftime = fopen("baseline/time.txt", "a");
+		start = time(NULL);
+		g.runInfomap().save(dir + "Infomap.gen");
+		stop = time(NULL);
+		fprintf(ftime, "Infomap time: %ld\n", stop - start);
+		fclose(ftime);
+
+	}
+
+
 	//Demon
-	ftime = fopen("baseline/time.txt", "a");
-	start = time(NULL);
-	g.runDemon().save(dir + "Demon.gen");
-	stop = time(NULL);
-	fprintf(ftime, "Demon time: %ld\n", stop - start);
-	fclose(ftime);
-	ftime = fopen("baseline/time.txt", "a");
+	if (demon)
+	{
+		ftime = fopen("baseline/time.txt", "a");
+		start = time(NULL);
+		g.runDemon().save(dir + "Demon.gen");
+		stop = time(NULL);
+		fprintf(ftime, "Demon time: %ld\n", stop - start);
+		fclose(ftime);
+	}
+	
 
 	//LC
-	start = time(NULL);
-	g.runLinkComm().save(dir + "LC.gen");
-	stop = time(NULL);
-	fprintf(ftime, "LC time: %ld\n", stop - start);
-	fclose(ftime);
-	ftime = fopen("baseline/time.txt", "a");
+	if (lc)
+	{
+		ftime = fopen("baseline/time.txt", "a");
+		start = time(NULL);
+		g.runLinkComm().save(dir + "LC.gen");
+		stop = time(NULL);
+		fprintf(ftime, "LC time: %ld\n", stop - start);
+		fclose(ftime);
+	}
+
 
 
 	//return 0;
 	//OSLOM
-	start = time(NULL);
-	g.runOSLOM2().save(dir + "OSLOM.gen");
-	stop = time(NULL);
-	fprintf(ftime, "OSLOM time: %ld\n", stop - start);
-	fclose(ftime);
-	ftime = fopen("baseline/time.txt", "a");
+	if (oslom)
+	{	
+		ftime = fopen("baseline/time.txt", "a");
+		start = time(NULL);
+		g.runOSLOM2().save(dir + "OSLOM.gen");
+		stop = time(NULL);
+		fprintf(ftime, "OSLOM time: %ld\n", stop - start);
+		fclose(ftime);
+	}
+	
 
 	//GCE
-	start = time(NULL);
-	g.runGCE().save(dir + "GCE.gen");
-	stop = time(NULL);
-	fprintf(ftime, "GCE time: %ld\n", stop - start);
-	fclose(ftime);
-	ftime = fopen("baseline/time.txt", "a");
+	if (gce)
+	{
+		ftime = fopen("baseline/time.txt", "a");
+		start = time(NULL);
+		g.runGCE().save(dir + "GCE.gen");
+		stop = time(NULL);
+		fprintf(ftime, "GCE time: %ld\n", stop - start);
+		fclose(ftime);
+	}
+
 
 
 
 	//CFinder
-	/*start = time(NULL);
-	g.runCFinder().save(dir + "CFinder.gen");
-	stop = time(NULL);
-	fprintf(ftime, "CFinder time: %ld\n", stop - start);
-	fclose(ftime);
-	ftime = fopen("baseline/time.txt", "a");
-	*/
-	
+	if (cfinder)
+	{
+		ftime = fopen("baseline/time.txt", "a");
+		start = time(NULL);
+		g.runCFinder().save(dir + "CFinder.gen");
+		stop = time(NULL);
+		fprintf(ftime, "CFinder time: %ld\n", stop - start);
+		fclose(ftime);
+	}
 
-	fclose(ftime);
 
 
 
