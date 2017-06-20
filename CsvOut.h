@@ -4,6 +4,10 @@ using std::vector;
 using std::string;
 
 #include <cstdio>
+#include "Graph.h"
+
+#include "os.h"
+
 
 struct Csv2rec {
 	vector<string> header;
@@ -60,6 +64,14 @@ struct Csv2rec {
 
 		fclose(fp);
 
+		return true;
+	}
+
+	bool savePNG(string & fn, string & out)
+	{
+		string python = Graph::config["python3_exe"];
+		string py = python + " " + Graph::config["py_plot_csv"] + " ";
+		os::cmd(py + fn + " " + out);
 		return true;
 	}
 };

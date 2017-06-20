@@ -1,3 +1,6 @@
+#ifndef OS_H
+#define OS_H
+
 #include <cstdlib>
 
 #define SHOW_CMD true
@@ -57,3 +60,8 @@ struct os {
 #endif
 
 };
+
+
+
+
+#endif

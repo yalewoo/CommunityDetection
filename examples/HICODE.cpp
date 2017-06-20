@@ -5,8 +5,11 @@
 #include "../CsvOut.h"
 #include "../os.h"
 
+#include <numeric>
+
 using std::cout;
 using std::endl;
+using std::accumulate;
 
 map<string, string> Graph::config;
 
@@ -18,11 +21,6 @@ void showVector(vector<T> & v, string name = "vector", int id = 0)
 	//cout << v[i] << " ";
 	//cout << endl;
 }
-
-
-
-
-Communities layer1, layer2;
 
 
 
@@ -42,7 +40,11 @@ int main(int argc, char *argv[])
 	if (argc >= 2)
 		graph_path = argv[1];
 	else
+	{
 		graph_path = "F:/HICODE_SUB/syn/testGraph/";
+		graph_path = "F:/Local/Theme/Q_kos/0.001/";
+	}
+		
 
 	Graph g;
 	g.load(graph_path + "graph");
@@ -106,10 +108,10 @@ int main(int argc, char *argv[])
 				layer.push_back(g2.runAlg(basealg));
 				g2 = g2.reduce(layer[i], reduce_method);
 
-				string path = outdir;
+				string path;
 				char buff[256];
 				sprintf(buff, "layer%d_0.gen", i + 1);
-				path = path + buff;
+				path = outdir + buff;
 				layer[i].save(path);
 
 				if (hicode_config["log_modularity"] == "true")
@@ -118,12 +120,33 @@ int main(int argc, char *argv[])
 					mods_reduce_graph[0][i] = layer[i].calcModularity(g3);
 				}
 
+				//保存消边后的图
+				if (hicode_config["log_save_reduce_graph"] == "true")
+				{
+					sprintf(buff, "graph%d_0.graph", i + 1);
+					path = outdir + buff;
+					g3.save(path);
+				}
+
 				for (size_t t = 0; t < truth.size(); ++t)
 				{
 					nmi_truth[t][0][i] = truth[t].calcNMI(layer[i]);
 				}
 
 				
+			}
+
+			//保存使mod最大的迭代结果
+			int mod_origin_graph_iterator = 0, mod_layer_graph_iterator = 0;
+			double mod_origin_graph, mod_layer_graph;
+			vector<Communities> layer_mod_origin_graph;
+			vector<Communities> layer_mod_layer_graph;
+			if (hicode_config["log_modularity"] == "true")
+			{
+				mod_origin_graph = accumulate(mods_ori_graph[0].begin(), mods_ori_graph[0].end(), 0.0);
+				mod_layer_graph = accumulate(mods_reduce_graph[0].begin(), mods_reduce_graph[0].end(), 0.0);
+				layer_mod_origin_graph = layer;
+				layer_mod_layer_graph = layer;
 			}
 
 			layer_last = layer;
@@ -159,6 +182,16 @@ int main(int argc, char *argv[])
 					}
 					layer.push_back(g2.runAlg(basealg));
 
+					//保存消边后的图
+					if (hicode_config["log_save_reduce_graph"] == "true")
+					{
+						char buff[256];
+						sprintf(buff, "graph%d_%d.graph", i + 1, iterator+1);
+						string path = outdir + buff;
+						g2.save(path);
+					}
+
+
 					string path = outdir;
 					char buff[256];
 					sprintf(buff, "layer%d_%d.gen", i + 1, iterator+1);
@@ -181,6 +214,27 @@ int main(int argc, char *argv[])
 						nmi_truth[t][iterator+1][i] = truth[t].calcNMI(layer[i]);
 					}
 				}
+
+				//保存maxOrigin和maxLayer
+				if (hicode_config["log_modularity"] == "true")
+				{
+					double new_mod_origin_graph = accumulate(mods_ori_graph[iterator + 1].begin(), mods_ori_graph[iterator + 1].end(), 0.0);
+					double new_mod_layer_graph = accumulate(mods_reduce_graph[iterator + 1].begin(), mods_reduce_graph[iterator + 1].end(), 0.0);
+					if (new_mod_origin_graph > mod_origin_graph)
+					{
+						mod_origin_graph = new_mod_origin_graph;
+						layer_mod_origin_graph = layer;
+						mod_origin_graph_iterator = iterator+1;
+					}
+					if (new_mod_layer_graph > mod_layer_graph)
+					{
+						mod_layer_graph = new_mod_layer_graph;
+						layer_mod_layer_graph = layer;
+						mod_layer_graph_iterator = iterator + 1;
+					}
+				}
+
+
 				bool not_change = true;
 				for (int i = 0; i < layer_num; ++i)
 				{
@@ -200,24 +254,159 @@ int main(int argc, char *argv[])
 				layer.clear();
 			}
 
+			
+
 
 			//save csv
 			if (hicode_config["log_modularity"] == "true")
 			{
 				Csv2rec csv(layer_num, mods_ori_graph);
 				csv.save(outdir + "mods_ori_graph.txt");
+				csv.savePNG(outdir + "mods_ori_graph.txt", outdir + "mods_ori_graph.png");
 				csv.setData(mods_reduce_graph);
 				csv.save(outdir + "mods_reduce_graph.txt");
+				csv.savePNG(outdir + "mods_reduce_graph.txt", outdir + "mods_reduce_graph.png");
 			}
 			if (hicode_config["log_nmi_last"] == "true")
 			{
 				Csv2rec csv(layer_num, nmi_last);
 				csv.save(outdir + "nmi_last.txt");
+				csv.savePNG(outdir + "nmi_last.txt", outdir + "nmi_last.png");
 			}
 			for (size_t t = 0; t < truth.size(); ++t)
 			{
 				Csv2rec csv(layer_num, nmi_truth[t]);
 				csv.save(outdir + struth[t] + ".txt");
+				csv.savePNG(outdir + struth[t] + ".txt", outdir + struth[t] + ".png");
+			}
+
+
+			//保存maxOrigin和maxLayer
+			if (hicode_config["log_modularity"] == "true")
+			{
+				for (int i = 0; i < layer_num; ++i)
+				{
+					string path;
+					char buff[256];
+					sprintf(buff, "maxOriginlayer%d.gen", i + 1);
+					path = outdir + buff;
+					layer_mod_origin_graph[i].save(path);
+
+					sprintf(buff, "maxLayerlayer%d.gen", i + 1);
+					path = outdir + buff;
+					layer_mod_layer_graph[i].save(path);
+				}
+
+				FILE * fp = fopen((outdir + "maxmod.txt").c_str(), "w");
+				fprintf(fp, "maxOrigin: %d\n", mod_origin_graph_iterator);
+				fprintf(fp, "maxLayer: %d\n", mod_layer_graph_iterator);
+				fclose(fp);
+
+
+				//递归抓子图找社团
+				if (hicode_config["use_r_sub"] == "true")
+				{
+					
+					string layer_outdir = "hicode_" + basealg + "_" + reduce_method + "_"
+						+ nlayer + "layers_layer_sub" + "/";
+
+
+					string s_sub_times = hicode_config["sub_times"];
+					int sub_times = atoi(s_sub_times.c_str());
+					int sub_nodes_number_thres = atoi(hicode_config["sub_nodes_number_thres"].c_str());
+
+					if (hicode_config["sub_maxori"] == "true")
+					{
+						string outdir = "hicode_" + basealg + "_" + reduce_method + "_"
+							+ nlayer + "layers_ori_sub" + "/";
+						os::mkdir(outdir);
+
+						vector<Communities> subl = layer_mod_origin_graph;
+						vector<Communities> subl_new;
+
+						for (int iter_i = 1; iter_i <= sub_times; ++iter_i)
+						{
+							subl_new.clear();
+							for (int li = 0; li < layer_num; ++li)
+							{
+								Communities & layer1 = subl[li];
+								Communities sub;
+								for (size_t i = 0; i < layer1.size(); ++i)
+								{
+									
+									if (layer1.comms[i].size() > sub_nodes_number_thres)
+									{
+										Graph subg = g.getSubGraph(layer1.comms[i]);
+										Communities subcs = subg.runAlg(basealg);
+										sub.addCommunities(subcs);
+									}
+									else
+									{
+										Communities subcs;
+										subcs.addCommunity(layer1.comms[i]);
+										sub.addCommunities(subcs);
+									}
+
+								}
+								char buff[256];
+								sprintf(buff, (outdir + "sub%d_%d.gen").c_str(),li+1, iter_i);
+								printf((outdir + "sub%d_%d.gen").c_str(), li+1,iter_i);
+								sub.save(buff);
+								subl_new.push_back(sub);
+							}
+							subl = subl_new;
+						}
+
+						os::moveDir(outdir, graph_path);
+					}
+					if (hicode_config["sub_maxlayer"] == "true")
+					{
+						string outdir = "hicode_" + basealg + "_" + reduce_method + "_"
+							+ nlayer + "layers_layer_sub" + "/";
+						os::mkdir(outdir);
+
+						vector<Communities> subl = layer_mod_layer_graph;
+						vector<Communities> subl_new;
+
+						for (int iter_i = 1; iter_i <= sub_times; ++iter_i)
+						{
+							subl_new.clear();
+							for (int li = 0; li < layer_num; ++li)
+							{
+								Communities & layer1 = subl[li];
+								Communities sub;
+								for (size_t i = 0; i < layer1.size(); ++i)
+								{
+
+									if (layer1.comms[i].size() > sub_nodes_number_thres)
+									{
+										Graph subg = g.getSubGraph(layer1.comms[i]);
+										Communities subcs = subg.runAlg(basealg);
+										sub.addCommunities(subcs);
+									}
+									else
+									{
+										Communities subcs;
+										subcs.addCommunity(layer1.comms[i]);
+										sub.addCommunities(subcs);
+									}
+
+								}
+								char buff[256];
+								sprintf(buff, (outdir + "sub%d_%d.gen").c_str(), li+1, iter_i);
+								printf((outdir + "sub%d_%d.gen").c_str(), li+1, iter_i);
+								sub.save(buff);
+								subl_new.push_back(sub);
+							}
+							subl = subl_new;
+						}
+						os::moveDir(outdir, graph_path);
+					}
+					
+					
+
+				}
+
 			}
 
 

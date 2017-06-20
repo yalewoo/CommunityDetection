@@ -145,7 +145,7 @@ public:
 	vector<double> getCommOutEdgeNum(const Communities & cs) const;	//返回社团连接其他社团的边数
 
 	friend class Communities;
-
+	friend class Csv2rec;
 	friend class MainWindow;	//Qt使用
 
 

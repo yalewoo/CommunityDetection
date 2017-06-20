@@ -23,3 +23,7 @@ Demon_launch=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/demon_py/
 #Cfinder
 Cfinder_exe="F:/Project/CommunityDetection/CommunityDetectionAlgorithm/CFinder-2.0.6/CFinder_commandline64"
 Cfinder_licence=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/CFinder-2.0.6/licence.txt
+
+#python_plot_csv
+python3_exe=C:\"Program Files"\Anaconda3\python.exe
+py_plot_csv="F:\Project\CommunityDetection\tools\show_hicode_tendency_cmd.py"
