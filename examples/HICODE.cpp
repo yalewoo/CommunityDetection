@@ -2,7 +2,8 @@
 #include <iostream>
 #include "../Graph.h"
 #include "../Config.h"
-
+#include "../CsvOut.h"
+#include "../os.h"
 
 using std::cout;
 using std::endl;
@@ -23,69 +24,15 @@ void showVector(vector<T> & v, string name = "vector", int id = 0)
 
 Communities layer1, layer2;
 
-struct Csv2rec {
-	vector<string> header;
-	vector<vector<double> > data;
 
-	Csv2rec(int n, vector<vector<double> > &data2)
-	{
-		setHeader(n);
-		setData(data2);
-	}
-	void setHeader(int nLayer)
-	{
-		header.push_back("x");
-		for (int i = 1; i <= nLayer; ++i)
-		{
-			char buff[256];
-			sprintf(buff, "layer%d", i);
-			header.push_back(buff);
-		}
-	}
-	void setData(vector<vector<double> > & d)
-	{
-		data = d;
-	}
-	bool save(string fn)
-	{
-		return save(fn.c_str());
-	}
-	bool save(const char * fn)
-	{
-		FILE * fp = fopen(fn, "w");
-		if (!fp) return false;
-
-
-
-		size_t i;
-		fprintf(fp, "%s", header[0].c_str());
-		for (i = 1; i < header.size(); ++i)
-		{
-			fprintf(fp, ",%s", header[i].c_str());
-		}
-		fprintf(fp, "\n");
-
-
-		for (i = 0; i < data.size(); ++i)
-		{
-			fprintf(fp, "%d", i);
-			for (size_t j = 0; j < data[i].size(); ++j)
-			{
-				fprintf(fp, ",%lf", data[i][j]);
-			}
-			fprintf(fp, "\n");
-		}
-
-		fclose(fp);
-
-		return true;
-	}
-};
 
 
 
 int main(int argc, char *argv[])
 {
+
+
+
 	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
 
 	Communities truth1, truth2;
@@ -131,7 +78,8 @@ int main(int argc, char *argv[])
 
 			string outdir = "hicode_" + basealg + "_" + reduce_method + "_"
 				+ nlayer + "layers" + "/";
-			Communities::mkdir(outdir);
+
+			os::mkdir(outdir);
 
 			vector<Communities> layer;
 			vector<Communities> layer_last;
@@ -271,6 +219,10 @@ int main(int argc, char *argv[])
 				Csv2rec csv(layer_num, nmi_truth[t]);
 				csv.save(outdir + struth[t] + ".txt");
 			}
+
+
+
+			os::moveDir(outdir, graph_path);
 
 
 		}
