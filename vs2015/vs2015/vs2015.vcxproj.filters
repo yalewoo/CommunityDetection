@@ -50,7 +50,7 @@
     <ClCompile Include="..\..\ylog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\examples\HICODE.cpp">
+    <ClCompile Include="..\..\examples\statistics_all.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
