@@ -152,7 +152,7 @@ void Communities::loadInfomap(const char * fn)
 		layers[level].push_back(c);
 		c.clear();
 
-		removeSmallComm(comms, 2);
+		removeSmallComm(layers[level], 2);
 
 		fclose(fp);
 

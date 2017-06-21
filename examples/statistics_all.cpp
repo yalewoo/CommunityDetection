@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	if (argc >= 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/Local/Theme/Q_kos/0.001/";
+		graph_path = "F:/Local/Theme/Q_enron/0.001/";
 
 	FILE * fp = fopen((graph_path + "detected_files.txt").c_str(), "r");
 	if (!fp)

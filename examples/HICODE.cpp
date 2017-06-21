@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		graph_path = "F:/HICODE_SUB/syn/testGraph/";
-		graph_path = "F:/Local/Theme/Q_kos/0.001/";
+		graph_path = "F:/Local/Theme/Q_nips/0.001/";
 	}
 		
 
