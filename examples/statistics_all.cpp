@@ -45,16 +45,11 @@ int main(int argc, char *argv[])
 {
 
 
-	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
-
-
-	Communities truth1_1, truth1_2, truth2_1, truth2_2;
-
 	string graph_path;
 	if (argc >= 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/Local/Theme/Q_enron/0.001/";
+		graph_path = "F:/HICODE_SUB/facebook/Rice31/";
 
 	FILE * fp = fopen((graph_path + "detected_files.txt").c_str(), "r");
 	if (!fp)
@@ -102,11 +97,21 @@ int main(int argc, char *argv[])
 	string outdir = "statistic/";
 	os::mkdir(outdir);
 	string outdir2 = "f1/";
-	Communities::mkdir(outdir2);
+	os::mkdir(outdir2);
 
 	for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
 	{
-		fp = fopen((outdir + truth_path[truth_i] + ".csv").c_str(), "w");
+		string tpath = truth_path[truth_i];
+		for (int i = 0; i < tpath.size(); ++i)
+		{
+			if (tpath[i] == '\\' || tpath[i] == '/')
+				tpath[i] = '_';
+		}
+		fp = fopen((outdir + tpath + ".csv").c_str(), "w");
+		if (fp == 0)
+		{
+			printf("open %s failed\n", (outdir + tpath + ".csv").c_str());
+		}
 
 		fprintf(fp, "Detected,NMI,F1,P,R,JF1,JP,JR\n");
 

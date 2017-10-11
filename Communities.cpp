@@ -841,16 +841,7 @@ pair<double, double> Communities::F1Score(Communities & Detected, Communities & 
 	return make_pair(Weighted, UnWeighted);
 }
 
-bool Communities::mkdir(string dir)
-{
-	string dir_cmd = dir;
-	for (size_t i = 0; i < dir_cmd.size(); ++i)
-	{
-		if (dir_cmd[i] == '/') dir_cmd[i] = '\\';
-	}
-	Graph::cmd("mkdir " + dir_cmd);
-	return true;
-}
+
 
 /*H(Xi|Y) = min { H(Xi|Yj) ,for all j }
 if [ h(p11) + h(p00) > h(p01) + h(p10) ] never occur, H(Xi|Y) = H(Xi)

@@ -210,7 +210,7 @@ public:
 	static pair<double, double> Precision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
 	static pair<double, double> F1Score(Communities & Detected, Communities & truth, string dir);
 
-	static bool mkdir(string dir);
+
 };
 
 

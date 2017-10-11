@@ -108,7 +108,7 @@ struct Csv2rec {
 
 int main(int argc, char *argv[])
 {
-	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
+	Graph::loadConfig(ALG_CONFIG_PATH);
 
 
 	string graph_path;

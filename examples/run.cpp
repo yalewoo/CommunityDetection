@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include "../Graph.h"
+#include "../os.h"
 
 using std::cout;
 using std::endl;
@@ -20,10 +21,10 @@ void showVector(vector<int> & v, string name = "vector", int id = 0)
 int main(int argc, char *argv[])
 {
 	//读配置文件，该文件记录社团检测算法的具体路径
-	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
+	Graph::loadConfig(ALG_CONFIG_PATH);
 
 	string dir = "baseline/";
-	Communities::mkdir(dir);
+	os::mkdir(dir);
 
 	FILE * ftime = fopen("baseline/time.txt", "a");
 	
@@ -187,7 +188,7 @@ int main(int argc, char *argv[])
 	}
 
 
-
+	os::moveDir(dir, graph_path);
 
 	printf("------------\ndone\n");
 	return 0;

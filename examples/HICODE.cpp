@@ -28,21 +28,17 @@ void showVector(vector<T> & v, string name = "vector", int id = 0)
 
 int main(int argc, char *argv[])
 {
+	Graph::loadConfig(ALG_CONFIG_PATH);
 
 
-
-	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
-
-	Communities truth1, truth2;
-	Communities truth1_1, truth1_2, truth2_1, truth2_2;
 
 	string graph_path;
 	if (argc >= 2)
 		graph_path = argv[1];
 	else
 	{
-		graph_path = "F:/HICODE_SUB/syn/testGraph/";
-		graph_path = "F:/Local/Theme/Q_nips/0.001/";
+		graph_path = "F:/HICODE_SUB/syn/test/";
+		//graph_path = "F:/Local/Theme/Q_nips/0.001/";
 	}
 		
 

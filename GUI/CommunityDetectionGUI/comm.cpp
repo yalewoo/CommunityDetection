@@ -8,6 +8,8 @@
 #include <QList>
 #include <QUrl>
 
+#include "../../os.h"
+
 Comm::Comm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Comm)
@@ -51,7 +53,7 @@ void Comm::dropEvent(QDropEvent *event)
     vector<int> v_index;
     vector<double> v_value;
     string outdir = "f1/";
-    Communities::mkdir(outdir);
+    os::mkdir(outdir);
     double p = Communities::Precision(comm1, *comm2, v_index, v_value, outdir).first;
     double r = Communities::Recall(comm1, *comm2, v_index, v_value, outdir).first;
     double f1 = Communities::F1Score(comm1, *comm2, outdir).first;

@@ -15,6 +15,16 @@ using std::map;
 
 #include "Communities.h"
 
+#ifdef _WIN32
+
+#define ALG_CONFIG_PATH "F:/Project/CommunityDetection/config_win.txt"
+
+#else
+
+#define ALG_CONFIG_PATH "/home/dell/"
+
+#endif
+
 
 //图中的一条边
 struct Edge {

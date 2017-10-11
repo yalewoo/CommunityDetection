@@ -7,7 +7,7 @@ import matplotlib.ticker as ticker
 #读取CSV数据为numpy record array记录
 
 
-r = mlab.csv2rec(r"F:\HICODE_SUB\syn\param\infomap_allmodf1.txt")
+r = mlab.csv2rec(r"F:\HICODE_SUB\syn\lab2\allmod.txt")
 #r = mlab.csv2rec(r"F:\Local\Theme\Q_nips\0.001\hicode_mod\nmi_last.txt")
 n = r.dtype.names
 r.sort()
@@ -19,7 +19,7 @@ fig = plt.figure(figsize=(12, 10))
 ax = fig.add_subplot(111, )
 
 ax.set_xlabel('p12')
-ax.set_ylabel('nmi_last')
+ax.set_ylabel('modularity & F1score')
 
 for col in n[1:]:
     ax.plot(r['p11'], r[col], 'o-',label=col)

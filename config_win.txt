@@ -1,0 +1,29 @@
+#Graphviz
+Graphviz_dot="D:/game/graphviz/bin/dot.exe"
+
+#Modularity
+Mod_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/louvain-code/
+
+#Infomap
+Infomap_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/Infomap/
+
+#LinkComm
+LinkComm_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/linkcomm-master/cpp/
+
+#OSLOM2
+OSLOM2_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/OSLOM2_bineary/
+
+#GCE
+GCE_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/GCECommunityFinder/build/
+
+#Demon
+python2_exe="C:\Program Files\Anaconda3\envs\python2\python.exe"
+Demon_launch=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/demon_py/launch.py
+
+#Cfinder
+Cfinder_exe="F:/Project/CommunityDetection/CommunityDetectionAlgorithm/CFinder-2.0.6/CFinder_commandline64"
+Cfinder_licence=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/CFinder-2.0.6/licence.txt
+
+#python_plot_csv
+python3_exe=C:\"Program Files"\Anaconda3\python.exe
+py_plot_csv="F:\Project\CommunityDetection\tools\show_hicode_tendency_cmd.py"
