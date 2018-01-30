@@ -169,6 +169,7 @@ public:
 	//reduceWeight消边
 	Graph reduce(Communities & cs, string & method);	//可选：reduceweight;remove
 	Graph reduceWeight(Communities & cs);
+
 	//remove消边
 	Graph removeEdge(Communities & cs);
 

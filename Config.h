@@ -32,7 +32,9 @@ public:
 	}
 	vector<string> getValue(const char * key)
 	{
-		return split(config[key], ';');
+		string ts = config[key];
+		vector<string> tmp = split(ts, ';');
+		return tmp;
 	}
 
 	vector<string> split(string& str, char seq);

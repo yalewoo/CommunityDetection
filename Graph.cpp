@@ -153,15 +153,31 @@ bool Graph::loadConfig(char * config_path)
 	return true;
 }
 
+string int2str(int i)
+{
+	char s[100];
+	sprintf(s, "%d", i);
+	return s;
+}
+int linux_rand()
+{
+	static FILE * fp = fopen("F:/Project/CommunityDetection/tools/linux_rand_array.txt", "r");
+	int n;
+	if (fscanf(fp, "%d", &n) == 1)
+		return n;
+	else
+		return 1;
+}
+
 Communities Graph::runInfomap(char * args)
 {
 	string Infomap = "\"" + config["Infomap_dir"] + "Infomap\"";
 	save("tmp.graph");
-	cmd(Infomap + " tmp.graph . -z -i link-list");
+	cmd(Infomap + " tmp.graph . -i link-list -s "+ int2str(linux_rand()));
 
 	Communities cs;
 	cs.setMaxNodeid(max_node_id);
-	cs.loadInfomap("tmp.tree");
+	cs.loadInfomap0135("tmp.tree");
 	return cs;
 }
 
@@ -667,8 +683,9 @@ Graph Graph::reduceWeight(Communities & cs)
 				{
 					int k = cx;
 					int nk = cs.comms[k].size();
-					double pk = e[k] / (0.5 * nk * (nk - 1));
-					double qk2 = (d[k] - 2 * e[k]) / (nk * (0 - nk));
+					double pk = e[k] / (0.5 * nk * (nk));
+					//double pk = e[k] / (0.5 * nk * (nk - 1));
+					//double qk2 = (d[k] - 2 * e[k]) / (nk * (0 - nk));
 					//??? next line works bad
 					double qk = (d[k] - 2 * e[k]) / (nk * (n - nk));
 					//TODO qk可能会小于0？？
@@ -695,7 +712,7 @@ Graph Graph::reduceWeight(Communities & cs)
 	}
 
 
-
+	g.save("F:/9157/9157IM2/Iteration/0/Layer2infunc.graph");
 	return g;
 }
 

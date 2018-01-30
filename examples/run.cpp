@@ -43,10 +43,10 @@ int main(int argc, char *argv[])
 	if (argc >= 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/HICODE_SUB/syn/3000/";
+		graph_path = "F:/9157/";
 
 
-	bool mod = false, infomap = false;
+	bool mod = false, infomap = true;
 	bool demon = false, lc = false;
 	bool oslom = false, gce = false, cfinder = false;
 	for (int i = 2; i < argc; ++i)
@@ -79,6 +79,8 @@ int main(int argc, char *argv[])
 			break;
 		}
 	}
+
+
 
 	Graph g;
 	//Graph g;

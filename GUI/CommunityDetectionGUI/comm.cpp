@@ -50,6 +50,18 @@ void Comm::dropEvent(QDropEvent *event)
     tmp.sprintf("NMI = %lf\n", nmi);
     s += tmp;
 
+    double f1_detected = Communities::f1(comm1, *comm2);
+    double f1_truth = Communities::f1(*comm2, comm1);
+
+    double weighted_f1_detected = Communities::wf1(comm1, *comm2);
+    double weighted_f1_truth = Communities::wf1(*comm2, comm1);
+
+    tmp.sprintf("F1_detected = %lf, f1_truth = %lf\n", f1_detected, f1_truth);
+    s += tmp;
+    tmp.sprintf("weighted_F1_detected = %lf, weighted_f1_truth = %lf\n", weighted_f1_detected, weighted_f1_truth);
+    s += tmp;
+
+    /*
     vector<int> v_index;
     vector<double> v_value;
     string outdir = "f1/";
@@ -68,15 +80,16 @@ void Comm::dropEvent(QDropEvent *event)
     tmp.sprintf("JF1Score = %lf,J Precision = %lf, JRecall = %lf", jf1, jp, jr);
     s += tmp;
 
+*/
     info->setText(s);
 
     ui->comm_name_2->setText("Detected  Communities");
     w2->ui->comm_name_2->setText("Truth Communities");
 
+/*
     tmp.sprintf("%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf", nmi, f1, p, r, jf1, jp, jr);
     *cliq = tmp;
-
-
+*/
 
     QTableWidget * tableWidget = ui->t;
     tableWidget->clearContents();
@@ -99,18 +112,29 @@ void Comm::dropEvent(QDropEvent *event)
         tableWidget->setItem(i,2,new QTableWidgetItem(qnodes));
     }
 
+    tableWidget->selectRow(0);
     tableWidget->show();
 }
 
 void Comm::on_t_cellClicked(int row, int column)
 {
     Community & c = comm1.comms[row];
-    pair<double, int> res = c.JaccardPrecision(*comm2, 0);
+
+    pair<double, int> res = Communities::p(c, *comm2);
+
+    //pair<double, int> res = c.JaccardPrecision(*comm2, 0);
     double p = res.first;
     int index = res.second;
 
+    //index = w2->ui->t->currentRow();
+
+    vector<int> cap = Communities::intersection(c.nodes, comm2->comms[index].nodes);
+    vector<int> join = Communities::setunion(c.nodes, comm2->comms[index].nodes);
+    int len = cap.size();
+    int joinlen = join.size();
+
     QString s;
-    s.sprintf("Jaccard = %lf ", p);
+    s.sprintf("%d / %d = %lf , jaccard = %lf ", len, c.nodes.size(), (double)len/c.nodes.size(), (double)len/joinlen);
     cinfo->setText(s);
 
     w2->ui->t->selectRow(index);

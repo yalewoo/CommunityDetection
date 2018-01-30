@@ -26,10 +26,18 @@ int main(int argc, char *argv[])
 {
 	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
 
-	Config con;
-	con.updateConfig("F:/HICODE_SUB/syn/testGraph/hicode.config");
+	string path = "F:/Project/CommunityDetection/vs2015/vs2015/hicode_infomap_ReduceWeight_2layers/";
+	Graph g;
+	g.load(path + "graph1_1.graph");
 
-	os::moveDir("apple", "F:/");
+	Communities cs;
+	cs.load(path + "layer1_1.gen");
+
+	g = g.reduceWeight(cs);
+
+	g.save(path + "graph2_1_new.graph");
+	
+
 	
 
 	printf("------------\ndone\n");

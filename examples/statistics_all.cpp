@@ -16,6 +16,7 @@ void calc(Communities & truth, vector<Communities> & cs, vector<string> & cs_nam
 
 	for (size_t i = 0; i < cs.size(); ++i)
 	{
+		printf("process detected %u\n", i);
 		Communities & detected = cs[i];
 
 		double nmi = detected.calcNMI(truth);
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
 	if (argc >= 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/HICODE_SUB/facebook/Rice31/";
+		graph_path = "F:/HICODE_SUB/facebook/UCSC68/";
 
 	FILE * fp = fopen((graph_path + "detected_files.txt").c_str(), "r");
 	if (!fp)
@@ -101,6 +102,8 @@ int main(int argc, char *argv[])
 
 	for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
 	{
+		printf("process truth %d..\n", truth_i);
+
 		string tpath = truth_path[truth_i];
 		for (int i = 0; i < tpath.size(); ++i)
 		{

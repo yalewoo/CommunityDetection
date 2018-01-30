@@ -71,6 +71,9 @@ struct Community
 			return nodes[0] < e.nodes[0];
 	}
 
+	bool isSubsetOf(Community & c);
+
+
 };
 
 
@@ -140,6 +143,8 @@ public:
 
 	//去掉结点数小于size的社团
 	void removeSmallComm(vector< Community > & comm, int size);	
+    //去掉结点数大于size的社团
+    void removeBigComm(vector< Community > & comm, int size);
 
 	//打印社团信息 show_detail表示显示每个社团结点个数 show_nodes表示显示每个社团内的所有结点
 	string print(bool show_detail = false,  bool show_nodes = false);
@@ -166,6 +171,7 @@ public:
 
 
 	void loadInfomap(const char * fn);
+	void loadInfomap0135(const char * fn);
 	void loadLinkComm(const char * fn);
 	void loadOSLOM2(const char * fn);
 	void loadGCE(const char * fn);
@@ -208,8 +214,13 @@ public:
 	static pair<double, double> PRGeneral(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, FILE * fp);
 	static pair<double, double> Recall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
 	static pair<double, double> Precision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
-	static pair<double, double> F1Score(Communities & Detected, Communities & truth, string dir);
+	static pair<double, double> PR(Communities & Detected, Communities & truth, string dir);
 
+    static double f1(Community & c1, Community & c2);
+    static pair<double, int> f1(Community &c1, Communities &cs);
+    static pair<double, int> p(Community &c1, Communities &cs);
+    static double f1(Communities &truth, Communities &detected);
+    static double wf1(Communities &truth, Communities &detected);
 
 };
 

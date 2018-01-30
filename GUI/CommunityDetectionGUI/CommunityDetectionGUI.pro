@@ -21,7 +21,8 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     comm.h \
-    ../../ylog.h
+    ../../ylog.h \
+    ../../Communities.h
 
 FORMS    += mainwindow.ui \
     comm.ui

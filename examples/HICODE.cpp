@@ -37,13 +37,15 @@ int main(int argc, char *argv[])
 		graph_path = argv[1];
 	else
 	{
-		graph_path = "F:/HICODE_SUB/syn/test/";
+		//graph_path = "Z:/synL2/";
 		//graph_path = "F:/Local/Theme/Q_nips/0.001/";
+		graph_path = "F:/9157/";
 	}
 		
 
 	Graph g;
 	g.load(graph_path + "graph");
+	g.runInfomap();
 
 	Config hicode_config;
 	hicode_config.updateConfig("F:/Project/CommunityDetection/hicode_default.config");
@@ -174,7 +176,10 @@ int main(int argc, char *argv[])
 					{
 						if (i == j)
 							continue;
-						g2 = g2.reduce(layer_last[j], reduce_method);
+						if (j < layer.size())
+							g2 = g2.reduce(layer[j], reduce_method);
+						else
+							g2 = g2.reduce(layer_last[j], reduce_method);
 					}
 					layer.push_back(g2.runAlg(basealg));
 

@@ -9,6 +9,8 @@
 #include <sstream>
 #include <iostream>
 
+//#include <QDebug>
+
 #include <cmath>
 double log2(double x)
 {
@@ -28,6 +30,15 @@ using std::min;
 using std::make_pair;
 
 
+
+bool Community::isSubsetOf(Community & c)
+{
+	vector<int> res = Communities::intersection(nodes, c.nodes);
+	if (res.size() == nodes.size() && res.size() < c.nodes.size())
+		return true;
+	else
+		return false;
+}
 
 int Communities::nodesNum()
 {
@@ -77,7 +88,7 @@ void Communities::load(const char * fn)
 			c.add(id);
 		}
 		c.sort();
-		if (c.nodes.size() > 2)
+        if (c.nodes.size() >= 2)
 			addCommunity(c);
 	}
 	//removeSmallComm(2);
@@ -161,6 +172,91 @@ void Communities::loadInfomap(const char * fn)
 	comms = layers[0];
 
 	
+}
+
+void Communities::loadInfomap0135(const char * fn)
+{
+	clear();
+
+
+	FILE *fp = fopen(fn, "r");
+	if (!fp)
+		return;
+	char buff[512];
+	fgets(buff, 512, fp);
+	fgets(buff, 512, fp);
+	fclose(fp);
+	int len = strlen(buff);
+	int i = 0;
+	int levels = 1;
+	for (; i < len; ++i)
+	{
+		if (buff[i] == ':')
+			++levels;
+	}
+
+
+	for (int level = 0; level < levels - 1; ++level)
+	{
+		vector<Community> vc;
+		layers.push_back(vc);
+
+		fp = fopen(fn, "r");
+		fgets(buff, 512, fp);
+
+
+		int n;
+		int lastn = 1;
+		int node;
+
+		Community c;
+		while (fgets(buff, 512, fp))
+		{
+			//定位到倒数第二个数字 三层时1:2:3 会读出2
+			int i = 0;
+			int colonnum = 0;
+			while (colonnum < level)
+			{
+				while (buff[i] != ':')
+					++i;
+				++colonnum;
+			}
+			if (level > 0)	++i;
+			//社团编号
+			sscanf(buff + i, "%d", &n);
+
+			if (n != lastn)
+			{
+				layers[level].push_back(c);
+				c.clear();
+			}
+			lastn = n;
+
+			i = strlen(buff);
+			while (buff[i] != ' ')
+				--i;
+
+			++i;
+			++i;
+			//节点号
+			sscanf(buff + i, "%d", &node);
+
+			c.add(node);
+
+
+		}
+		layers[level].push_back(c);
+		c.clear();
+
+		removeSmallComm(layers[level], 2);
+
+		fclose(fp);
+
+	}
+
+	comms = layers[0];
+
+
 }
 
 void Communities::loadLinkComm(const char * fn)
@@ -809,7 +905,7 @@ pair<double, double> Communities::Precision(Communities & Detected, Communities 
 		fprintf(fp, "Detected id,Detected size,Truth id,Truth size,Precision,intersect\n");
 	return PRGeneral(Detected, truth, v_index, v_value, fp);
 }
-pair<double, double> Communities::F1Score(Communities & Detected, Communities & truth, string dir)
+pair<double, double> Communities::PR(Communities & Detected, Communities & truth, string dir)
 {
 	vector<int> tmp;
 	vector<double> tmpd;
@@ -838,7 +934,84 @@ pair<double, double> Communities::F1Score(Communities & Detected, Communities & 
 		fprintf(fp, "%lf,%lf,%lf", UnWeighted, P, R);
 
 	fclose(fp);
-	return make_pair(Weighted, UnWeighted);
+    return make_pair(Weighted, UnWeighted);
+}
+
+double Communities::f1(Community &c1, Community &c2)
+{
+    vector<int> cap = Communities::intersection(c1.nodes, c2.nodes);
+    double join = cap.size();
+    double p = join / c2.size();
+    double r = join / c1.size();
+    double f = 2 * p * r / (p + r);
+    return f;
+}
+
+pair<double, int> Communities::f1(Community &c1, Communities &cs)
+{
+    double res = 0;
+    int i;
+    int index = 0;
+    for (i = 0; i < cs.size(); ++i)
+    {
+        double f = f1(c1, cs.comms[i]);
+        if (f > res)
+        {
+            res = f;
+            index = i;
+        }
+    }
+    return make_pair(res, index);
+}
+
+pair<double, int> Communities::p(Community &c1, Communities &cs)
+{
+    double res = 0;
+    int i;
+    int index = 0;
+    for (i = 0; i < cs.size(); ++i)
+    {
+        Community & c2 = cs.comms[i];
+        vector<int> cap = Communities::intersection(c1.nodes, c2.nodes);
+        double join = cap.size();
+        double p = join / c1.size();
+
+
+        if (p > res)
+        {
+            res = p;
+            index = i;
+        }
+    }
+    return make_pair(res, index);
+}
+
+double Communities::f1(Communities &truth, Communities &detected)
+{
+    double res = 0;
+    double count = 0;
+    for (int i = 0; i < truth.size(); ++i)
+    {
+        res += f1(truth.comms[i], detected).first;
+        ++count;
+    }
+    //qDebug() << count;
+    return res / count;
+}
+
+double Communities::wf1(Communities &truth, Communities &detected)
+{
+    double res = 0;
+    double count = 0;
+    double m = truth.sizeOfCommsSum();
+
+    for (int i = 0; i < truth.size(); ++i)
+    {
+        res += f1(truth.comms[i], detected).first  * truth.comms[i].size() / m;
+        ++count;
+    }
+
+    return res;
 }
 
 
@@ -914,11 +1087,35 @@ void Communities::removeSmallComm(vector< Community > & comm, int size)
 		if (it->size() <= size)
 			it = comm.erase(it);    //删除元素，返回值指向已删除元素的下一个位置    
 		else
+		{
+			it->sort();
 			++it;    //指向下一个位置
+		}
+			
 	}
 
 	ylog("Communities::removeSmallComm end");
 
+}
+
+void Communities::removeBigComm(vector<Community> &comm, int size)
+{
+    ylog("Communities::removeSmallComm begin");
+
+    sort(comm.begin(), comm.end());
+    for (auto it = comm.begin(); it != comm.end();)
+    {
+        if (it->size() >= size)
+            it = comm.erase(it);    //删除元素，返回值指向已删除元素的下一个位置
+        else
+        {
+            it->sort();
+            ++it;    //指向下一个位置
+        }
+
+    }
+
+    ylog("Communities::removeBigComm end");
 }
 
 string Communities::print(bool show_detail, bool show_nodes)
@@ -928,12 +1125,15 @@ string Communities::print(bool show_detail, bool show_nodes)
 	printf("-------------------------\n");
 	printf("Modularity: %lf\n", Q);
 	printf("%d communities:\n", comms.size());
+
 	sprintf(buff, "-------------------------\n");
 	res += buff;
 	sprintf(buff, "Modularity: %lf\n", Q);
 	res += buff;
 	sprintf(buff, "%d communities:\n", comms.size());
 	res += buff;
+    sprintf(buff, "%d nodes:\n", nodesNum());
+    res += buff;
 	if (show_detail)
 	{
 		for (size_t i = 0; i < comms.size(); ++i)
