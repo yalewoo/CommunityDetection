@@ -173,7 +173,7 @@ Communities Graph::runInfomap(char * args)
 {
 	string Infomap = "\"" + config["Infomap_dir"] + "Infomap\"";
 	save("tmp.graph");
-	cmd(Infomap + " tmp.graph . -i link-list -s "+ int2str(linux_rand()));
+	cmd(Infomap + " tmp.graph . -i link-list -z -s "+ int2str(linux_rand()));
 
 	Communities cs;
 	cs.setMaxNodeid(max_node_id);
@@ -759,6 +759,67 @@ Graph Graph::getSubGraph(vector<int>& nodes)
 		}
 	}
 	ylog("getSubGraph end");
+	return res;
+}
+
+Graph Graph::getMergeGraph(Communities & cs)
+{
+	Graph res;
+	res.Weighted = this->Weighted;
+
+	int size = cs.size();
+	vector<vector<int> > m = vector<vector<int> >(size, vector<int>(size, 0));
+
+	double maxNumEdge = 0;
+	for (size_t i = 0; i < size; ++i)
+	{
+		vector<int> &vc1 = cs.comms[i].nodes;
+		set<int> c1;
+		for (const auto & elem : vc1) {
+			c1.insert(elem);
+		}
+		//cout << c1.size() << " ";
+		for (size_t j = i + 1; j < size; ++j)
+		{
+			vector<int> &vc2 = cs.comms[j].nodes;
+			set<int> c2;
+			for (const auto & elem : vc2) {
+				c2.insert(elem);
+			}
+			//cout << c2.size() << " ";
+
+			int numEdge = 0;
+			for (size_t e = 0; e < edges.size(); ++e)
+			{
+				//printf("(%d,%d)", edges[e].x, edges[e].y);
+				if ((c1.find(edges[e].x) != c1.end() && c2.find(edges[e].y) != c2.end())
+					|| (c2.find(edges[e].x) != c2.end() && c1.find(edges[e].y) != c1.end()))
+				{
+					//printf("find edge\n");
+					++numEdge;
+				}
+			}
+			if (numEdge > maxNumEdge)
+			{
+				maxNumEdge = numEdge;
+			}
+			m[i][j] = numEdge;
+		}
+	}
+
+	for (size_t i = 0; i < size; ++i)
+	{
+		for (size_t j = i+1; j < size; ++j)
+		{
+			//printf("%d ", m[i][j]);
+			if (m[i][j] > 0)
+			{
+				res.addEdge(i, j, m[i][j] / maxNumEdge);
+			}
+		}
+		//printf("\n");
+	}
+
 	return res;
 }
 

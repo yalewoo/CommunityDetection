@@ -178,6 +178,9 @@ public:
 	Graph getSubGraph(vector<int> & nodes);
 	Graph getSubGraph(Community & c) { return getSubGraph(c.nodes); }
 
+	//返回一个图， 图中每个结点代表一个社团
+	Graph getMergeGraph(Communities & cs);
+
 };
 
 
