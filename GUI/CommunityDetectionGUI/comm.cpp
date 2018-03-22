@@ -120,7 +120,8 @@ void Comm::on_t_cellClicked(int row, int column)
 {
     Community & c = comm1.comms[row];
 
-    pair<double, int> res = Communities::p(c, *comm2);
+    pair<double, int> res = Communities::findSimilar
+            (c, *comm2);
 
     //pair<double, int> res = c.JaccardPrecision(*comm2, 0);
     double p = res.first;

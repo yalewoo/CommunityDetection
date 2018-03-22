@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setAcceptDrops(true);
 
-    //g.load("F:/HICODE_SUB/result/syn/graph");
+    g.load("F:/HICODE_SUB/syn/3000_0611/graph");
 
     QString t(g.print().c_str());
     ui->graph_info->setText(t);

@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 		//graph_path = "F:/Local/Theme/Q_nips/0.001/";
 		graph_path = "F:/Bio/20180227/";
 	}
-		
+
 
 	Graph g;
 	g.load(graph_path + "graph");
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 					nmi_truth[t][0][i] = truth[t].calcNMI(layer[i]);
 				}
 
-				
+
 			}
 
 			//保存使mod最大的迭代结果
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
 					if (hicode_config["log_save_reduce_graph"] == "true")
 					{
 						char buff[256];
-						sprintf(buff, "graph%d_%d.graph", i + 1, iterator+1);
+						sprintf(buff, "graph%d_%d.graph", i + 1, iterator + 1);
 						string path = outdir + buff;
 						g2.save(path);
 					}
@@ -195,14 +195,14 @@ int main(int argc, char *argv[])
 
 					string path = outdir;
 					char buff[256];
-					sprintf(buff, "layer%d_%d.gen", i + 1, iterator+1);
+					sprintf(buff, "layer%d_%d.gen", i + 1, iterator + 1);
 					path = path + buff;
 					layer[i].save(path);
 
 					if (hicode_config["log_modularity"] == "true")
 					{
-						mods_ori_graph[iterator+1][i] = layer[i].calcModularity(g);
-						mods_reduce_graph[iterator+1][i] = layer[i].calcModularity(g2);
+						mods_ori_graph[iterator + 1][i] = layer[i].calcModularity(g);
+						mods_reduce_graph[iterator + 1][i] = layer[i].calcModularity(g2);
 					}
 					if (hicode_config["log_nmi_last"] == "true")
 					{
@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
 					}
 					for (size_t t = 0; t < truth.size(); ++t)
 					{
-						nmi_truth[t][iterator+1][i] = truth[t].calcNMI(layer[i]);
+						nmi_truth[t][iterator + 1][i] = truth[t].calcNMI(layer[i]);
 					}
 				}
 
@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
 					{
 						mod_origin_graph = new_mod_origin_graph;
 						layer_mod_origin_graph = layer;
-						mod_origin_graph_iterator = iterator+1;
+						mod_origin_graph_iterator = iterator + 1;
 					}
 					if (new_mod_layer_graph > mod_layer_graph)
 					{
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 						not_change = false;
 						break;
 					}
-						
+
 				}
 
 				if (not_change)
@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
 				layer.clear();
 			}
 
-			
+
 
 
 			//save csv
@@ -307,7 +307,7 @@ int main(int argc, char *argv[])
 				//递归抓子图找社团
 				if (hicode_config["use_r_sub"] == "true")
 				{
-					
+
 					string layer_outdir = "hicode_" + basealg + "_" + reduce_method + "_"
 						+ nlayer + "layers_layer_sub" + "/";
 
@@ -334,7 +334,7 @@ int main(int argc, char *argv[])
 								Communities sub;
 								for (size_t i = 0; i < layer1.size(); ++i)
 								{
-									
+
 									if (layer1.comms[i].size() > sub_nodes_number_thres)
 									{
 										Graph subg = g.getSubGraph(layer1.comms[i]);
@@ -350,8 +350,8 @@ int main(int argc, char *argv[])
 
 								}
 								char buff[256];
-								sprintf(buff, (outdir + "sub%d_%d.gen").c_str(),li+1, iter_i);
-								printf((outdir + "sub%d_%d.gen").c_str(), li+1,iter_i);
+								sprintf(buff, (outdir + "sub%d_%d.gen").c_str(), li + 1, iter_i);
+								printf((outdir + "sub%d_%d.gen").c_str(), li + 1, iter_i);
 								sub.save(buff);
 								subl_new.push_back(sub);
 							}
@@ -394,8 +394,8 @@ int main(int argc, char *argv[])
 
 								}
 								char buff[256];
-								sprintf(buff, (outdir + "sub%d_%d.gen").c_str(), li+1, iter_i);
-								printf((outdir + "sub%d_%d.gen").c_str(), li+1, iter_i);
+								sprintf(buff, (outdir + "sub%d_%d.gen").c_str(), li + 1, iter_i);
+								printf((outdir + "sub%d_%d.gen").c_str(), li + 1, iter_i);
 								sub.save(buff);
 								subl_new.push_back(sub);
 							}
@@ -403,8 +403,8 @@ int main(int argc, char *argv[])
 						}
 						os::moveDir(outdir, graph_path);
 					}
-					
-					
+
+
 
 				}
 
@@ -422,9 +422,9 @@ int main(int argc, char *argv[])
 	}
 
 
-	
 
-	
+
+
 
 	printf("------------\ndone\n");
 	return 0;

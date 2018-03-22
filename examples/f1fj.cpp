@@ -2,6 +2,8 @@
 #include <iostream>
 #include "../Graph.h"
 
+#include "../os.h"
+
 using std::cout;
 using std::endl;
 
@@ -35,7 +37,7 @@ int main(int argc, char *argv[])
 	vector<double> v_value;
 	string outdir = argv[4];
 
-	Communities::mkdir(outdir);
+	os::mkdir(outdir);
 
 	printf("calculating Jaccard F1 Score...\n");
 	pair<double, double> res;

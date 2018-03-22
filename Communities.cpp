@@ -1015,6 +1015,33 @@ double Communities::wf1(Communities &truth, Communities &detected)
 }
 
 
+double Communities::findSimilar(Community &c1, Community &c2)
+{
+    vector<int> cap = Communities::intersection(c1.nodes, c2.nodes);
+    vector<int> u = Communities::setunion(c1.nodes, c2.nodes);
+    double join = cap.size();
+    double usize = u.size();
+    double f = join / usize;
+    return f;
+}
+pair<double, int> Communities::findSimilar(Community &c1, Communities &cs)
+{
+    double res = 0;
+    int i;
+    int index = 0;
+    for (i = 0; i < cs.size(); ++i)
+    {
+        double f = findSimilar(c1, cs.comms[i]);
+        if (f > res)
+        {
+            res = f;
+            index = i;
+        }
+    }
+    return make_pair(res, index);
+}
+
+
 
 /*H(Xi|Y) = min { H(Xi|Yj) ,for all j }
 if [ h(p11) + h(p00) > h(p01) + h(p10) ] never occur, H(Xi|Y) = H(Xi)

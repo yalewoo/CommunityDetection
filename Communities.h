@@ -222,6 +222,9 @@ public:
     static double f1(Communities &truth, Communities &detected);
     static double wf1(Communities &truth, Communities &detected);
 
+    static double findSimilar(Community &c1, Community &c2);
+    static pair<double, int> findSimilar(Community &c1, Communities &cs);
+
 };
 
 

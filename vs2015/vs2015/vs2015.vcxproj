@@ -150,7 +150,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Communities.cpp" />
     <ClCompile Include="..\..\Config.cpp" />
-    <ClCompile Include="..\..\examples\Sub_general.cpp" />
+    <ClCompile Include="..\..\examples\weightedG.cpp" />
     <ClCompile Include="..\..\Graph.cpp" />
     <ClCompile Include="..\..\ylog.cpp" />
   </ItemGroup>
