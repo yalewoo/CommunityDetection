@@ -50,7 +50,16 @@
     <ClCompile Include="..\..\ylog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\examples\mergeUp.cpp">
+    <ClCompile Include="..\..\examples\HICODE.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\generateGraph.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\F1.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

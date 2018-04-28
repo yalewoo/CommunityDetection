@@ -28,7 +28,7 @@ struct Community
 
 	//社团内的所有结点
 	vector<int> nodes;
-	
+
 	//社团内结点编号范围
 	int max_node_id = -1;
 	int min_node_id = INT_MAX;
@@ -44,12 +44,13 @@ struct Community
 		std::sort(nodes.begin(), nodes.end());
 		nodes.erase(unique(nodes.begin(), nodes.end()), nodes.end());
 	}
-	void clear() 
-	{ 
+	void clear()
+	{
 		nodes.clear();
 		max_node_id = -1;
 		min_node_id = INT_MAX;
 	}
+
 
 	//返回社团中结点个数
 	int size() const { return nodes.size(); }
@@ -86,6 +87,18 @@ public:
 
 	//modularity值，在调用calcModularity时更新
 	double Q = 0;
+	vector<double> community_Q;
+	vector<double> comm_inter_edge_num;
+	vector<double> comm_out_edge_num;
+
+	double getCommQ(int i)
+	{
+		if (community_Q.empty())
+		{
+			return -999;
+		}
+		return community_Q[i] / (double)comms[i].size();
+	}
 
 	//转换cid到comms
 	//cid[i]表示结点i所在社团
@@ -122,6 +135,7 @@ public:
 		min_node_id = INT_MAX;
 		layer = 0;
 		Q = 0;
+		community_Q.clear();
 	}
 
 	//添加一个社团 不排序 更新编号范围
@@ -130,6 +144,13 @@ public:
 		min_node_id = min(min_node_id, c.min_node_id);
 		max_node_id = max(max_node_id, c.max_node_id);
 		comms.push_back(c);
+	}
+	//添加一个社团 不排序 更新编号范围
+	void addCommunity(Community c, int leve)
+	{
+		min_node_id = min(min_node_id, c.min_node_id);
+		max_node_id = max(max_node_id, c.max_node_id);
+		layers[leve].push_back(c);
 	}
 
 	//把另一种划分的所有社团加到后面 不排序 更新编号范围
@@ -149,6 +170,8 @@ public:
 	//打印社团信息 show_detail表示显示每个社团结点个数 show_nodes表示显示每个社团内的所有结点
 	string print(bool show_detail = false,  bool show_nodes = false);
 
+    //社团平均大小
+    double averageSize();
 
 	bool save(const char * fn);
 	bool save(string fn);
@@ -206,20 +229,23 @@ public:
 	double h(double x) const;
 
 
-	static pair<double, double> Jaccard(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, FILE * fp);
-	static pair<double, double> JaccardRecall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
-	static pair<double, double> JaccardPrecision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
-	static pair<double, double> JaccardF1Score(Communities & Detected, Communities & truth, string dir);
 
-	static pair<double, double> PRGeneral(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, FILE * fp);
-	static pair<double, double> Recall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
-	static pair<double, double> Precision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir);
-	static pair<double, double> PR(Communities & Detected, Communities & truth, string dir);
+
+	static double Precision_unweighted(Communities & Detected, Communities & truth, FILE * fp = 0);
+	static double Precision_weighted(Communities & Detected, Communities & truth);
+	static double F1_unweighted(Communities & Detected, Communities & truth);
+	static double F1_weighted(Communities & Detected, Communities & truth);
+
+	static double Jaccard_Precision_unweighted(Communities & Detected, Communities & truth, FILE * fp = 0);
+	static double Jaccard_Precision_weighted(Communities & Detected, Communities & truth);
+	static double Jaccard_F1_unweighted(Communities & Detected, Communities & truth);
+	static double Jaccard_F1_weighted(Communities & Detected, Communities & truth);
+
 
     static double f1(Community & c1, Community & c2);
-    static pair<double, int> f1(Community &c1, Communities &cs);
+    static pair<double, int> f1(Community &c1, Communities &cs, FILE * fp);
     static pair<double, int> p(Community &c1, Communities &cs);
-    static double f1(Communities &truth, Communities &detected);
+    static double f1(Communities &truth, Communities &detected, FILE * fp = 0);
     static double wf1(Communities &truth, Communities &detected);
 
     static double findSimilar(Community &c1, Community &c2);

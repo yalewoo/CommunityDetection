@@ -106,6 +106,7 @@ public:
 	//若文件打开失败返回false
 	bool load(string fn) { return load(fn.c_str()); }
 	bool load(char const * graph_path);
+	bool loadMatrix(vector<vector<int> > & matrix);
 
 	//保存图到文件 Weighted决定输出带权还是不带权
 	bool save(string fn) 
@@ -148,7 +149,7 @@ public:
 
 
 	//计算模块度
-	double calcModularity(const Communities & cs) const;
+	double calcModularity(Communities & cs) const;
 	vector<int> getDegree() const;	//返回每个结点的度
 	vector<double> getCommInterEdgeNum(const Communities & cs) const;	//返回每个社团内部的边数
 	vector<double> getCommInterNodesDegree(vector<double> &comm_inter_edge_num, vector<double> & comm_out_edge_num) const;	//返回社团内部点的度数之和

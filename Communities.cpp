@@ -227,7 +227,7 @@ void Communities::loadInfomap0135(const char * fn)
 
 			if (n != lastn)
 			{
-				layers[level].push_back(c);
+				addCommunity(c, level);
 				c.clear();
 			}
 			lastn = n;
@@ -240,12 +240,13 @@ void Communities::loadInfomap0135(const char * fn)
 			++i;
 			//节点号
 			sscanf(buff + i, "%d", &node);
+			--node;
 
 			c.add(node);
 
 
 		}
-		layers[level].push_back(c);
+		addCommunity(c, level);
 		c.clear();
 
 		removeSmallComm(layers[level], 2);
@@ -770,171 +771,110 @@ double Communities::h(double x) const
 	return x > 0 ? -1 * x * log2(x) : 0;
 }
 
-//v_index[i]保存和i最相思的truth编号
-pair<double,double> Communities::Jaccard(Communities & Detected, Communities & truth, vector<int>& v_index, vector<double> &v_value,FILE * fp)
+
+
+
+
+double Communities::Precision_unweighted(Communities & Detected, Communities & truth, FILE * fp)
 {
-	v_index.clear();
-	v_value.clear();
-	v_index.resize(Detected.size());
-	v_value.resize(Detected.size());
-	double m = Detected.sizeOfCommsSum();
-	double res = 0;
 	double unweightedres = 0;
-	
-	for (size_t i = 0; i < Detected.size(); ++i)
-	{
-		if (fp)
-			fprintf(fp, "%d,", i+1);
-		pair<double, int> p = Detected.comms[i].JaccardPrecision(truth, fp);
-		v_value[i] = p.first;
-		res += p.first * Detected.comms[i].size() / m;
-		unweightedres += p.first;
-		v_index[i] = p.second;
-	}
-	unweightedres /= (double)Detected.size();
 	if (fp)
-	{
-		fprintf(fp, "Weighted Average,%lf\n", res);
-		fprintf(fp, "Average,%lf\n", unweightedres);
-		fclose(fp);
-	}
-		
-
-	return make_pair(res,unweightedres);
-}
-
-pair<double, double> Communities::JaccardRecall(Communities & Detected, Communities & truth, vector<int>& v_index, vector<double> &v_value, string dir)
-{
-	
-	string fn = dir + "JaccardRecall.csv";
-	FILE * fp = fopen(fn.c_str(), "w");
-	if (fp)
-		fprintf(fp, "Truth id,Truth size,Detected id,Detected size,Recall,Truth left,intersect,Detected left\n");
-	return Jaccard(truth, Detected, v_index, v_value,fp);
-}
-pair<double, double> Communities::JaccardPrecision(Communities & Detected, Communities & truth, vector<int>& v_index, vector<double> &v_value, string dir)
-{
-
-	string fn = dir + "JaccardPrecision.csv";
-	FILE * fp = fopen(fn.c_str(), "w");
-	if (fp)
-		fprintf(fp, "Detected id,Detected size,Truth id,Truth size,Precision,Detected left,intersect,Truth left\n");
-	return Jaccard(Detected, truth, v_index, v_value,fp);
-
-}
-
-pair<double, double> Communities::JaccardF1Score(Communities & Detected, Communities & truth, string dir)
-{
-	vector<int> tmp;
-	vector<double> tmpd;
-	
-
-
-	string fn = dir + "F1FJ.csv";
-	FILE * fp = fopen(fn.c_str(), "w");
-	if (fp)
-		fprintf(fp, "WeightedJaccardF1, Weighted Jaccard Precision, Weighted Jaccard Recall,JaccardF1, Jaccard Precision, Jaccard Recall\n");
-
-	pair<double, double> P_pair;
-	pair<double, double> R_pair;
-	P_pair = JaccardPrecision(Detected, truth, tmp, tmpd, dir);
-	R_pair = JaccardRecall(Detected, truth, tmp, tmpd, dir);
-	double P = P_pair.first;
-	double R = R_pair.first;
-	double Weighted = 2 * P * R / (P + R);
-	if (P + R == 0) Weighted = 0;
-	if (fp)
-		fprintf(fp, "%lf,%lf,%lf,", Weighted, P, R);
-	P = P_pair.second;
-	R = R_pair.second;
-	double UnWeighted = 2 * P * R / (P + R);
-	if (P + R == 0) UnWeighted = 0;
-	if (fp)
-		fprintf(fp, "%lf,%lf,%lf", UnWeighted, P, R);
-	
-	fclose(fp);
-	return make_pair(Weighted, UnWeighted);
-}
-
-pair<double, double> Communities::PRGeneral(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, FILE * fp)
-{
-	v_index.clear();
-	v_value.clear();
-	v_index.resize(Detected.size());
-	v_value.resize(Detected.size());
-	double m = Detected.sizeOfCommsSum();
-	double res = 0;
-	double unweightedres = 0;
+		fprintf(fp, "#Detected,size,#Truth,size,intersect,Precision\n");
 
 	for (size_t i = 0; i < Detected.size(); ++i)
 	{
 		if (fp)
 			fprintf(fp, "%d,", i + 1);
 		pair<double, int> p = Detected.comms[i].Precision(truth, fp);
-		v_value[i] = p.first;
-		res += p.first * Detected.comms[i].size() / m;
+
 		unweightedres += p.first;
-		v_index[i] = p.second;
+
 	}
 	unweightedres /= (double)Detected.size();
 	if (fp)
 	{
-		fprintf(fp, "Weighted Average,%lf\n", res);
-		fprintf(fp, "Average,%lf\n", unweightedres);
 		fclose(fp);
 	}
-	
 
-	return make_pair(res, unweightedres);
+	return unweightedres;
 }
-pair<double, double> Communities::Recall(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir)
+double Communities::Precision_weighted(Communities & Detected, Communities & truth)
 {
+	double m = Detected.sizeOfCommsSum();
+	double res = 0;
 
-	string fn = dir + "Recall.csv";
-	FILE * fp = fopen(fn.c_str(), "w");
-	if (fp)
-		fprintf(fp, "Truth id,Truth size,Detected id,Detected size,Recall,intersect\n");
-	return PRGeneral(truth, Detected, v_index, v_value, fp);
+	for (size_t i = 0; i < Detected.size(); ++i)
+	{
+		pair<double, int> p = Detected.comms[i].Precision(truth, 0);
+
+		res += p.first * Detected.comms[i].size() / m;
+	}
+
+	return res;
 }
-pair<double, double> Communities::Precision(Communities & Detected, Communities & truth, vector<int> & v_index, vector<double> &v_value, string dir)
-{
 
-	string fn = dir + "Precision.csv";
-	FILE * fp = fopen(fn.c_str(), "w");
-	if (fp)
-		fprintf(fp, "Detected id,Detected size,Truth id,Truth size,Precision,intersect\n");
-	return PRGeneral(Detected, truth, v_index, v_value, fp);
+double Communities::F1_unweighted(Communities & Detected, Communities & truth)
+{
+	double p = Precision_unweighted(Detected, truth);
+	double r = Precision_unweighted(truth, Detected);
+	return 2 * p * r / (p + r);
 }
-pair<double, double> Communities::PR(Communities & Detected, Communities & truth, string dir)
+double Communities::F1_weighted(Communities & Detected, Communities & truth)
 {
-	vector<int> tmp;
-	vector<double> tmpd;
+	double p = Precision_weighted(Detected, truth);
+	double r = Precision_weighted(truth, Detected);
+	return 2 * p * r / (p + r);
+}
 
-
-	string fn = dir + "F1.csv";
-	FILE * fp = fopen(fn.c_str(), "w");
+double Communities::Jaccard_Precision_unweighted(Communities & Detected, Communities & truth, FILE * fp)
+{
+	double unweightedres = 0;
 	if (fp)
-		fprintf(fp, "WeightedF1, Weighted Precision, Weighted Recall,F1, Precision, Recall\n");
+		fprintf(fp, "#Detected,size,#Truth,size,intersect,Jaccard\n");
 
-	pair<double, double> P_pair;
-	pair<double, double> R_pair;
-	P_pair = Precision(Detected, truth, tmp, tmpd, dir);
-	R_pair = Recall(Detected, truth, tmp, tmpd, dir);
-	double P = P_pair.first;
-	double R = R_pair.first;
-	double Weighted = 2 * P * R / (P + R);
-	if (P + R == 0) Weighted = 0;
-	if (fp)
-		fprintf(fp, "%lf,%lf,%lf,", Weighted, P, R);
-	P = P_pair.second;
-	R = R_pair.second;
-	double UnWeighted = 2 * P * R / (P + R);
-	if (P + R == 0) UnWeighted = 0;
-	if (fp)
-		fprintf(fp, "%lf,%lf,%lf", UnWeighted, P, R);
+	for (size_t i = 0; i < Detected.size(); ++i)
+	{
+		if (fp)
+			fprintf(fp, "%d,", i + 1);
+		pair<double, int> p = Detected.comms[i].JaccardPrecision(truth, fp);
 
-	fclose(fp);
-    return make_pair(Weighted, UnWeighted);
+		unweightedres += p.first;
+
+	}
+	unweightedres /= (double)Detected.size();
+	if (fp)
+	{
+		fclose(fp);
+	}
+
+	return unweightedres;
+}
+double Communities::Jaccard_Precision_weighted(Communities & Detected, Communities & truth)
+{
+	double m = Detected.sizeOfCommsSum();
+	double res = 0;
+
+	for (size_t i = 0; i < Detected.size(); ++i)
+	{
+		pair<double, int> p = Detected.comms[i].JaccardPrecision(truth, 0);
+
+		res += p.first * Detected.comms[i].size() / m;
+	}
+
+	return res;
+}
+
+double Communities::Jaccard_F1_unweighted(Communities & Detected, Communities & truth)
+{
+	double p = Jaccard_Precision_unweighted(Detected, truth);
+	double r = Jaccard_Precision_unweighted(truth, Detected);
+	return 2 * p * r / (p + r);
+}
+double Communities::Jaccard_F1_weighted(Communities & Detected, Communities & truth)
+{
+	double p = Jaccard_Precision_weighted(Detected, truth);
+	double r = Jaccard_Precision_weighted(truth, Detected);
+	return 2 * p * r / (p + r);
 }
 
 double Communities::f1(Community &c1, Community &c2)
@@ -947,7 +887,7 @@ double Communities::f1(Community &c1, Community &c2)
     return f;
 }
 
-pair<double, int> Communities::f1(Community &c1, Communities &cs)
+pair<double, int> Communities::f1(Community &c1, Communities &cs, FILE * fp)
 {
     double res = 0;
     int i;
@@ -961,6 +901,11 @@ pair<double, int> Communities::f1(Community &c1, Communities &cs)
             index = i;
         }
     }
+	if (fp)
+	{
+		fprintf(fp, "%d,%d,%d,%lf\n", c1.size(), index, cs.comms[index].size(), res);
+	}
+
     return make_pair(res, index);
 }
 
@@ -986,13 +931,19 @@ pair<double, int> Communities::p(Community &c1, Communities &cs)
     return make_pair(res, index);
 }
 
-double Communities::f1(Communities &truth, Communities &detected)
+double Communities::f1(Communities &truth, Communities &detected, FILE * fp)
 {
     double res = 0;
     double count = 0;
+	if (fp)
+	{
+		fprintf(fp, "#truth, size, #detected, size, f1\n");
+	}
     for (int i = 0; i < truth.size(); ++i)
     {
-        res += f1(truth.comms[i], detected).first;
+		if (fp)
+			fprintf(fp, "%d,", i);
+        res += f1(truth.comms[i], detected, fp).first;
         ++count;
     }
     //qDebug() << count;
@@ -1007,7 +958,7 @@ double Communities::wf1(Communities &truth, Communities &detected)
 
     for (int i = 0; i < truth.size(); ++i)
     {
-        res += f1(truth.comms[i], detected).first  * truth.comms[i].size() / m;
+        res += f1(truth.comms[i], detected, 0).first  * truth.comms[i].size() / m;
         ++count;
     }
 
@@ -1157,7 +1108,7 @@ string Communities::print(bool show_detail, bool show_nodes)
 	res += buff;
 	sprintf(buff, "Modularity: %lf\n", Q);
 	res += buff;
-	sprintf(buff, "%d communities:\n", comms.size());
+    sprintf(buff, "%d communities, average size = %f\n", comms.size(), averageSize());
 	res += buff;
     sprintf(buff, "%d nodes:\n", nodesNum());
     res += buff;
@@ -1187,6 +1138,16 @@ string Communities::print(bool show_detail, bool show_nodes)
 
 	return res;
 
+}
+
+double Communities::averageSize()
+{
+    long totalsize = 0;
+    for (int i = 0; i < comms.size(); ++i)
+    {
+        totalsize += comms[i].size();
+    }
+    return double(totalsize) / comms.size();
 }
 bool Communities::save(string fn)
 {
@@ -1293,9 +1254,9 @@ pair<double, int> Community::JaccardPrecision(Communities & truth, FILE * fp)
 	}
 	if (fp)
 	{
-		//Detected size,Truth id,Truth size,Precision,Detected left,intersect,Truth left
-		fprintf(fp, "%d,%d,%d,%lf,%d,%d,%d\n", this->size(),index+1,truth.comms[index].size(),
-			res, this->size()-inter, inter, truth.comms[index].size()-inter);
+		//Detected size,Truth id,Truth size,intersect,Jaccard
+		fprintf(fp, "%d,%d,%d,%d,%lf\n", this->size(),index+1,truth.comms[index].size(),
+			inter, res);
 	}
 
 	return make_pair(res, index);
@@ -1326,9 +1287,9 @@ pair<double, int> Community::Precision(Communities & truth, FILE * fp)
 	}
 	if (fp)
 	{
-		//Detected size,Truth id,Truth size,Precision,intersect
-		fprintf(fp, "%d,%d,%d,%lf,%d\n", this->size(), index + 1, truth.comms[index].size(),
-			res, inter);
+		//Detected size,Truth id,Truth size,intersect,Precision
+		fprintf(fp, "%d,%d,%d,%d,%lf\n", this->size(), index + 1, truth.comms[index].size(),
+			inter,res);
 	}
 
 	return make_pair(res, index);

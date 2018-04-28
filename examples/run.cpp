@@ -43,12 +43,12 @@ int main(int argc, char *argv[])
 	if (argc >= 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/9157/";
+		graph_path = "F:/Bio/0420/output/";
 
 
-	bool mod = false, infomap = true;
-	bool demon = false, lc = false;
-	bool oslom = false, gce = false, cfinder = false;
+	bool mod = true, infomap = true;
+	bool demon = false, lc = true;
+	bool oslom = true, gce = true, cfinder = true;
 	for (int i = 2; i < argc; ++i)
 	{
 		string algname = argv[i];

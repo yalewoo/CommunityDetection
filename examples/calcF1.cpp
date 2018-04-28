@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	if (argc >= 2)
 		graph_path = argv[1];
 	else
-		graph_path = "F:/Yun/Bio/fenceng/20180103/newCommunity/";
+		graph_path = "F:/Bio/0new9606/graph/output/detected/";
 	//F:\HICODE_SUB\syn\3000_ori
 
 	FILE * fp = fopen((graph_path + "detected_files.txt").c_str(), "r");
@@ -243,149 +243,7 @@ int main(int argc, char *argv[])
 	}
 	fclose(fp);
 
-
-	vector<int> tmp;
-	vector<double> tmpd;
-
-	fp = fopen((outdir + "Precision_Truth_weighted.csv").c_str(), "w");
-	for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
-	{
-
-
-		string tpath = truth_path[truth_i];
-		for (int i = 0; i < tpath.size(); ++i)
-		{
-			if (tpath[i] == '\\' || tpath[i] == '/')
-				tpath[i] = '_';
-		}
-		fprintf(fp, ",%s", tpath.c_str());
-	}
-	fprintf(fp, "\n");
-	for (int i = 0; i < detected.size(); ++i)
-	{
-		printf("process detected %d..\n", i);
-		fprintf(fp, "%s", detected_path[i].c_str());
-		for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
-		{
-			printf("process truth %d..\n", truth_i);
-
-
-
-			//double pr = Communities::PR(detected[i], truth[truth_i], outdir).first;
-			double wf1 = Communities::Precision( truth[truth_i], detected[i], tmp, tmpd, outdir2).first;
-			fprintf(fp, ",%lf", wf1);
-		}
-		fprintf(fp, "\n");
-
-
-	}
-	fclose(fp);
-
-
-	fp = fopen((outdir + "Precision_Truth_Unweighted.csv").c_str(), "w");
-	for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
-	{
-
-
-		string tpath = truth_path[truth_i];
-		for (int i = 0; i < tpath.size(); ++i)
-		{
-			if (tpath[i] == '\\' || tpath[i] == '/')
-				tpath[i] = '_';
-		}
-		fprintf(fp, ",%s", tpath.c_str());
-	}
-	fprintf(fp, "\n");
-	for (int i = 0; i < detected.size(); ++i)
-	{
-		printf("process detected %d..\n", i);
-		fprintf(fp, "%s", detected_path[i].c_str());
-		for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
-		{
-			printf("process truth %d..\n", truth_i);
-
-
-
-			//double pr = Communities::PR(detected[i], truth[truth_i], outdir).first;
-			double wf1 = Communities::Precision( truth[truth_i], detected[i],tmp, tmpd, outdir2).second;
-			fprintf(fp, ",%lf", wf1);
-		}
-		fprintf(fp, "\n");
-
-
-	}
-	fclose(fp);
-
-
-	fp = fopen((outdir + "Precision_Detected_weighted.csv").c_str(), "w");
-	for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
-	{
-
-
-		string tpath = truth_path[truth_i];
-		for (int i = 0; i < tpath.size(); ++i)
-		{
-			if (tpath[i] == '\\' || tpath[i] == '/')
-				tpath[i] = '_';
-		}
-		fprintf(fp, ",%s", tpath.c_str());
-	}
-	fprintf(fp, "\n");
-	for (int i = 0; i < detected.size(); ++i)
-	{
-		printf("process detected %d..\n", i);
-		fprintf(fp, "%s", detected_path[i].c_str());
-		for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
-		{
-			printf("process truth %d..\n", truth_i);
-
-
-
-			//double pr = Communities::PR(detected[i], truth[truth_i], outdir).first;
-			double wf1 = Communities::Precision(detected[i], truth[truth_i], tmp, tmpd, outdir2).first;
-			fprintf(fp, ",%lf", wf1);
-		}
-		fprintf(fp, "\n");
-
-
-	}
-	fclose(fp);
-
-
-	fp = fopen((outdir + "Precision_Detected_Unweighted.csv").c_str(), "w");
-	for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
-	{
-
-
-		string tpath = truth_path[truth_i];
-		for (int i = 0; i < tpath.size(); ++i)
-		{
-			if (tpath[i] == '\\' || tpath[i] == '/')
-				tpath[i] = '_';
-		}
-		fprintf(fp, ",%s", tpath.c_str());
-	}
-	fprintf(fp, "\n");
-	for (int i = 0; i < detected.size(); ++i)
-	{
-		printf("process detected %d..\n", i);
-		fprintf(fp, "%s", detected_path[i].c_str());
-		for (int truth_i = 0; truth_i < truth.size(); ++truth_i)
-		{
-			printf("process truth %d..\n", truth_i);
-
-
-
-			//double pr = Communities::PR(detected[i], truth[truth_i], outdir).first;
-			double wf1 = Communities::Precision(detected[i], truth[truth_i], tmp, tmpd, outdir2).second;
-			fprintf(fp, ",%lf", wf1);
-		}
-		fprintf(fp, "\n");
-
-
-	}
-	fclose(fp);
-
+	
 	
 
 	os::moveDir(outdir, graph_path);

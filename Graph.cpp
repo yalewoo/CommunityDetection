@@ -97,6 +97,27 @@ bool Graph::load(char const *graph_path)
 
 }
 
+bool Graph::loadMatrix(vector<vector<int>>& matrix)
+{
+	if (matrix.empty())
+		return false;
+
+	for (int i = 0; i < matrix.size(); ++i)
+	{
+		for (int j = i + 1; j < matrix[i].size(); ++j)
+		{
+			if (matrix[i][j] == 1)
+				addEdge(i, j);
+		}
+	}
+
+
+
+	//边(x,y)按照x升序，x相同是按照y升序
+	sort(edges.begin(), edges.end());
+	edges.erase(unique(edges.begin(), edges.end()), edges.end());
+}
+
 bool Graph::save(char const * graph_path)
 {
 	FILE *fp = fopen(graph_path, "w");
@@ -440,7 +461,7 @@ void Graph::showPic(void)
 	getchar();
 }
 
-double Graph::calcModularity(const Communities & cs)  const
+double Graph::calcModularity(Communities & cs)  const
 {
 	if (edges.size() == 0)
 		return 0;
@@ -450,9 +471,11 @@ double Graph::calcModularity(const Communities & cs)  const
 
 	//社团内部的边数
 	vector<double> comm_inter_edge_num = getCommInterEdgeNum(cs);
+	cs.comm_inter_edge_num = comm_inter_edge_num;
 	//cout << "内部边数ok" << endl;
 	//社团连出的边数
 	vector<double> comm_out_edge_num = getCommOutEdgeNum(cs);
+	cs.comm_out_edge_num = comm_out_edge_num;
 	//cout << "连出边数ok" << endl;
 	//社团内部点的度数之和
 	vector<double> comm_inter_nodes_degree = getCommInterNodesDegree(comm_inter_edge_num, comm_out_edge_num);
@@ -461,9 +484,12 @@ double Graph::calcModularity(const Communities & cs)  const
 	double m = getSumWeighted();
 
 	double Q = 0;
+	cs.community_Q.clear();
 	for (size_t i = 0; i < nc; ++i)
 	{
-		Q += (comm_inter_edge_num[i] / m) - (comm_inter_nodes_degree[i] / (2 * m)) * (comm_inter_nodes_degree[i] / (2 * m));
+		double Qc = (comm_inter_edge_num[i] / m) - (comm_inter_nodes_degree[i] / (2 * m)) * (comm_inter_nodes_degree[i] / (2 * m));
+		Q += Qc;
+		cs.community_Q.push_back(Qc);
 	}
 	saveVector(comm_inter_edge_num, "comm_inter_edge_num.txt");
 	saveVector(comm_out_edge_num, "comm_out_edge_num.txt");

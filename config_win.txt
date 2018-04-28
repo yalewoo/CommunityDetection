@@ -17,7 +17,7 @@ OSLOM2_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/OSLOM2_bine
 GCE_dir=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/GCECommunityFinder/build/
 
 #Demon
-python2_exe="C:\Program Files\Anaconda3\envs\python2\python.exe"
+python2_exe="C:\Users\Liu\Anaconda3\envs\python2\python.exe"
 Demon_launch=F:/Project/CommunityDetection/CommunityDetectionAlgorithm/demon_py/launch.py
 
 #Cfinder

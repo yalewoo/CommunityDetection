@@ -11,27 +11,14 @@ using std::cout;
 using std::endl;
 using std::accumulate;
 
-map<string, string> Graph::config;
+extern Config hicode_config;
 
-template <typename T>
-void showVector(vector<T> & v, string name = "vector", int id = 0)
+
+
+
+int main_hicode(int argc, char *argv[])
 {
-	cout << name << " " << id << " (size=" << v.size() << ") : " << endl;
-	//for (size_t i = 0; i < v.size(); ++i)
-	//cout << v[i] << " ";
-	//cout << endl;
-}
-
-
-
-
-
-int main(int argc, char *argv[])
-{
-	Graph::loadConfig(ALG_CONFIG_PATH);
-
-
-
+	
 	string graph_path;
 	if (argc >= 2)
 		graph_path = argv[1];
@@ -39,17 +26,21 @@ int main(int argc, char *argv[])
 	{
 		//graph_path = "Z:/synL2/";
 		//graph_path = "F:/Local/Theme/Q_nips/0.001/";
-		graph_path = "F:/Bio/20180227/";
+		graph_path = "F:/HICODE_SUB/0426new/";
 	}
 		
 
 	Graph g;
 	g.load(graph_path + "graph");
-	g.runInfomap();
+	g.setWeighted(true);
 
-	Config hicode_config;
-	hicode_config.updateConfig("F:/Project/CommunityDetection/hicode_default.config");
+	
+
+	
 	hicode_config.updateConfig(graph_path + "hicode_default.config");
+
+
+	
 
 	vector<string> vbasealg = hicode_config.getValue("base_alg");
 	vector<string> vreduce_method = hicode_config.getValue("reduce_method");
@@ -64,6 +55,20 @@ int main(int argc, char *argv[])
 		Communities t;
 		t.load(path);
 		truth.push_back(t);
+	}
+
+	//输出baseline算法自身结果
+	if (hicode_config["output_baseline_results"] == "true")
+	{
+		string outpath = "baseline/";
+		os::mkdir(outpath);
+		for (int i = 0; i < vbasealg.size(); ++i)
+		{
+			Communities cs;
+			cs = g.runAlg(vbasealg[i]);
+			cs.save(outpath + vbasealg[i] + ".gen");
+		}
+		os::moveDir(outpath, graph_path);
 	}
 
 
@@ -339,13 +344,14 @@ int main(int argc, char *argv[])
 									{
 										Graph subg = g.getSubGraph(layer1.comms[i]);
 										Communities subcs = subg.runAlg(basealg);
-										sub.addCommunities(subcs);
+										if (subcs.size() > 1)
+											sub.addCommunities(subcs);
 									}
 									else
 									{
-										Communities subcs;
-										subcs.addCommunity(layer1.comms[i]);
-										sub.addCommunities(subcs);
+										//Communities subcs;
+										//subcs.addCommunity(layer1.comms[i]);
+										//sub.addCommunities(subcs);
 									}
 
 								}
@@ -383,13 +389,14 @@ int main(int argc, char *argv[])
 									{
 										Graph subg = g.getSubGraph(layer1.comms[i]);
 										Communities subcs = subg.runAlg(basealg);
-										sub.addCommunities(subcs);
+										if (subcs.size() > 1)
+											sub.addCommunities(subcs);
 									}
 									else
 									{
-										Communities subcs;
-										subcs.addCommunity(layer1.comms[i]);
-										sub.addCommunities(subcs);
+										//Communities subcs;
+										//subcs.addCommunity(layer1.comms[i]);
+										//sub.addCommunities(subcs);
 									}
 
 								}

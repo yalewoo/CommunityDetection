@@ -150,8 +150,11 @@
   <ItemGroup>
     <ClCompile Include="..\..\Communities.cpp" />
     <ClCompile Include="..\..\Config.cpp" />
-    <ClCompile Include="..\..\examples\mergeUp.cpp" />
+    <ClCompile Include="..\..\examples\F1.cpp" />
+    <ClCompile Include="..\..\examples\generateGraph.cpp" />
+    <ClCompile Include="..\..\examples\HICODE.cpp" />
     <ClCompile Include="..\..\Graph.cpp" />
+    <ClCompile Include="..\..\main.cpp" />
     <ClCompile Include="..\..\ylog.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

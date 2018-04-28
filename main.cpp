@@ -1,75 +1,61 @@
-#include <cstdio>
-#include <iostream>
+#include <map>
 #include "Graph.h"
-
-using std::cout;
-using std::endl;
+#include "Config.h"
 
 map<string, string> Graph::config;
 
+int main_hicode(int argc, char *argv[]);
+int main_F1(int argc, char *argv[]);
 
-void showVector(vector<int> & v, string name = "vector", int id = 0)
-{
-	cout << name << " " << id << " (size=" << v.size() << ") : " << endl;
-	//for (size_t i = 0; i < v.size(); ++i)
-		//cout << v[i] << " ";
-	//cout << endl;
-}
+
+Config hicode_config;
 
 int main(int argc, char *argv[])
 {
-	//读配置文件，该文件记录社团检测算法的具体路径
-	Graph::loadConfig("F:/Project/CommunityDetection/config.txt");
+	Graph::loadConfig(ALG_CONFIG_PATH);
+
+	
+	hicode_config.updateConfig("F:/Project/CommunityDetection/hicode_default.config");
 
 
+
+
+
+
+	//return main_hicode(argc, argv);
+	//return main_F1(argc, argv);
 
 	Graph g;
-	g.load("F:/HICODE_SUB/result/syn/graph");
-	//g.print();
+	g.load("F:/HICODE_SUB/0426new/graph");
+	Communities t11, t12;
+	t11.load("F:/HICODE_SUB/0426new/L11.txt");
+	t12.load("F:/HICODE_SUB/0426new/L12.txt");
+	Communities & comm1 = t11;
+	Communities * comm2 = &t12;
 
 
-
-	Communities truth, truth1, truth2;
-	Communities truth1_1, truth1_2, truth2_1, truth2_2;
-	truth.load("F:/HICODE_SUB/result/syn/truth.gen");
-	truth1.load("F:/HICODE_SUB/result/syn/truth1.gen");
-	truth2.load("F:/HICODE_SUB/result/syn/truth2.gen");
-
-	truth1_1.load("F:/HICODE_SUB/result/syn/truth1_1.gen");
-	truth1_2.load("F:/HICODE_SUB/result/syn/truth1_2.gen");
-	truth2_1.load("F:/HICODE_SUB/result/syn/truth2_1.gen");
-	truth2_2.load("F:/HICODE_SUB/result/syn/truth2_2.gen");
-
-	Communities layer1, layer2;
-	layer1.load("F:/Project/CommunityDetection/vs2015/vs2015/hicode/layer1_4.txt");
-	layer2.load("F:/Project/CommunityDetection/vs2015/vs2015/hicode/layer2_4.txt");
+	double nmi = comm1.calcNMI(*comm2);
+	printf("NMI = %lf\n", nmi);
 
 
-	double Q1 = truth1.calcModularity(g);
-	double Q2 = truth2.calcModularity(g);
-	cout << "Q1 = " << Q1 << endl;
-	cout << "Q2 = " << Q2 << endl;
+	double f1_unweighted = Communities::F1_unweighted(comm1, *comm2);
+	double f1_weighted = Communities::F1_weighted(*comm2, comm1);
 
-	cout << "NMI = " << truth1.calcNMI(truth2) << endl;
+	double jaccard_f1_unweighted = Communities::Jaccard_F1_unweighted(comm1, *comm2);
+	double jaccard_f1_weighted = Communities::Jaccard_F1_weighted(*comm2, comm1);
 
-	cout << "NMI(layer1, truth) = " << layer1.calcNMI(truth) << endl;
-	cout << "NMI(layer1, truth1) = " << layer1.calcNMI(truth1) << endl;
-	cout << "NMI(layer1, truth2) = " << layer1.calcNMI(truth2) << endl;
-	cout << "NMI(layer1, truth1_1) = " << layer1.calcNMI(truth1_1) << endl;
-	cout << "NMI(layer1, truth1_2) = " << layer1.calcNMI(truth1_2) << endl;
-	cout << "NMI(layer1, truth2_1) = " << layer1.calcNMI(truth2_1) << endl;
-	cout << "NMI(layer1, truth2_2) = " << layer1.calcNMI(truth2_2) << endl;
+	double f1_precision_unweighted = Communities::f1(comm1, *comm2);
+	double f1_recall_unweighted = Communities::f1(*comm2, comm1);
 
+	double f1_precision_weighted = Communities::wf1(comm1, *comm2);
+	double f1_recall_weighted = Communities::wf1(*comm2, comm1);
 
-	cout << "NMI(layer2, truth) = " << layer2.calcNMI(truth) << endl;
-	cout << "NMI(layer2, truth1) = " << layer2.calcNMI(truth1) << endl;
-	cout << "NMI(layer2, truth2) = " << layer2.calcNMI(truth2) << endl;
-	cout << "NMI(layer2, truth1_1) = " << layer2.calcNMI(truth1_1) << endl;
-	cout << "NMI(layer2, truth1_2) = " << layer2.calcNMI(truth1_2) << endl;
-	cout << "NMI(layer2, truth2_1) = " << layer2.calcNMI(truth2_1) << endl;
-	cout << "NMI(layer2, truth2_2) = " << layer2.calcNMI(truth2_2) << endl;
+	printf("F1 = %lf, wF1 = %lf\n", f1_unweighted, f1_weighted);
 
+	printf("JF1 = %lf, wJF1 = %lf\n", jaccard_f1_unweighted, jaccard_f1_weighted);
 
-	printf("------------\ndone\n");
-	return 0;
+	printf("F1_precision = %lf, wF1_precision = %lf\n", f1_precision_unweighted, f1_recall_unweighted);
+
+	printf("F1_recall = %lf, wF1_recall = %lf\n", f1_precision_weighted, f1_recall_weighted);
+
 }

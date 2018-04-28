@@ -50,15 +50,25 @@ void Comm::dropEvent(QDropEvent *event)
     tmp.sprintf("NMI = %lf\n", nmi);
     s += tmp;
 
-    double f1_detected = Communities::f1(comm1, *comm2);
-    double f1_truth = Communities::f1(*comm2, comm1);
+    double f1_unweighted = Communities::F1_unweighted(comm1, *comm2);
+    double f1_weighted = Communities::F1_weighted(*comm2, comm1);
 
-    double weighted_f1_detected = Communities::wf1(comm1, *comm2);
-    double weighted_f1_truth = Communities::wf1(*comm2, comm1);
+    double jaccard_f1_unweighted = Communities::Jaccard_F1_unweighted(comm1, *comm2);
+    double jaccard_f1_weighted = Communities::Jaccard_F1_weighted(*comm2, comm1);
 
-    tmp.sprintf("F1_detected = %lf, f1_truth = %lf\n", f1_detected, f1_truth);
+    double f1_precision_unweighted = Communities::f1(comm1, *comm2);
+    double f1_recall_unweighted = Communities::f1(*comm2, comm1);
+
+    double f1_precision_weighted = Communities::wf1(comm1, *comm2);
+    double f1_recall_weighted = Communities::wf1(*comm2, comm1);
+
+    tmp.sprintf("F1 = %lf, wF1 = %lf\n", f1_unweighted, f1_weighted);
     s += tmp;
-    tmp.sprintf("weighted_F1_detected = %lf, weighted_f1_truth = %lf\n", weighted_f1_detected, weighted_f1_truth);
+    tmp.sprintf("JF1 = %lf, wJF1 = %lf\n", jaccard_f1_unweighted, jaccard_f1_weighted);
+    s += tmp;
+    tmp.sprintf("F1_precision = %lf, wF1_precision = %lf\n", f1_precision_unweighted, f1_recall_unweighted);
+    s += tmp;
+    tmp.sprintf("F1_recall = %lf, wF1_recall = %lf\n", f1_precision_weighted, f1_recall_weighted);
     s += tmp;
 
     /*
